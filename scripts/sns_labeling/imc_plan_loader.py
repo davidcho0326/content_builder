@@ -87,6 +87,21 @@ SCENE_PERSONA_HINTS: list[tuple[str, str]] = [
     ("페스티벌", "G3"),
     ("festival", "G3"),
     ("resort", "G3"),
+    # Discovery-style scenes (Active Wellness lifestyle)
+    ("first light", "G1"),
+    ("daybreak", "G1"),
+    ("morning run", "G1"),
+    ("running", "G1"),
+    ("러닝", "G1"),
+    ("café transit", "G2"),
+    ("studio", "G2"),
+    ("pilates", "G2"),
+    ("yoga", "G2"),
+    ("필라테스", "G2"),
+    ("office glow", "G3"),
+    ("office", "G3"),
+    ("commute", "G3"),
+    ("출퇴근", "G3"),
 ]
 
 

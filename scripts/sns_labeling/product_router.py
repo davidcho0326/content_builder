@@ -22,11 +22,15 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_PRODUCTS_DIR = PROJECT_ROOT / "products_resource"
 
 
-# brand display name → on-disk folder name
+# brand display name → on-disk folder name.
+# Both display ("MLB"/"DUVETICA"/"DISCOVERY") and short codes ("DX"/"DV") accepted —
+# imc_plan 'brand' field varies by campaign source.
 BRAND_FOLDER = {
     "mlb": "MLB",
     "duvetica": "DV",
+    "dv": "DV",
     "discovery": "DX",
+    "dx": "DX",
 }
 
 # imc category code → on-disk code-folder suffix.
