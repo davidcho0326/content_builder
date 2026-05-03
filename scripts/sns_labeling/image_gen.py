@@ -113,11 +113,22 @@ THE MODEL: {persona_demo}. {brand_model_keyword}.
 EXPRESSION: {expression} (gaze: {gaze}).
 SIGNATURE POSE: {pose}.
 
-WEARING:
-- Hero: {hero_desc}
-- Sub: {sub_desc_csv}
-ACCESSORIES (scene-appropriate, light): {accessories}
-FOOTWEAR: {footwear}
+WEARING (PRODUCT-AWARE COORDINATION):
+- HERO ({hero_code}) = real product visual:
+{hero_visual_block}
+- BOTTOM ({bottom_code}) = real product visual:
+{bottom_visual_block}
+- COORDINATED ITEMS (from brand DNA · theme: {coord_theme}):
+    Top suggestion (if hero is bottom): {coord_top_suggestion}
+    Cap/Hat: {coord_hat}
+    Footwear: {coord_footwear}
+    Accessories: {coord_accessories}
+    Style notes: {coord_styling_note}
+
+COLOR HARMONY:
+- Hero garment color leads: {hero_color_lead}
+- Scene tone shapes background: {scene_tone}
+- Brand palette accent: {coord_color_palette}
 
 PHOTOGRAPHY:
 - Camera: {camera}, {lens}.
@@ -134,14 +145,61 @@ NEGATIVE: no Y2K poses, no mirror selfies, no exaggerated cute gestures, no plas
 CRITICAL: Match the REFERENCE photograph's POSE / COMPOSITION / CAMERA ANGLE precisely. The model's SETTING, COLOR PALETTE, CLOTHING, and ACCESSORIES must match the SCENE BRIEF above — NOT the reference image. The TONE & COLOR direction ({scene_tone}) must dominate the rendered image's color grading."""
 
 
+def _format_garment_visual_block(code: str, desc: str, analysis) -> str:
+    """Compose multi-line visual description for a garment (hero or bottom).
+
+    Falls back to imc desc when analysis is None (v3.3 behavior).
+    """
+    indent = "    "
+    if analysis is None:
+        line = (desc or "(unspecified)").strip()
+        return f"{indent}{line}"
+
+    def _g(name, default=""):
+        v = getattr(analysis, name, None)
+        return v if v else default
+
+    bits = []
+    gtype = _g("garment_type")
+    cat = _g("category")
+    if gtype or cat:
+        bits.append(f"type: {gtype} / category: {cat}".strip(" /"))
+
+    pc = _g("primary_color")
+    sc_raw = _g("secondary_colors")
+    if pc:
+        sc_text = (", ".join(sc_raw) if isinstance(sc_raw, list) else str(sc_raw)) if sc_raw else ""
+        bits.append(f"color: {pc}" + (f" (+ {sc_text})" if sc_text else ""))
+
+    mat = _g("material_appearance") or _g("material")
+    pat = _g("pattern")
+    if mat or pat:
+        bits.append(f"material: {mat or '-'}, pattern: {pat or '-'}")
+
+    fit = _g("fit_style") or _g("fit")
+    logo = _g("logo")
+    if fit or logo:
+        bits.append(f"fit: {fit or '-'}, logo: {logo or '-'}")
+
+    details = _g("key_details")
+    if details:
+        d_text = "; ".join(details) if isinstance(details, list) else str(details)
+        bits.append(f"key details: {d_text}")
+
+    if not bits:
+        return f"{indent}{(desc or '(unspecified)').strip()}"
+    return "\n".join(f"{indent}{b}" for b in bits)
+
+
 def build_prompt_from_imc_scene(
     scene,                        # imc_plan_loader.Scene
     spec,                         # imc_plan_loader.CampaignSpec
     ref: dict,                    # selected reference (selector_v3 output)
     *,
     moment: Optional[str] = None,
-    accessories: Optional[str] = None,
-    footwear: Optional[str] = None,
+    accessories: Optional[str] = None,        # legacy, used only when product_context is None
+    footwear: Optional[str] = None,           # legacy
+    product_context: Optional[dict] = None,   # v3.4 product-aware Step C
 ) -> str:
     """Render the IMC-aware prompt for one scene + ref + persona.
 
@@ -179,6 +237,36 @@ def build_prompt_from_imc_scene(
         else "(unspecified)"
     )
 
+    # v3.4 product-aware Step C: build hero/bottom visual blocks + coord.
+    # When product_context is None (v3.3 fallback), all blocks degrade gracefully
+    # to the imc_plan text-only description.
+    pc = product_context or {}
+    hero_match = pc.get("hero_match")
+    bottom_match = pc.get("bottom_match")
+    hero_analysis = pc.get("hero_analysis")
+    bottom_analysis = pc.get("bottom_analysis")
+    coord = pc.get("coord_block") or {}
+
+    hero_code_disp = (hero_match.code if hero_match
+                      else (spec.hero_garment.get("code") or ""))
+    hero_desc_text = (spec.hero_garment.get("desc") or "")
+    hero_visual_block = _format_garment_visual_block(
+        hero_code_disp, hero_desc_text, hero_analysis,
+    )
+
+    bottom_code_disp = (bottom_match.code if bottom_match
+                        else (spec.sub_garments[0].get("code") if spec.sub_garments else ""))
+    bottom_desc_text = (spec.sub_garments[0].get("desc")
+                        if spec.sub_garments else "")
+    bottom_visual_block = _format_garment_visual_block(
+        bottom_code_disp, bottom_desc_text, bottom_analysis,
+    )
+
+    hero_color_lead = (
+        getattr(hero_analysis, "primary_color", None) if hero_analysis
+        else "(per scene tone)"
+    ) or "(per scene tone)"
+
     return IMC_PROMPT_TEMPLATE.format(
         brand=spec.brand or "",
         season=spec.season or "",
@@ -199,10 +287,20 @@ def build_prompt_from_imc_scene(
         expression=expression or "cool",
         gaze=gaze or "front",
         pose=pose or "full body shot",
-        hero_desc=f"[{spec.hero_garment.get('code', '')}] {spec.hero_garment.get('desc', '')}".strip(),
-        sub_desc_csv=sub_desc_csv,
-        accessories=accessories or "minimal scene-appropriate items",
-        footwear=footwear or "scene-appropriate footwear",
+        hero_code=hero_code_disp or "(none)",
+        hero_visual_block=hero_visual_block,
+        bottom_code=bottom_code_disp or "(none)",
+        bottom_visual_block=bottom_visual_block,
+        coord_theme=coord.get("theme_key") or "(no theme matched)",
+        coord_top_suggestion=coord.get("coord_top_suggestion") or "(n/a — hero is top)",
+        coord_hat=coord.get("coord_hat") or "(unspecified)",
+        coord_footwear=coord.get("coord_footwear")
+                        or (footwear or "scene-appropriate footwear"),
+        coord_accessories=coord.get("coord_accessories")
+                            or (accessories or "minimal scene-appropriate items"),
+        coord_styling_note=coord.get("coord_styling_note") or "",
+        coord_color_palette=coord.get("coord_color_palette") or "(scene tone leads)",
+        hero_color_lead=hero_color_lead,
         camera="Hasselblad 500CM",
         lens="85mm f/1.8",
         film="Kodak Portra 400",

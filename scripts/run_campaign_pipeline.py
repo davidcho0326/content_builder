@@ -24,6 +24,8 @@ import shutil
 import sys
 from pathlib import Path
 
+from PIL import Image  # for v3.4 product VLM analysis
+
 _THIS = Path(__file__).resolve()
 _SCRIPTS = _THIS.parent
 if str(_SCRIPTS) not in sys.path:
@@ -161,11 +163,66 @@ def _run_imc_pipeline(args) -> int:
     (prop_dir / "campaign_proposal.md").write_text(md, encoding="utf-8")
     print(f"  wrote campaign_proposal.json + .md ({len(md):,} chars)")
 
+    # ---- Step C-pre: route + pre-analyze hero/bottom products (v3.4) ----
+    product_context = None
+    pre_hero_analysis = None
+    pre_bottom_analysis = None
+    pre_hero_match = None
+    pre_bottom_match = None
+    if args.product_aware_stepc and not args.no_images:
+        print(f"\n[Step C-pre] Pre-route + analyze products for product-aware Step C")
+        from sns_labeling.product_router import (
+            route_hero_product, route_bottom_product, build_brand_coord_block,
+        )
+        # Load brand DNA for coord block
+        brand_lower = (spec.brand or "").lower().split()[0]
+        brand_dna_path = BRAND_DNA_DIR / f"{brand_lower}.json"
+        brand_dna_local = (json.loads(brand_dna_path.read_text(encoding="utf-8"))
+                           if brand_dna_path.exists() else {})
+
+        pre_hero_match = route_hero_product(spec)
+        pre_bottom_match = route_bottom_product(spec) if args.tryon_multi else None
+        coord_block = build_brand_coord_block(
+            brand_dna_local,
+            spec.lifestyle or "",
+            hero_is_top=True,    # imc hero is conventionally top (TS / WJ / DJ)
+        )
+        # Run product VLM analyses (Gemini Flash)
+        if pre_hero_match:
+            try:
+                from sns_labeling.tryon import _gemini_client, _vt_analyze_product, _VTON_AVAILABLE
+                if _VTON_AVAILABLE and _vt_analyze_product is not None:
+                    client = _gemini_client()
+                    pre_hero_analysis = _vt_analyze_product(
+                        client, Image.open(pre_hero_match.hero_image).convert("RGB"),
+                    )
+                    print(f"  hero analyzed: "
+                          f"{getattr(pre_hero_analysis, 'garment_type', '')} / "
+                          f"{getattr(pre_hero_analysis, 'primary_color', '')}")
+                    if pre_bottom_match:
+                        pre_bottom_analysis = _vt_analyze_product(
+                            client, Image.open(pre_bottom_match.hero_image).convert("RGB"),
+                        )
+                        print(f"  bottom analyzed: "
+                              f"{getattr(pre_bottom_analysis, 'garment_type', '')} / "
+                              f"{getattr(pre_bottom_analysis, 'primary_color', '')}")
+            except Exception as e:
+                print(f"  [warn] product analysis failed: {type(e).__name__}: {e}")
+        product_context = {
+            "hero_match": pre_hero_match,
+            "bottom_match": pre_bottom_match,
+            "hero_analysis": pre_hero_analysis,
+            "bottom_analysis": pre_bottom_analysis,
+            "coord_block": coord_block,
+        }
+        print(f"  coord theme: {coord_block.get('theme_key')}")
+
     # ---- Step C: image generation ----
     if args.no_images:
         print("\n[Step C] skipped (--no-images)")
     else:
-        print(f"\n[Step C] Image generation (providers: {', '.join(args.providers)})")
+        print(f"\n[Step C] Image generation (providers: {', '.join(args.providers)})"
+              + (" — product-aware" if product_context else " — text-only (v3.3)"))
         # Filter providers to those supported by the IMC orchestrator (Direct only).
         from sns_labeling.image_providers import IMC_PROVIDER_FUNCS as _imc_pf
         providers = [p for p in args.providers if p in _imc_pf]
@@ -176,6 +233,7 @@ def _run_imc_pipeline(args) -> int:
                 spec, refs_by_scene, imgs_dir,
                 providers=providers,
                 moments_by_key=moments_by_key,
+                product_context=product_context,
                 max_workers=args.max_workers,
             )
             (imgs_dir / "_summary.json").write_text(
@@ -193,7 +251,8 @@ def _run_imc_pipeline(args) -> int:
             route_hero_product, route_bottom_product,
             write_manifest as write_product_manifest,
         )
-        product_match = route_hero_product(spec)
+        # Reuse pre-routed match from Step C-pre when available (v3.4)
+        product_match = pre_hero_match if pre_hero_match else route_hero_product(spec)
         if product_match is None:
             print("  [skip] no hero product matched in products_resource")
         else:
@@ -212,8 +271,9 @@ def _run_imc_pipeline(args) -> int:
                   f"(strategy: {product_match.match_strategy}/{product_match.hero_strategy})")
 
             # Multi-tryon: auto-route bottom (WP/PT) when --tryon-multi is on
-            bottom_match = None
-            if args.tryon_multi:
+            # Reuse pre-routed bottom_match from Step C-pre when available
+            bottom_match = pre_bottom_match if pre_bottom_match else None
+            if args.tryon_multi and bottom_match is None:
                 bottom_match = route_bottom_product(spec)
                 if bottom_match is not None:
                     write_product_manifest(bottom_match, products_dir / "bottom_product.json")
@@ -240,6 +300,8 @@ def _run_imc_pipeline(args) -> int:
                 engines=args.tryon_engines,
                 product_match=product_match,
                 bottom_match=bottom_match,
+                pre_top_analysis=pre_hero_analysis,        # v3.4 cache reuse
+                pre_bottom_analysis=pre_bottom_analysis,
             )
             (imgs_dir / "_tryon_summary.json").write_text(
                 json.dumps(tryon_results, ensure_ascii=False, indent=2),
@@ -343,6 +405,15 @@ def main() -> int:
                     action="store_false",
                     help="Force single-garment (hero only) try-on even if "
                          "bottom asset is available")
+    ap.add_argument("--product-aware-stepc", dest="product_aware_stepc",
+                    action="store_true", default=True,
+                    help="v3.4: pre-route hero/bottom products and inject "
+                         "VLM-analyzed visual + brand-DNA coord cues into "
+                         "Step C image generation prompt (default true)")
+    ap.add_argument("--no-product-aware-stepc", dest="product_aware_stepc",
+                    action="store_false",
+                    help="Disable v3.4 product-aware Step C (fallback to "
+                         "v3.3 text-only IMC prompt)")
     args = ap.parse_args()
 
     # ---- IMC-driven branch (v3) ----

@@ -26,8 +26,9 @@ imc_plan.json
    ↓ Step A) Per-scene reference selection           (selector_v3, persona+pose anchor)
    ↓ Step B) IMC proposal                            (campaign + scenes + influencer_categories)
    ↓ Step B.5) THE MOMENT extraction                 (gemini-3.1-flash-lite, IMC-aware moments)  ★
-   ↓ Step C) 3-model image generation                (GPT-image-2 Direct + HF GPT-image 2 + HF Marketing Studio)
-   ↓ Step C+) Virtual try-on (hero product swap)     (Gemini-3-pro-image + GPT-image-2 두 엔진)  ★ v3.2
+   ↓ Step C-pre) Pre-route + analyze hero/bottom     (Gemini Flash analyze_product + brand DNA coord)  ★ v3.4
+   ↓ Step C) 3-model PRODUCT-AWARE generation        (GPT-image-2 Direct + HF GPT + HF MKT, prompt에 실제 제품 visual + brand DNA hat/shoe/coord 주입)  ★ v3.4
+   ↓ Step C+) Multi-tryon hero TS + sub WP swap      (gpt-image-2 single engine, 캐시된 product analysis 재사용)
    ↓ Step D) Scene-grouped gallery + lightbox        (자동 오픈)
 ```
 
@@ -174,6 +175,68 @@ st_cut-dev/results/{brand}/imc_driven/{campaign_id}_{ts}/
 - 임베딩 캐시: `source/sns-influencer-output/_pool_embeddings.npz` (5,774 × 3072 float32)
 - imc_plan: `marketing_builder/output/{campaign_id}/05_marketing/output/imc_plan.json`
 - (legacy 모드 한정) brand DNA: `st_cut-dev/brand-dna/{brand}.json`
+
+---
+
+## Step C-pre · Step C Product-Aware (v3.4, 2026-05-03 도입)
+
+Step C가 옷을 *상상*해서 그리는 대신, **실제 자사 제품 시각 정보(VLM 분석된 컬러/소재/핏/로고)** + **브랜드 DNA 코디 룰(hat/footwear/accessories)** 을 프롬프트에 주입해 *처음부터 product-aware한 룩*으로 생성.
+
+### 동작 (Step C-pre, 1회 호출)
+
+`run_campaign_pipeline.py _run_imc_pipeline()` 의 Step B.5 직후:
+1. `route_hero_product(spec)` → hero packshot 파일 매핑
+2. `route_bottom_product(spec)` → bottom packshot (WP/PT, multi-tryon용)
+3. 외부 `core.virtual_tryon.analyze_product()` 로 hero+bottom 1회씩 VLM 분석 → ProductAnalysis
+4. `build_brand_coord_block(brand_dna, lifestyle, hero_is_top)` → hat / footwear / accessories / theme styling
+5. 결과를 `product_context` dict로 묶어 Step C / Step C+ 둘 다 전달 (캐시 공유)
+
+### Step C 프롬프트 변화
+
+기존 `WEARING:` 단순 텍스트 → 다음 블록으로 교체:
+```
+WEARING (PRODUCT-AWARE COORDINATION):
+- HERO (TS) = real product visual:
+    type: long-sleeve henley top / category: top
+    color: charcoal grey (+ white)
+    material: ribbed knit, pattern: solid with large graphic print
+    fit: slim fit, logo: {text: 'LA', type: 'embroidered', ...}
+    key details: long sleeves; layered double neckline; henley placket; 4 silver snaps; ...
+- BOTTOM (WP) = real product visual:
+    type: sweatpants / category: bottom
+    color: sage green (+ tan)
+    ...
+- COORDINATED ITEMS (from brand DNA · theme: sportive):
+    Top suggestion (if hero is bottom): ...
+    Cap/Hat: MLB baseball cap (NY logo)
+    Footwear: chunky sneakers, platform sneakers, white sneakers
+    Accessories: crossbody bag, chain necklace, hoop earrings, mini shoulder bag
+    Style notes: athletic proportions, sporty accessories, dynamic pose
+
+COLOR HARMONY:
+- Hero garment color leads: charcoal grey
+- Scene tone shapes background: D.GREEN base + L.MINT 액센트
+- Brand palette accent: Team colors (navy/white/red), vivid colorblock
+```
+
+### CLI flag
+
+| 인자 | 기본 | 설명 |
+|---|---|---|
+| `--product-aware-stepc` | True | Step C-pre 실행 + Step C 프롬프트에 실제 제품 visual + brand DNA coord 주입 |
+| `--no-product-aware-stepc` | — | v3.3 동작으로 fallback (text-only IMC prompt) |
+
+### 비용
+
+- 추가 Gemini Flash analyze_product 2회 (hero + bottom) ≈ ~$0.1
+- Step C+ 에서 재분석 안 함 (캐시 재사용) → **비용 영향 없음 또는 절감**
+- Step C 프롬프트 ~500-800 자 증가 → 모델 처리 시간 미세 증가
+
+### Roll-back
+
+- `--no-product-aware-stepc` 즉시 v3.3 동작
+- branch `feature/product-aware-stepC` 격리 → main 회귀: `git checkout main`
+- v3.3 tag: `v3.3-multi-tryon`
 
 ---
 

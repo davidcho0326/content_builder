@@ -294,11 +294,131 @@ def write_manifest(match: ProductMatch, out_path: Path) -> None:
     )
 
 
+# ---------- Brand-DNA coordinated styling helper (v3.4) ---------------------
+
+def _flatten(values) -> list[str]:
+    """Coerce list/dict/str → flat list of strings, dropping empties."""
+    if values is None:
+        return []
+    if isinstance(values, str):
+        return [values] if values.strip() else []
+    if isinstance(values, dict):
+        out: list[str] = []
+        for v in values.values():
+            out.extend(_flatten(v))
+        return out
+    if isinstance(values, list):
+        out: list[str] = []
+        for v in values:
+            out.extend(_flatten(v))
+        return out
+    return [str(values)]
+
+
+def _pick_theme(brand_dna: dict, lifestyle: str) -> tuple[Optional[str], dict]:
+    """Match imc lifestyle → brand_dna.themes.{key} via slug substring.
+
+    Returns (theme_key, theme_dict) or (None, {}) if no themes.
+    """
+    themes = (brand_dna or {}).get("themes") or {}
+    if not isinstance(themes, dict) or not themes:
+        return None, {}
+    target_slug = _slug(lifestyle or "")
+    if not target_slug:
+        first_key = next(iter(themes.keys()), None)
+        return first_key, themes.get(first_key) or {}
+    # exact / substring match
+    for k in themes.keys():
+        if _slug(k) == target_slug:
+            return k, themes[k]
+    for k in themes.keys():
+        ks = _slug(k)
+        if ks and (ks in target_slug or target_slug in ks):
+            return k, themes[k]
+    # word overlap
+    target_words = set(re.findall(r"[a-z0-9]+", lifestyle.lower()))
+    best_k, best_overlap = None, 0
+    for k in themes.keys():
+        kw = set(re.findall(r"[a-z0-9]+", k.lower()))
+        overlap = len(target_words & kw)
+        if overlap > best_overlap:
+            best_k, best_overlap = k, overlap
+    if best_k:
+        return best_k, themes[best_k]
+    first_key = next(iter(themes.keys()), None)
+    return first_key, themes.get(first_key) or {}
+
+
+def build_brand_coord_block(
+    brand_dna: dict,
+    lifestyle: str,
+    hero_is_top: bool,
+) -> dict:
+    """Compose coordinated styling cues from brand DNA for product-aware Step C.
+
+    Returns a dict consumed by image_gen.IMC_PROMPT_TEMPLATE_V2:
+      {
+        "theme_key": str,            # matched theme name, or None
+        "coord_top_suggestion": str, # only meaningful when hero_is_top=False
+        "coord_hat": str,
+        "coord_footwear": str,
+        "coord_accessories": str,
+        "coord_color_palette": str,  # theme.color or brand color basics
+        "coord_styling_note": str,   # theme.styling text
+    }
+    """
+    bd = brand_dna or {}
+    styling = bd.get("styling") or {}
+    theme_key, theme = _pick_theme(bd, lifestyle or "")
+
+    accessories = _flatten(styling.get("accessories"))
+    footwear = _flatten(styling.get("footwear"))
+    details = _flatten(styling.get("details"))
+
+    # cap/hat: prefer top-level styling.cap_hat, fallback to keyword in accessories
+    cap_hat = _flatten(styling.get("cap_hat"))
+    if not cap_hat:
+        cap_hat = [a for a in accessories if "cap" in a.lower() or "hat" in a.lower()]
+
+    other_acc = [a for a in accessories if a not in cap_hat]
+
+    theme_color = theme.get("color") or ""
+    theme_styling = theme.get("styling") or ""
+    theme_fit = theme.get("fit") or ""
+    theme_fabric = theme.get("fabric") or ""
+
+    # When hero is bottom, suggest a coord top from theme fit/fabric/color
+    coord_top_suggestion = ""
+    if not hero_is_top:
+        bits = []
+        if theme_fit:
+            bits.append(f"fit: {theme_fit}")
+        if theme_fabric:
+            bits.append(f"fabric: {theme_fabric}")
+        if theme_color:
+            bits.append(f"colors: {theme_color}")
+        if theme_styling:
+            bits.append(f"styling: {theme_styling}")
+        coord_top_suggestion = "; ".join(bits) if bits else ""
+
+    return {
+        "theme_key": theme_key,
+        "coord_top_suggestion": coord_top_suggestion,
+        "coord_hat": ", ".join(cap_hat[:3]) if cap_hat else "",
+        "coord_footwear": ", ".join(footwear[:3]) if footwear else "",
+        "coord_accessories": ", ".join(other_acc[:4]) if other_acc else "",
+        "coord_color_palette": theme_color or "",
+        "coord_styling_note": theme_styling or "",
+        "coord_details": ", ".join(details[:4]) if details else "",
+    }
+
+
 __all__ = [
     "ProductMatch",
     "route_hero_product",
     "route_sub_products",
     "route_bottom_product",
+    "build_brand_coord_block",
     "write_manifest",
     "DEFAULT_PRODUCTS_DIR",
     "BRAND_FOLDER",

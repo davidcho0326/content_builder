@@ -456,6 +456,8 @@ def run_tryon_step(
     max_workers: int = 3,
     product_match=None,                        # pre-resolved hero ProductMatch (top), or None to route now
     bottom_match=None,                         # optional ProductMatch for bottom (multi-tryon mode)
+    pre_top_analysis=None,                     # v3.4 cache: pre-computed Gemini analyze_product result for top
+    pre_bottom_analysis=None,                  # v3.4 cache: same for bottom
 ) -> dict:
     """Run try-on on every Direct gpt result with the chosen engines.
 
@@ -506,21 +508,31 @@ def run_tryon_step(
     elif bottom_match is not None:
         print(f"  [tryon] bottom_match given but file missing; falling back to single mode")
 
-    # Pre-analyze top product (once; reused by both engines)
-    top_analysis = None
-    bottom_analysis = None
+    # Pre-analyze top product (once; reused by both engines).
+    # v3.4: skip if pre_top_analysis / pre_bottom_analysis given (cache reuse).
+    top_analysis = pre_top_analysis
+    bottom_analysis = pre_bottom_analysis
     if _VTON_AVAILABLE and "gemini" in engines:
         try:
             client = _gemini_client()
-            product_pil = Image.open(product_path).convert("RGB")
-            top_analysis = _vt_analyze_product(client, product_pil)
-            print(f"  [tryon] analyzed top: "
-                  f"{getattr(top_analysis, 'garment_type', '')} / "
-                  f"{getattr(top_analysis, 'primary_color', '')}")
-            if multi_mode:
+            if top_analysis is None:
+                product_pil = Image.open(product_path).convert("RGB")
+                top_analysis = _vt_analyze_product(client, product_pil)
+                print(f"  [tryon] analyzed top: "
+                      f"{getattr(top_analysis, 'garment_type', '')} / "
+                      f"{getattr(top_analysis, 'primary_color', '')}")
+            else:
+                print(f"  [tryon] reusing cached top analysis: "
+                      f"{getattr(top_analysis, 'garment_type', '')} / "
+                      f"{getattr(top_analysis, 'primary_color', '')}")
+            if multi_mode and bottom_analysis is None:
                 bottom_pil = Image.open(bottom_path).convert("RGB")
                 bottom_analysis = _vt_analyze_product(client, bottom_pil)
                 print(f"  [tryon] analyzed bottom: "
+                      f"{getattr(bottom_analysis, 'garment_type', '')} / "
+                      f"{getattr(bottom_analysis, 'primary_color', '')}")
+            elif multi_mode:
+                print(f"  [tryon] reusing cached bottom analysis: "
                       f"{getattr(bottom_analysis, 'garment_type', '')} / "
                       f"{getattr(bottom_analysis, 'primary_color', '')}")
         except Exception as e:  # noqa: BLE001

@@ -257,6 +257,7 @@ def generate_imc_unit_gemini(
     scene, spec, ref: dict, *,
     out_dir: Path, moment: Optional[str] = None,
     model: Optional[str] = None,
+    product_context: Optional[dict] = None,
 ) -> dict:
     """Generate one image for (scene, ref) via Gemini using IMC prompt."""
     rank = ref.get("rank") or 1
@@ -266,7 +267,8 @@ def generate_imc_unit_gemini(
         return {"unit_id": unit_id, "scene_id": scene.slug, "rank": rank,
                 "provider": "gemini", "status": "skip",
                 "error": f"reference image missing: {ref_path}"}
-    prompt = build_prompt_from_imc_scene(scene, spec, ref, moment=moment)
+    prompt = build_prompt_from_imc_scene(scene, spec, ref, moment=moment,
+                                          product_context=product_context)
     _save_prompt(out_dir, unit_id, prompt)
     out_path = out_dir / f"{unit_id}_gemini.png"
     res = _gemini_call(prompt, ref_path, out_path, model=model)
@@ -279,6 +281,7 @@ def generate_imc_unit_gpt(
     scene, spec, ref: dict, *,
     out_dir: Path, moment: Optional[str] = None,
     model: Optional[str] = None, size: str = "1024x1536", retries: int = 2,
+    product_context: Optional[dict] = None,
 ) -> dict:
     """Generate one image for (scene, ref) via OpenAI images.edit."""
     rank = ref.get("rank") or 1
@@ -288,7 +291,8 @@ def generate_imc_unit_gpt(
         return {"unit_id": unit_id, "scene_id": scene.slug, "rank": rank,
                 "provider": "gpt", "status": "skip",
                 "error": f"reference image missing: {ref_path}"}
-    prompt = build_prompt_from_imc_scene(scene, spec, ref, moment=moment)
+    prompt = build_prompt_from_imc_scene(scene, spec, ref, moment=moment,
+                                          product_context=product_context)
     _save_prompt(out_dir, unit_id, prompt)
 
     ref_img = Image.open(ref_path).convert("RGB")
@@ -348,6 +352,7 @@ def generate_campaign_imc(
     *,
     providers: list[str],
     moments_by_key: Optional[dict[str, str]] = None,
+    product_context: Optional[dict] = None,   # v3.4 product-aware Step C
     max_workers: int = 4,
 ) -> dict:
     """IMC orchestrator: render every (scene, ref) with every provider."""
@@ -365,7 +370,8 @@ def generate_campaign_imc(
     results: list[dict] = []
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         futs = {
-            ex.submit(fn, scene, spec, ref, out_dir=out_dir, moment=mom):
+            ex.submit(fn, scene, spec, ref, out_dir=out_dir, moment=mom,
+                      product_context=product_context):
                 (p, scene.slug, ref.get("rank"))
             for (p, scene, ref, mom, fn) in jobs
         }
