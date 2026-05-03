@@ -1,0 +1,996 @@
+{
+  "brand": "MLB",
+  "season": "27SS",
+  "positioning": "기능성이 패션이 되는 브랜드 — 스트리트 캐주얼 → 웰니스 기반 액티브 라이프스타일 브랜드",
+  "insight": "겉은 패셔너블, 안은 기능성. 야구점퍼 헤리티지 → 애슬레저 라이프스타일. 비비크림은 OK, 파운데이션은 NO — 자연스러운 고급감.",
+  "themes": {
+    "street": {
+      "mood": "NYC 스트릿, 에너지틱, 청년, 볼드",
+      "fit": "Oversized / Boxy / Drop-shoulder / Wide-leg",
+      "fabric": "Heavy cotton fleece, sweat fabric, washed nylon, heavyweight jersey",
+      "color": "Black, white, navy, red, colorblock, washed/faded tone",
+      "logo": "Big logo, team graphic, bold lettering, all-over print, vintage patch",
+      "expression": "cool indifferent, urban-confident, hip-hop energy",
+      "background": "urban street / concrete wall / graffiti alley / NYC cityscape at dusk",
+      "styling": "oversized silhouette, streetwear stack, chunky sneakers",
+      "growth": "역성장 ↓"
+    },
+    "wellness": {
+      "mood": "클린, 소프트, 건강미, 자연스러운 고급감",
+      "fit": "Slim / Semi-fitted / Soft Crop / Relaxed tapered",
+      "fabric": "Stretch jersey, soft tech fabric, quick-dry, cool-touch, anti-bacterial, double knit",
+      "color": "Cream, light gray, soft pastel, white, muted earth tones, semi-glossy",
+      "logo": "Small logo, subtle embroidery, minimal branding",
+      "expression": "serene, confident, soft athletic glow, natural beauty",
+      "background": "minimal white studio / morning light pilates space / clean park path",
+      "styling": "fitted silhouette, wellness-ready layering, clean accessories",
+      "growth": "↑↑↑ 110% 성장 목표"
+    },
+    "sportive": {
+      "mood": "다이나믹, 팀 스피릿, 게임데이 에너지",
+      "fit": "Athletic regular / Jersey fit / Semi-slim performance",
+      "fabric": "Performance mesh, jersey fabric, functional poly blend, stretch woven",
+      "color": "Team colors (navy/white/red), vivid colorblock, high-contrast",
+      "logo": "Team number, lettering, NY/LA logo on chest or back, sporty graphic",
+      "expression": "energetic, competitive, game-ready, athletic confidence",
+      "background": "stadium / court / running track / dynamic urban sports space",
+      "styling": "athletic proportions, sporty accessories, dynamic pose",
+      "growth": "보통"
+    },
+    "outdoor": {
+      "mood": "익스플로러, 어드벤처, 기능미, 테크니컬 패션",
+      "fit": "Comfortable / Slightly over / Technical fit",
+      "fabric": "Low-denier nylon (20D~50D), waterproof/water-repellent, 2L/3L, lightweight shell",
+      "color": "Earthy tones, khaki, olive, stone, deep navy, forest green, accent color",
+      "logo": "Medium logo, technical badge, outdoor patch branding",
+      "expression": "explorer, calm adventurous, nature-connected, focused",
+      "background": "mountain trail / misty forest / scenic viewpoint / urban outdoor / camping",
+      "styling": "technical layering, trail shoes, outdoor accessories",
+      "growth": "↑↑ 중국 17% 성장"
+    },
+    "old_money": {
+      "mood": "절제된 럭셔리, 타임리스, 클래식 스포티",
+      "fit": "Semi-fitted tailored / Clean structured slim — 오버핏 절대 금지",
+      "fabric": "Ultra-fine woven nylon with soft natural sheen / premium satin-finish shell / cashmere-weight drape",
+      "color": "Ivory / warm cream / camel / soft navy / burgundy / stone — tonal coordination 필수",
+      "logo": "Tonal small NY embroidery / subtle monogram / heritage crest — 있지만 없어 보이는",
+      "expression": "quietly poised, effortlessly refined, old-money ease — NOT athletic",
+      "background": "Haussmann-style building / luxury hotel garden / European palace courtyard / clean Parisian street",
+      "styling": "tonal head-to-toe, minimal fine jewelry, small structured bag, cream leather sneakers",
+      "avoid": "테니스코트, athletic 에너지, 밝은 team color, 두꺼운 기능성 소재",
+      "growth": "↑ 프리미엄 시장 지속"
+    }
+  },
+  "color": {
+    "source": "27SS MLB COLOR (260424) + Color Mood + Styling Map",
+    "basic": [
+      {
+        "code": "WHS",
+        "name": "White",
+        "pantone": "11-0601TCX"
+      },
+      {
+        "code": "IVS",
+        "name": "Ivory",
+        "coloro": "040-52-00"
+      },
+      {
+        "code": "CRS",
+        "name": "Cream",
+        "pantone": "11-0809TCX"
+      },
+      {
+        "code": "D.CREAM",
+        "name": "D.Cream",
+        "note": "신규 추가"
+      },
+      {
+        "code": "GRL",
+        "name": "L.Grey",
+        "pantone": "14-4107TCX"
+      },
+      {
+        "code": "MGS",
+        "name": "M.Greyish",
+        "note": "BRCS BC23"
+      },
+      {
+        "code": "M.GREYBN",
+        "name": "M.GreyBN",
+        "note": "BRCS BC07"
+      },
+      {
+        "code": "GRS",
+        "name": "Grey",
+        "pantone": "17-3914TCX"
+      },
+      {
+        "code": "COM",
+        "name": "M.Charcoal",
+        "coloro": "149-40-06"
+      },
+      {
+        "code": "BKS",
+        "name": "Gre.Black",
+        "pantone": "19-3911TCX"
+      }
+    ],
+    "basic_warm": [
+      {
+        "code": "SAL",
+        "name": "L.Sand",
+        "coloro": "053-79-04"
+      },
+      {
+        "code": "SAI",
+        "name": "Sand",
+        "coloro": "050-65-06"
+      },
+      {
+        "code": "SAD",
+        "name": "D.Sand",
+        "coloro": "050-N6-011"
+      },
+      {
+        "code": "BRS",
+        "name": "Brown",
+        "pantone": "19-1119TCX"
+      },
+      {
+        "code": "BRD",
+        "name": "D.Brown",
+        "pantone": "19-1419TCX"
+      },
+      {
+        "code": "NYS",
+        "name": "Navy",
+        "pantone": "19-3927TCX"
+      },
+      {
+        "code": "NVM",
+        "name": "Mix.Navy",
+        "note": "BRCS BB10"
+      }
+    ],
+    "spring_key": [
+      {
+        "code": "SBS",
+        "name": "Skyblue",
+        "pantone": "15-4005TCX"
+      },
+      {
+        "code": "GNL",
+        "name": "L.Green",
+        "pantone": "14-6327TCX"
+      },
+      {
+        "code": "BRD",
+        "name": "D.Brown",
+        "pantone": "19-1419TCX"
+      }
+    ],
+    "spring_sub": [
+      {
+        "code": "BRO",
+        "name": "D.Sand",
+        "coloro": "052-21-17"
+      },
+      {
+        "code": "PNI",
+        "name": "M.Pink",
+        "pantone": "15-1906CK"
+      },
+      {
+        "code": "PPS",
+        "name": "Purple",
+        "pantone": "16-1619TCX"
+      }
+    ],
+    "summer_key": [
+      {
+        "code": "YEM",
+        "name": "M.Yellow",
+        "pantone": "11-0609TCX"
+      },
+      {
+        "code": "LVL",
+        "name": "L.Lavender",
+        "coloro": "150-72-11"
+      },
+      {
+        "code": "SBL",
+        "name": "L.Skyblue",
+        "pantone": "14-4115TCX"
+      },
+      {
+        "code": "NYI",
+        "name": "L.Navy",
+        "coloro": "124-24-17"
+      }
+    ],
+    "summer_sub": [
+      {
+        "code": "MTL",
+        "name": "L.Mint",
+        "pantone": "15-5807TCX"
+      },
+      {
+        "code": "BRD",
+        "name": "D.Brown",
+        "pantone": "19-1419TCX"
+      },
+      {
+        "code": "COM",
+        "name": "M.Charcoal Grey Key",
+        "coloro": "149-40-00"
+      },
+      {
+        "code": "IND",
+        "name": "Indigo",
+        "coloro": "121-38-10"
+      }
+    ],
+    "leather_colors": [
+      "Mustard",
+      "Olive",
+      "Caramel",
+      "Camel",
+      "Dark Brown"
+    ],
+    "added_colors": [
+      "Ivory Lavender",
+      "D.Cream",
+      "Beige",
+      "L.Green",
+      "Aqua Blue",
+      "D.Brown",
+      "Purple"
+    ],
+    "dropped_colors": "Burgundy, Charcoal, Mustard 등 약 30색 드롭"
+  },
+  "competitors": {
+    "down_jacket": [
+      "노스페이스",
+      "아크테릭스",
+      "코오롱",
+      "살로몬",
+      "데상트",
+      "몽클레르",
+      "보시뎅",
+      "룰루레몬",
+      "알로",
+      "구찌",
+      "루이비통"
+    ],
+    "windbreaker": [
+      "아크테릭스",
+      "노스페이스",
+      "코오롱",
+      "살로몬",
+      "카멜",
+      "펠리엇",
+      "카일라스",
+      "마땡킴",
+      "룰루레몬",
+      "알로"
+    ],
+    "jumper": [
+      "루이비통",
+      "구찌",
+      "프라다",
+      "아디다스",
+      "나이키",
+      "안타",
+      "룰루레몬",
+      "알로"
+    ],
+    "sweatshirt_hoodie": [
+      "데상트",
+      "룰루레몬",
+      "휠라",
+      "뉴발란스",
+      "아디다스",
+      "마뗑킴",
+      "마리떼",
+      "세터",
+      "온러닝"
+    ],
+    "tshirt": [
+      "데상트",
+      "룰루레몬",
+      "휠라",
+      "뉴발란스",
+      "아디다스",
+      "마뗑킴",
+      "마리떼",
+      "세터",
+      "온러닝"
+    ],
+    "sweater": [
+      "마리떼",
+      "마뗑킴",
+      "시엔느",
+      "던스트",
+      "세터",
+      "이미스",
+      "휠라",
+      "홉쇼"
+    ],
+    "woven_pants": [
+      "아크테릭스",
+      "코오롱",
+      "카멜",
+      "안타",
+      "룰루레몬",
+      "알로"
+    ],
+    "knit_pants": [
+      "알로",
+      "룰루레몬",
+      "안타"
+    ],
+    "denim": [
+      "리바이스",
+      "캘빈클라인 진",
+      "발렌시아가",
+      "루이비통",
+      "구찌"
+    ],
+    "cap_hat": [
+      "뉴에라",
+      "이미스",
+      "마리떼",
+      "마뗑킴",
+      "47브랜드",
+      "루이비통",
+      "룰루레몬"
+    ],
+    "shoes": [
+      "뉴발란스",
+      "아디다스",
+      "나이키",
+      "휠라",
+      "아식스",
+      "살로몬",
+      "호카",
+      "구찌",
+      "루이비통",
+      "미우미우",
+      "프라다",
+      "온러닝"
+    ],
+    "bag": [
+      "스탠드오일",
+      "마뗑킴",
+      "미우미우",
+      "루이비통",
+      "프라다",
+      "알로",
+      "룰루레몬"
+    ]
+  },
+  "influencer_references": {
+    "street": [
+      "https://www.instagram.com/p/DXJseRCk9pT/",
+      "https://www.instagram.com/p/DXbxOW3kozA/",
+      "https://www.instagram.com/p/DXMVzaAD51a/"
+    ],
+    "wellness": [
+      "https://www.instagram.com/p/DWlRQl5lJlu/",
+      "https://www.instagram.com/p/DXTbYgbkWMK/"
+    ],
+    "sportive": [
+      "https://www.instagram.com/p/DWqNb3skwvO/",
+      "https://www.instagram.com/p/DWJeFiPD4_-/"
+    ],
+    "outdoor": [
+      "https://www.instagram.com/p/DXMfdhlD_Mc/",
+      "https://www.instagram.com/p/DWgsHG8mWYD/",
+      "https://www.instagram.com/p/DWLWEyOE9Nf/"
+    ],
+    "old_money": [
+      "https://www.instagram.com/p/DXda1yVE8by/",
+      "https://www.instagram.com/p/DWOOsHUEUwg/",
+      "https://www.instagram.com/p/DW8ydfYmT-8/"
+    ]
+  },
+  "marketing_strategy_26ss": {
+    "_source": "F&F 마케팅본부 MKT 26SS STRATEGY 문서 (2026-04-30 수령)",
+    "_images": "db/strategy-cut-builder/mlb/references/strategy_*.png",
+    "core_message": "HIP FEMININE SPORTIVE — MLB만의 '힙 페미닌'과 '페미닌 스포티브' 연계",
+    "phases": {
+      "phase_1": {
+        "period": "1월",
+        "theme": "SHOES & BAG Styling",
+        "desc": "슈즈 클라비 & 가방/월렛토트백 중심 커뮤니케이션. 신규 로우 프로파일 슈즈 포커스",
+        "key_items": [
+          "클라비 슈즈",
+          "월렛토트백",
+          "로우 프로파일 스니커즈"
+        ]
+      },
+      "phase_2": {
+        "period": "2-4월",
+        "theme": "FEMININE 'Balletcore'",
+        "desc": "발레코어를 확장으로 페미닌 감성 강화. 'MLB VERSE' 슈즈 '클라비' & '솔트' 매치 위한 페미닌 의류 추가",
+        "key_items": [
+          "리본 & 슬렛츠 & 메리제인",
+          "베이직 나일론 포트폴리오",
+          "크림 스니커즈"
+        ]
+      },
+      "phase_3": {
+        "period": "5-8월",
+        "theme": "FEMININE 'Sportive'",
+        "desc": "페미닌+웰니스 라이프스타일 확장으로, 스포티브 라인 전면 전개. 페미닌 웰니스 무드 라너 & 멋진 애슬레저록 추가",
+        "key_items": [
+          "베이직 스포티브 토트백",
+          "크림 스니커즈",
+          "러너"
+        ]
+      }
+    },
+    "input_review": {
+      "desc": "인풋검 이미지 12장 — MLB 26SS 인풋으로 사용될 인플루언서 시안 검수용",
+      "path": "db/strategy-cut-builder/mlb/references/input_review_12.png",
+      "visual_pattern": "크롭탑+미니스커트/숏츠+MLB캡, 어반 스트릿 배경, 시크한 표정",
+      "color_palette": "화이트/그레이/블랙 뉴트럴 + 라벤더 포인트",
+      "count": 12
+    },
+    "target_image_direction": {
+      "positioning": "힙 페미닌 스포티브 — 여성 중심, 캐주얼+스포티+페미닌 교차",
+      "must_have": [
+        "MLB 캡 (NY/LA 로고)",
+        "크롭탑 or 크롭 티",
+        "미니스커트 or 숏츠 or 와이드팬츠",
+        "어반 스트릿 배경"
+      ],
+      "expression": "cool+도도한 시선 (89% — VLM 분석 결과와 일치)",
+      "avoid": [
+        "지나친 스포츠 액티비티",
+        "아웃도어/자연 배경",
+        "남성 중심 콘텐츠"
+      ]
+    }
+  },
+  "data_driven_guardrails": {
+    "_source": "134 images (official-site 93 + Instagram 41), analyzed 2026-04-30",
+    "_report": "db/strategy-cut-builder/mlb/_dna/full_dna_report.json",
+    "tee": {
+      "sample_size": 27,
+      "attributes": {
+        "fabric": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "소프트 저지/코튼 블렌드"
+        },
+        "fit": {
+          "min": 1,
+          "max": 3,
+          "median": 2,
+          "desc": "슬림~레귤러 (크롭 포함)"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 1,
+          "median": 1,
+          "desc": "완전 매트"
+        },
+        "weight": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "초경량~라이트"
+        }
+      },
+      "top_colors": [
+        "white (44%)",
+        "light blue (22%)",
+        "brown (15%)",
+        "blue (11%)"
+      ],
+      "garment_types": [
+        "crop top",
+        "ringer tee",
+        "cropped graphic tee",
+        "logo tee"
+      ],
+      "key_features": [
+        "NY/LA 로고 강조",
+        "여성 크롭 기장 주력",
+        "링거 디테일",
+        "화이트+블루 조합 빈번"
+      ]
+    },
+    "windbreaker": {
+      "sample_size": 22,
+      "attributes": {
+        "fabric": {
+          "min": 2,
+          "max": 2,
+          "median": 2,
+          "desc": "나일론/폴리 블렌드"
+        },
+        "fit": {
+          "min": 3,
+          "max": 4,
+          "median": 3,
+          "desc": "레귤러~세미오버 (남녀 공통 약간 여유)"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "매트~세미매트"
+        },
+        "weight": {
+          "min": 2,
+          "max": 3,
+          "median": 2,
+          "desc": "라이트~미드"
+        }
+      },
+      "top_colors": [
+        "brown (45%)",
+        "black (27%)",
+        "light blue (9%)",
+        "blue (9%)"
+      ],
+      "garment_types": [
+        "windbreaker",
+        "varsity-style windbreaker"
+      ],
+      "key_features": [
+        "브라운이 시즌 키컬러 (45%)",
+        "NY/LA 로고 배치",
+        "대비색 배색 (브라운+블랙, 블루+화이트)"
+      ]
+    },
+    "set": {
+      "sample_size": 17,
+      "attributes": {
+        "fabric": {
+          "min": 2,
+          "max": 2,
+          "median": 2,
+          "desc": "테크니컬 저지/나일론"
+        },
+        "fit": {
+          "min": 2,
+          "max": 3,
+          "median": 2,
+          "desc": "슬림~레귤러 (피티드 경향)"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "매트~세미매트"
+        },
+        "weight": {
+          "min": 2,
+          "max": 2,
+          "median": 2,
+          "desc": "라이트 고정"
+        }
+      },
+      "top_colors": [
+        "blue (41%)",
+        "brown (18%)",
+        "white (12%)",
+        "black (12%)"
+      ],
+      "garment_types": [
+        "halter top + shorts",
+        "crop top + track pants",
+        "sports bra + shorts + windbreaker"
+      ],
+      "key_features": [
+        "블루 계열 세트가 최다 (41%)",
+        "크롭+숏츠 여성 세트 주력",
+        "스포티브/웰니스 믹스"
+      ]
+    },
+    "jacket": {
+      "sample_size": 7,
+      "attributes": {
+        "fabric": {
+          "min": 2,
+          "max": 4,
+          "median": 2,
+          "desc": "나일론~레더리 텍스처"
+        },
+        "fit": {
+          "min": 3,
+          "max": 4,
+          "median": 3,
+          "desc": "레귤러~세미오버"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 3,
+          "median": 2,
+          "desc": "매트~세미글로시"
+        },
+        "weight": {
+          "min": 3,
+          "max": 4,
+          "median": 3,
+          "desc": "미드~헤비 (다른 카테고리보다 무거움)"
+        }
+      },
+      "top_colors": [
+        "black (71%)",
+        "blue (29%)"
+      ],
+      "garment_types": [
+        "varsity jacket",
+        "bomber jacket"
+      ],
+      "key_features": [
+        "야구점퍼 헤리티지",
+        "블랙 주력",
+        "팀 넘버/레터링",
+        "두꺼운 소재감"
+      ]
+    },
+    "pants": {
+      "sample_size": 7,
+      "attributes": {
+        "fabric": {
+          "min": 2,
+          "max": 3,
+          "median": 2,
+          "desc": "테크니컬 우븐/저지"
+        },
+        "fit": {
+          "min": 3,
+          "max": 5,
+          "median": 4,
+          "desc": "레귤러~와이드 (오버핏 경향)"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "매트~세미매트"
+        },
+        "weight": {
+          "min": 2,
+          "max": 3,
+          "median": 2,
+          "desc": "라이트~미드"
+        }
+      },
+      "top_colors": [
+        "grey (29%)",
+        "black (29%)",
+        "white (14%)",
+        "brown (14%)"
+      ],
+      "garment_types": [
+        "cargo pants",
+        "track pants"
+      ],
+      "key_features": [
+        "카고 포켓",
+        "와이드 핏 경향",
+        "카리나 착용컷 다수"
+      ]
+    }
+  },
+  "marketing_dna": {
+    "_source": "92 marketing images, detailed extraction",
+    "pose": {
+      "stance_distribution": {
+        "stand": "39%",
+        "lean": "28%",
+        "sit": "20%",
+        "squat": "2%",
+        "walk": "1%"
+      },
+      "framing_distribution": {
+        "MFS": "28%",
+        "FS": "28%",
+        "MCU": "25%",
+        "MS": "10%",
+        "CU": "6%"
+      },
+      "camera_height": "eye level dominant, 간헐적 low angle (카리나 롱레그 강조)",
+      "dominant_patterns": [
+        "벽/차에 기대어 서기 — 한 다리 구부림, 한 손 모자, 시크 포즈 (lean/MFS/eye level) ★가장 빈번",
+        "의자/바닥 앉기 — 다리 길게 뻗거나 꼬기, 도도한 시선 (sit/FS/eye level)",
+        "정면 서서 — 양손 자연스럽게, 모자 만지기, NY 로고 강조 (stand/MCU/eye level)"
+      ],
+      "body_direction": "정면 50%, 3/4 앵글 40%, 측면 10%",
+      "brand_rules": {
+        "avoid": [
+          "애교/큐트 포즈",
+          "하트손/피스",
+          "과한 액션/러닝",
+          "아웃도어 탐험 포즈"
+        ],
+        "prefer": [
+          "시크한 lean 포즈",
+          "도도한 sit 포즈",
+          "릴렉스드 스탠딩",
+          "모자 만지기/조정하기"
+        ]
+      }
+    },
+    "expression": {
+      "base_distribution": {
+        "cool": "89%",
+        "serene": "8%",
+        "playful": "1%"
+      },
+      "gaze_distribution": {
+        "camera": "90%",
+        "away": "8%"
+      },
+      "dominant_pattern": "시크+도도함 절대 지배 (89%) — 무표정에 가까운 쿨한 직시. 카리나 시그니처. 이를 보이는 미소 거의 없음",
+      "brand_rules": {
+        "avoid": [
+          "환한 미소",
+          "이 보이기",
+          "애교",
+          "놀란 표정",
+          "과한 에너지"
+        ],
+        "prefer": [
+          "cool indifferent",
+          "도도한 직시",
+          "살짝 턱 들기",
+          "무심한 멋"
+        ]
+      }
+    },
+    "background": {
+      "mood_distribution": {
+        "urban street": "36%",
+        "studio neutral": "22%",
+        "sporty": "15%",
+        "luxury": "14%",
+        "lifestyle": "10%"
+      },
+      "location_distribution": {
+        "studio": "35%",
+        "urban city": "30%",
+        "indoor": "21%",
+        "outdoor nature": "4%"
+      },
+      "dominant_pattern": "어반 스트릿(36%) — NYC 감성, 콘크리트/빌딩, 자동차 옆, 쿨톤 그레이딩",
+      "secondary_pattern": "스튜디오(22%) — 뉴트럴/화이트 배경, 제품 포커스, 소프트 라이팅",
+      "tertiary_pattern": "럭셔리(14%) — 고급 호텔/건물, 올드머니 무드, 웜톤",
+      "brand_rules": {
+        "avoid": [
+          "자연 아웃도어 (산/바위/해변)",
+          "지프/SUV",
+          "캠핑/트레일",
+          "일본 감성"
+        ],
+        "prefer": [
+          "NYC 스트릿",
+          "콘크리트/도심",
+          "미니멀 스튜디오",
+          "럭셔리 건축물",
+          "스타디움/코트"
+        ]
+      }
+    }
+  },
+  "vlm_analysis": {
+    "source": "Gemini 3 Flash VLM — 134장 분석 (인스타41 + 공식몰93)",
+    "analysis_date": "2026-04-30",
+    "total_analyzed": 133,
+    "image_type_ratio": {
+      "marketing": 92,
+      "product": 40,
+      "graphic": 1
+    },
+    "category_distribution": {
+      "tee": {
+        "count": 33,
+        "ratio": "25%",
+        "note": "크롭티+로고티 — 핵심 아이템"
+      },
+      "accessories": {
+        "count": 28,
+        "ratio": "21%",
+        "note": "캡/모자 비중 매우 높음 (MLB 아이덴티티)"
+      },
+      "windbreaker": {
+        "count": 22,
+        "ratio": "17%",
+        "note": "점퍼/바람막이"
+      },
+      "set": {
+        "count": 17,
+        "ratio": "13%",
+        "note": "매칭세트"
+      },
+      "pants": {
+        "count": 11,
+        "ratio": "8%"
+      },
+      "jacket": {
+        "count": 7,
+        "ratio": "5%"
+      },
+      "hoodie_sweatshirt": {
+        "count": 3,
+        "ratio": "2%"
+      },
+      "shorts": {
+        "count": 2,
+        "ratio": "2%"
+      },
+      "skirt": {
+        "count": 2,
+        "ratio": "2%"
+      }
+    },
+    "gender_ratio": {
+      "female": "65%",
+      "male": "10%",
+      "unisex": "26%",
+      "note": "카리나 중심 — 여성 콘텐츠 압도적"
+    },
+    "color_ranking": {
+      "1st": "brown (23%) — 26SS 시즌 키 컬러 (카리나 캠페인)",
+      "2nd": "white (19%) — 클린 베이스",
+      "3rd": "black (17%) — 스트릿/스포티",
+      "4th": "blue (11%) + light blue (6%) — 블루 계열 합산 17%",
+      "5th": "grey (7%)",
+      "accent": "pink, mauve, dusty rose, silver, cream (각 1~2%)"
+    },
+    "background_distribution": {
+      "studio_neutral": "46% — 깔끔한 스튜디오 (제품 포커스)",
+      "urban_street": "26% — NYC 감성 스트릿",
+      "sporty": "11% — 스타디움/코트",
+      "luxury": "10% — 올드머니/프리미엄 무드",
+      "lifestyle": "8% — 카페/일상"
+    },
+    "expression_profile": {
+      "cool": "62% — 시크+도도한 표정 (압도적 1위)",
+      "serene": "6% — 차분",
+      "note": "MLB는 cool 표정이 브랜드 정체성. Discovery(33%)보다 2배 높음"
+    },
+    "logo_strategy": {
+      "prominent": "88%",
+      "subtle": "11%",
+      "note": "NY/LA 로고 강하게 노출 — Discovery(39%)와 정반대"
+    },
+    "mood_keywords": [
+      "urban cool",
+      "sporty chic",
+      "cool urban",
+      "clean sporty",
+      "cool sporty",
+      "urban chic"
+    ],
+    "pose_profile": {
+      "stand": "27%",
+      "lean": "20%",
+      "sit": "14%",
+      "note": "lean+sit 비중 높음 — 릴렉스드 포즈 선호"
+    },
+    "vs_discovery": {
+      "logo": "MLB prominent(88%) vs DX subtle(61%) — MLB는 로고가 브랜드",
+      "gender": "MLB female(65%) vs DX male(42%) — MLB는 카리나 중심 여성 콘텐츠",
+      "expression": "MLB cool(62%) vs DX cool(33%) — MLB가 더 시크/도도",
+      "color": "MLB brown(23%) vs DX black(27%) — MLB는 브라운, DX는 블랙 중심",
+      "background": "MLB urban(26%) vs DX outdoor(14%) — MLB는 도시, DX는 아웃도어",
+      "category": "MLB accessories(21%) vs DX windbreaker(33%) — MLB는 모자, DX는 바람막이"
+    }
+  },
+  "scoring_system": {
+    "description": "5테마 스코어링 — 변수(핏/소재/기능성/로고/중량/레이어/컬러) × 테마 점수",
+    "thresholds": {
+      "weak": "0-5점",
+      "moderate": "6-9점",
+      "primary_candidate": "10-14점",
+      "primary_confirmed": "15점+"
+    }
+  },
+  "prompt_template": {
+    "source": "나노바나나 프롬프트 구조 — MLB 전용 템플릿",
+    "structure": "[reference] + [model] + [theme expression] + [MLB theme category design] + [fabric] + [bottom] + [background/styling/mood] + [color/logo]"
+  },
+  "additional_data": {
+    "color_mood_pdf": "c:/Users/AC1060/Downloads/MLB_data_2/27SS MLB Color Mood.pdf (8p)",
+    "color_styling_map_pdf": "c:/Users/AC1060/Downloads/MLB_data_2/27SS MLB COLOR STYLING MAP.pdf (7p)",
+    "color_palette_pdf": "c:/Users/AC1060/Downloads/MLB_data_2/27SS MLB COLOR_260424.pdf (2p)",
+    "brand_dna_md": "c:/Users/AC1060/Downloads/MLB_data_2/MLB_brand_DNA.md",
+    "rendered_images": "c:/Users/AC1060/Downloads/MLB_data_2/*_p*.png (17장 렌더링 완료)"
+  },
+  "gender_strategy": {
+    "priority": "여성 라인 강화 최우선",
+    "current_gap": "DJ 여성 8%(시장34%), TS 여성 5%(시장45%)",
+    "female_direction": "페미닌 실루엣 × 기능성 소재 — 크롭/커브/슬림핏/세미크롭",
+    "female_color": "소프트 페미닌 + 세미글로시"
+  },
+  "mood": [
+    "Street Cool",
+    "Y2K Hip",
+    "Wellness Active",
+    "Sporty Chic",
+    "Urban Casual"
+  ],
+  "setting": {
+    "location": [
+      "Korean street cafe terrace",
+      "Urban convenience store entrance",
+      "Parking lot with luxury cars",
+      "Rooftop with city skyline",
+      "Graffiti alley with warm light",
+      "Basketball court at golden hour",
+      "Seoul Seongsu-dong street",
+      "Outdoor stairs with concrete walls"
+    ],
+    "lighting": "Natural daylight, slightly overexposed, phone-camera aesthetic warmth",
+    "architecture": "Concrete, neon signs, glass storefronts, metal shutters, urban textures"
+  },
+  "styling": {
+    "details": [
+      "crop length",
+      "oversized fit",
+      "off-shoulder",
+      "half-tuck",
+      "waistband fold",
+      "cap tilt",
+      "bag crossbody"
+    ],
+    "accessories": [
+      "MLB baseball cap (NY logo)",
+      "crossbody bag",
+      "chain necklace",
+      "hoop earrings",
+      "mini shoulder bag"
+    ],
+    "footwear": [
+      "chunky sneakers",
+      "platform sneakers",
+      "white sneakers",
+      "slides"
+    ]
+  },
+  "model": {
+    "age_range": "late teens to mid-20s",
+    "beauty": "Dewy skin, natural BB cream, subtle lip tint, long straight dark hair",
+    "expression": "Cool indifferent, confident, slightly bored luxury, not smiling",
+    "demographics": "Korean"
+  },
+  "silhouette": {
+    "fit": "Slim crop top + oversized bottom OR body-con set",
+    "structure": "Soft unstructured casual",
+    "drape": "Relaxed, easy movement"
+  },
+  "fabric": {
+    "material_actual": [
+      "cotton jersey",
+      "lightweight nylon",
+      "sweat fleece",
+      "track fabric",
+      "mesh"
+    ],
+    "weight": "light to mid",
+    "sheen": "matte to soft matte"
+  },
+  "photography": {
+    "style": "Street snap, candid, influencer selfie-like but curated",
+    "framing": [
+      "upper body",
+      "full body",
+      "mirror selfie",
+      "close-up face with cap"
+    ],
+    "tone": "Slightly warm, natural, phone-camera quality but styled"
+  },
+  "length": {
+    "tops": "cropped above navel or oversized hip-length",
+    "bottoms": "mini skirt / wide cargo / track pants",
+    "outerwear": "hip to mid-thigh"
+  }
+}

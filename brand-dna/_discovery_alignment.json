@@ -1,0 +1,243 @@
+{
+  "brand": "discovery",
+  "model": "gemini-3.1-flash-lite-preview",
+  "generated_at": "2026-05-02T23:09:02+09:00",
+  "alignments": {
+    "location": {
+      "studio": [
+        {
+          "target": "shopping/store",
+          "weight": 1.0,
+          "rationale": "Controlled indoor environment aligns with retail/showroom presentation."
+        }
+      ],
+      "urban city": [
+        {
+          "target": "city",
+          "weight": 0.6,
+          "rationale": "Captures skyline and architectural urban backdrops."
+        },
+        {
+          "target": "street",
+          "weight": 0.4,
+          "rationale": "Captures street-level lifestyle scenes for high-tech apparel."
+        }
+      ],
+      "outdoor nature": [
+        {
+          "target": "park/nature/forest",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for natural outdoor environments."
+        }
+      ],
+      "beach": [
+        {
+          "target": "beach",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for coastal locations."
+        }
+      ],
+      "indoor": [
+        {
+          "target": "shopping/store",
+          "weight": 0.5,
+          "rationale": "Represents commercial indoor lifestyle settings."
+        },
+        {
+          "target": "travel",
+          "weight": 0.3,
+          "rationale": "Covers indoor transit hubs like airports or stations."
+        },
+        {
+          "target": "gym",
+          "weight": 0.2,
+          "rationale": "Aligns with the brand's active, high-tech wellness positioning."
+        }
+      ]
+    },
+    "mood": {
+      "studio neutral": [
+        {
+          "target": "chic",
+          "weight": 0.6,
+          "rationale": "Clean studio aesthetics align with sophisticated, minimalist chic."
+        },
+        {
+          "target": "relaxed",
+          "weight": 0.4,
+          "rationale": "Neutral studio settings convey a calm, composed brand mood."
+        }
+      ],
+      "outdoor adventure": [
+        {
+          "target": "active",
+          "weight": 0.7,
+          "rationale": "High-performance outdoor focus directly maps to active utility."
+        },
+        {
+          "target": "relaxed",
+          "weight": 0.3,
+          "rationale": "Outdoor exploration implies a natural, unconstrained lifestyle."
+        }
+      ],
+      "lifestyle": [
+        {
+          "target": "relaxed",
+          "weight": 0.6,
+          "rationale": "Lifestyle imagery emphasizes comfort and daily ease."
+        },
+        {
+          "target": "lovely",
+          "weight": 0.4,
+          "rationale": "Soft lifestyle visuals capture approachable, pleasant moments."
+        }
+      ],
+      "sporty": [
+        {
+          "target": "active",
+          "weight": 1.0,
+          "rationale": "Sporty DNA is synonymous with high-performance activewear."
+        }
+      ],
+      "urban street": [
+        {
+          "target": "hip",
+          "weight": 0.7,
+          "rationale": "Urban street scenes define current, trend-conscious hip style."
+        },
+        {
+          "target": "chic",
+          "weight": 0.3,
+          "rationale": "City-based street style often incorporates polished, chic elements."
+        }
+      ]
+    },
+    "pose": {
+      "stand": [
+        {
+          "target": "full body shot",
+          "weight": 1.0,
+          "rationale": "Standard standing pose is best captured by full body framing."
+        }
+      ],
+      "lean": [
+        {
+          "target": "full body shot",
+          "weight": 1.0,
+          "rationale": "Leaning is a static pose best represented in full body context."
+        }
+      ],
+      "sit": [
+        {
+          "target": "sitting",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the sitting pose."
+        }
+      ],
+      "walk": [
+        {
+          "target": "walking",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the walking pose."
+        }
+      ],
+      "squat": [
+        {
+          "target": "full body shot",
+          "weight": 0.7,
+          "rationale": "Squatting is a full body action in lifestyle photography."
+        },
+        {
+          "target": "exercise (running/tennis etc)",
+          "weight": 0.3,
+          "rationale": "Squatting implies active, functional movement."
+        }
+      ]
+    },
+    "expression": {
+      "cool": [
+        {
+          "target": "cool",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the brand's high-tech, urban aesthetic."
+        }
+      ],
+      "serene": [
+        {
+          "target": "expressionless",
+          "weight": 1.0,
+          "rationale": "Captures the calm, composed, and minimalist wellness-adjacent vibe."
+        }
+      ],
+      "neutral": [
+        {
+          "target": "expressionless",
+          "weight": 1.0,
+          "rationale": "Neutrality aligns with the stoic, functional nature of the gear."
+        }
+      ],
+      "confident": [
+        {
+          "target": "cool",
+          "weight": 0.7,
+          "rationale": "Confidence in this brand context manifests as a cool, poised demeanor."
+        },
+        {
+          "target": "expressionless",
+          "weight": 0.3,
+          "rationale": "Confidence is often conveyed through a steady, non-reactive gaze."
+        }
+      ]
+    },
+    "gaze": {
+      "camera": [
+        {
+          "target": "front",
+          "weight": 1.0,
+          "rationale": "Direct camera engagement implies a front-facing gaze for brand connection."
+        }
+      ],
+      "away": [
+        {
+          "target": "avoiding gaze",
+          "weight": 0.7,
+          "rationale": "Looking away is synonymous with avoiding direct eye contact."
+        },
+        {
+          "target": "side",
+          "weight": 0.3,
+          "rationale": "Looking away often involves a side-profile gaze in outdoor lifestyle shots."
+        }
+      ],
+      "down": [
+        {
+          "target": "downward",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for downward gaze direction."
+        }
+      ]
+    }
+  },
+  "_usage": {
+    "location": {
+      "input_tokens": 566,
+      "output_tokens": 319
+    },
+    "mood": {
+      "input_tokens": 531,
+      "output_tokens": 350
+    },
+    "pose": {
+      "input_tokens": 534,
+      "output_tokens": 261
+    },
+    "expression": {
+      "input_tokens": 516,
+      "output_tokens": 230
+    },
+    "gaze": {
+      "input_tokens": 508,
+      "output_tokens": 211
+    }
+  }
+}

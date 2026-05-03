@@ -1,0 +1,207 @@
+{
+  "brand": "mlb",
+  "model": "gemini-3.1-flash-lite-preview",
+  "generated_at": "2026-05-02T23:17:17+09:00",
+  "alignments": {
+    "location": {
+      "studio": [
+        {
+          "target": "shopping/store",
+          "weight": 1.0,
+          "rationale": "Controlled indoor environment aligns with commercial retail aesthetics."
+        }
+      ],
+      "urban city": [
+        {
+          "target": "city",
+          "weight": 0.6,
+          "rationale": "Captures the skyline and architectural scale of urban environments."
+        },
+        {
+          "target": "street",
+          "weight": 0.4,
+          "rationale": "Captures the street-level lifestyle essential to MLB brand identity."
+        }
+      ],
+      "indoor": [
+        {
+          "target": "shopping/store",
+          "weight": 0.5,
+          "rationale": "Neutral indoor space for product-focused lifestyle shots."
+        },
+        {
+          "target": "gym",
+          "weight": 0.5,
+          "rationale": "Aligns with the brand's shift toward wellness and active lifestyle."
+        }
+      ],
+      "outdoor nature": [
+        {
+          "target": "park/nature/forest",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for natural outdoor environments."
+        }
+      ]
+    },
+    "mood": {
+      "urban street": [
+        {
+          "target": "hip",
+          "weight": 1.0,
+          "rationale": "Street culture aligns directly with the hip aesthetic."
+        }
+      ],
+      "studio neutral": [
+        {
+          "target": "chic",
+          "weight": 0.6,
+          "rationale": "Clean studio visuals emphasize a polished, chic presentation."
+        },
+        {
+          "target": "relaxed",
+          "weight": 0.4,
+          "rationale": "Neutral studio settings provide a calm, relaxed backdrop."
+        }
+      ],
+      "sporty": [
+        {
+          "target": "active",
+          "weight": 1.0,
+          "rationale": "Direct mapping to the brand's wellness-based active positioning."
+        }
+      ],
+      "luxury": [
+        {
+          "target": "luxurious",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for high-end brand positioning."
+        }
+      ],
+      "lifestyle": [
+        {
+          "target": "relaxed",
+          "weight": 0.7,
+          "rationale": "Lifestyle imagery captures natural, relaxed everyday moments."
+        },
+        {
+          "target": "lovely",
+          "weight": 0.3,
+          "rationale": "Lifestyle shots often incorporate approachable, lovely elements."
+        }
+      ]
+    },
+    "pose": {
+      "stand": [
+        {
+          "target": "full body shot",
+          "weight": 1.0,
+          "rationale": "Standard standing pose is best captured as a full body shot."
+        }
+      ],
+      "lean": [
+        {
+          "target": "full body shot",
+          "weight": 1.0,
+          "rationale": "Leaning poses are typically captured in full body frames."
+        }
+      ],
+      "sit": [
+        {
+          "target": "sitting",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the sitting pose."
+        }
+      ],
+      "squat": [
+        {
+          "target": "full body shot",
+          "weight": 1.0,
+          "rationale": "Squatting is a full body posture in active lifestyle imagery."
+        }
+      ],
+      "walk": [
+        {
+          "target": "walking",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the walking pose."
+        }
+      ]
+    },
+    "expression": {
+      "cool": [
+        {
+          "target": "cool",
+          "weight": 0.8,
+          "rationale": "Direct semantic match for MLB's street-casual heritage."
+        },
+        {
+          "target": "expressionless",
+          "weight": 0.2,
+          "rationale": "Captures the stoic, high-fashion attitude of active lifestyle models."
+        }
+      ],
+      "serene": [
+        {
+          "target": "expressionless",
+          "weight": 1.0,
+          "rationale": "Serenity in active lifestyle imagery aligns with a calm, neutral face."
+        }
+      ],
+      "playful": [
+        {
+          "target": "smile",
+          "weight": 0.7,
+          "rationale": "Primary visual indicator of a playful, energetic brand mood."
+        },
+        {
+          "target": "wink",
+          "weight": 0.3,
+          "rationale": "Adds a subtle, witty layer to the playful brand expression."
+        }
+      ]
+    },
+    "gaze": {
+      "camera": [
+        {
+          "target": "front",
+          "weight": 1.0,
+          "rationale": "Direct camera engagement aligns with front-facing brand communication."
+        }
+      ],
+      "away": [
+        {
+          "target": "avoiding gaze",
+          "weight": 0.5,
+          "rationale": "Captures the intentional lack of direct eye contact."
+        },
+        {
+          "target": "side",
+          "weight": 0.5,
+          "rationale": "Often implies a candid, lifestyle-focused profile view."
+        }
+      ]
+    }
+  },
+  "_usage": {
+    "location": {
+      "input_tokens": 522,
+      "output_tokens": 253
+    },
+    "mood": {
+      "input_tokens": 494,
+      "output_tokens": 283
+    },
+    "pose": {
+      "input_tokens": 499,
+      "output_tokens": 226
+    },
+    "expression": {
+      "input_tokens": 471,
+      "output_tokens": 262
+    },
+    "gaze": {
+      "input_tokens": 463,
+      "output_tokens": 157
+    }
+  }
+}

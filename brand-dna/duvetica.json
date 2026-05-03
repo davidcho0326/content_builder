@@ -1,0 +1,226 @@
+{
+  "brand": "DUVETICA",
+  "season": "27SS",
+  "positioning": "Old Money Sportive — Old Money의 우아함과 Active Sport의 기능성을 연결하는 가교",
+  "insight": "컬러 자체보다 '톤 + 소재감'으로 고급감을 분별. Earthy Neutral + Wellness Blue + Energetic Accent",
+
+  "mood": [
+    "Premium Leisure",
+    "Quiet Luxury",
+    "Mediterranean Summer",
+    "Old Money Sportive",
+    "Understated Elegance"
+  ],
+
+  "color": {
+    "base": {
+      "ratio": "70%",
+      "colors": [
+        {"code": "IVL", "name": "Ivory", "color_code": "040-80-00"},
+        {"code": "CRS", "name": "Cream Stone", "color_code": "12-0601CN"},
+        {"code": "OATMEAL", "name": "Oatmeal Heather", "color_code": "032-64-10"},
+        {"code": "BGS", "name": "Beige Sand", "color_code": "FABRIC SMPL"},
+        {"code": "CAD", "name": "Cadet", "color_code": "FABRIC SMPL"},
+        {"code": "GRL", "name": "Gravel", "color_code": "149-54-00"},
+        {"code": "MGS", "name": "Moss Green Sage", "color_code": "FABRIC SMPL"},
+        {"code": "SAGE", "name": "Sage", "color_code": "17-627(TPG) 069-51-06"},
+        {"code": "OLIVE", "name": "Olive", "color_code": "FABRIC SMPL"},
+        {"code": "BRD", "name": "Bordeaux Brown", "color_code": "FABRIC SMPL"},
+        {"code": "NYD", "name": "Navy Dark", "color_code": "FABRIC SMPL"}
+      ]
+    },
+    "key": {
+      "ratio": "20%",
+      "colors": [
+        {"code": "PKL", "name": "Pickle", "color_code": "001-66-09"},
+        {"code": "BRICK BROWN", "name": "Brick Brown", "color_code": "019-27-14"},
+        {"code": "MINTY BLUE", "name": "Minty Blue", "color_code": "112-65-07"},
+        {"code": "LUMINOUS BLUE", "name": "Luminous Blue", "color_code": "125-26-38"}
+      ]
+    },
+    "accent": {
+      "ratio": "10%",
+      "colors": [
+        {"code": "ENERGETIC ORANGE", "name": "Energetic Orange", "color_code": "16-1329PG"},
+        {"code": "TERRACOTTA RED", "name": "Terracotta Red", "color_code": "006-04-17"}
+      ]
+    }
+  },
+
+  "silhouette": {
+    "fit": "Relaxed oversized — 여유있지만 정제된",
+    "structure": "Soft unstructured — 구조감 없는 소프트",
+    "drape": "Fluid — 유동적 드레이프"
+  },
+
+  "fabric": {
+    "material_original": ["linen", "cotton", "silk", "satin", "boucle", "lightweight knit"],
+    "material_actual": ["lightweight nylon", "technical polyester", "nylon/cotton blend", "boucle (setup only)", "lightweight knit (polo only)"],
+    "weight": "lightweight",
+    "sheen": "matte to soft matte (median=2)",
+    "data_correction": "기존 DNA에 technical fabric을 avoid로 기재했으나, 자사몰 65장 분석 결과 WJ 카테고리의 100%가 경량 테크니컬 소재. 실제 듀베티카 WJ = 테크니컬 윈드브레이커이며, 프리미엄 감성은 컬러/핏/디테일로 표현"
+  },
+
+  "length": {
+    "tops": "regular to slightly oversized crop",
+    "bottoms_shorts": "mid-thigh (허벅지 중간)",
+    "bottoms_pants": "full length wide",
+    "dress": "midi to maxi",
+    "outerwear": "regular to hip length"
+  },
+
+  "styling": {
+    "details": ["open collar", "rolled sleeves", "half-tuck", "drawstring", "zip-up"],
+    "accessories": ["straw bag", "leather belt", "minimal jewelry", "sunglasses (occasional, ~25%)"],
+    "footwear": ["leather sandals", "loafers", "espadrilles", "flat sandals"]
+  },
+
+  "setting": {
+    "location": [
+      "Mediterranean villa",
+      "Resort pool/terrace",
+      "European cafe",
+      "Coastal garden",
+      "Stone-wall alley",
+      "Beach club"
+    ],
+    "lighting": "Natural warm, golden hour, soft diffused",
+    "architecture": "Earth-toned stone, terracotta, white plaster, rattan furniture"
+  },
+
+  "model": {
+    "age_range": "mid-20s (24-27)",
+    "beauty": "Clean natural minimal-makeup, luminous porcelain skin, no plastic skin",
+    "expression": "Relaxed, confident, candid — not posed",
+    "demographics": "Western European / Caucasian young beautiful person (any gender) — fair porcelain skin, light eyes (blue / green / hazel), natural blonde or chestnut-brown hair, refined European features, editorial-grade beauty. The reference image is used ONLY for pose / composition / framing — replace the face and ethnicity with Caucasian. NO Asian, NO Korean facial features.",
+    "_note": "Per user override (2026-05-03): even though this is an influencer-style cut, Duvetica brand uses Caucasian young beautiful model regardless of gender."
+  },
+
+  "photography": {
+    "style": "Editorial lifestyle — candid but curated",
+    "framing": ["full body", "upper body", "environmental portrait", "detail crop"],
+    "tone": "Warm, soft contrast, slightly desaturated"
+  },
+
+  "categories": {
+    "down": {
+      "items": ["lightweight down jacket", "packable vest", "down parka"],
+      "competitors": ["Moncler", "Canada Goose", "Herno"],
+      "key_points": "경량, 소프트 실루엣, 프리미엄 소재감"
+    },
+    "woven_jacket": {
+      "items": ["collared zip-up windbreaker", "stand-collar lightweight jacket", "hooded windbreaker jacket", "cropped hooded windbreaker", "open-collar shirt jacket"],
+      "items_old": ["unstructured blazer", "shirt jacket"],
+      "competitors": ["Moncler", "Prada"],
+      "key_points": "후드 약 50% (옵션), 풀/하프 집업, 경량 테크니컬 소재, 베이지/블랙 중심. 칼라형(스탠드/오픈 칼라) 윈드브레이커도 50%",
+      "data_correction": "기존 DNA에 '린넨/코튼 언스트럭쳐드'로 기재했으나, 실제 제품 65장 분석 결과 fabric=4(경량 테크니컬/나일론 기반) 윈드브레이커가 주력. 소재감은 테크니컬이지만 컬러/핏/무드로 프리미엄 표현. (사용자 override 2026-05-03: 후드 비율 90%→50%로 다운, 칼라형 절반 도입)"
+    },
+    "setup": {
+      "items": ["hooded zip-up jacket + matching shorts", "half-zip windbreaker + matching skirt", "t-shirt + shorts set", "zip-up jacket + matching shorts"],
+      "competitors": ["Lanvin Blanc", "G/FORE", "Alo"],
+      "key_points": "후드 집업 상의 + 매칭 하의(숏츠/스커트), 톤온톤 세트, 라이트웨이트 고정, 블랙/다크브라운 중심",
+      "data_correction": "실제 제품은 부클/코튼보다 테크니컬 소재 비중이 높음 (fabric median=4)"
+    },
+    "pants": {
+      "items": ["wide leg pants", "shorts (mid-thigh)", "linen trousers", "drawstring pants"],
+      "competitors": ["Lanvin Blanc", "G/FORE"],
+      "key_points": "와이드/숏츠, 허벅지 중간 기장, 릴랙스드"
+    },
+    "knit_polo": {
+      "items": ["polo shirt", "knit polo", "open collar knit", "lightweight sweater"],
+      "competitors": ["Lanvin Blanc", "G/FORE", "Moncler"],
+      "key_points": "오픈칼라, 경량 니트, 캐주얼 엘레강스"
+    }
+  },
+
+  "products": {
+    "andretta": {
+      "name": "안드레타",
+      "sku": "VDHD13063-IVL",
+      "price": 330000,
+      "description": "썸머 부클 하프슬리브 후디집업 + 매칭 숏츠",
+      "category": "setup",
+      "color": "WHITE (IVL)",
+      "url": "https://www.duvetica.co.kr/product-detail/VDHD13063-IVL",
+      "source_images": []
+    }
+  },
+
+  "references": {
+    "path": "c:/Users/AC1060/Downloads/새 폴더 (19)/",
+    "count": 7,
+    "description": "듀베티카 추구미 레퍼런스 — 리조트/지중해/프리미엄 레저 무드"
+  },
+
+  "data_driven_guardrails": {
+    "_source": "231 images (official site 177 + Instagram 54), analyzed 2026-04-30",
+    "_report": "db/strategy-cut-builder/duvetica/_dna/detailed_dna_report.json",
+
+    "woven_jacket": {
+      "sample_size": 65,
+      "attributes": {
+        "fabric": {"min": 4, "max": 4, "median": 4, "desc": "경량 테크니컬 소재 (나일론/폴리 기반 윈드브레이커). 기존 DNA의 natural premium과 다름 — 실제 제품은 테크니컬 소재가 주력"},
+        "fit": {"min": 3, "max": 4, "median": 3, "desc": "레귤러~세미오버사이즈"},
+        "sheen": {"min": 1, "max": 4, "median": 2, "desc": "소프트매트~세미. 대부분 매트 마감"},
+        "weight": {"min": 2, "max": 3, "median": 2, "desc": "라이트~미드. 27SS 경량 중심"}
+      },
+      "top_colors": ["beige (40%)", "black (20%)", "dark brown (11%)", "light pink (5%)", "off-white (5%)"],
+      "garment_types": ["hooded windbreaker jacket", "hooded zip-up jacket", "woven jacket", "cropped hooded windbreaker", "long hooded jacket", "belted hooded jacket"],
+      "key_features": ["후드 필수 (90%+)", "풀집업 or 하프집업", "경량 테크니컬 소재", "베이지/블랙 투톤 중심"]
+    },
+
+    "setup": {
+      "sample_size": 10,
+      "attributes": {
+        "fabric": {"min": 2, "max": 4, "median": 4, "desc": "테크니컬~천연믹스"},
+        "fit": {"min": 3, "max": 4, "median": 4, "desc": "레귤러~세미오버사이즈. 약간 여유"},
+        "sheen": {"min": 1, "max": 4, "median": 2, "desc": "소프트매트 중심"},
+        "weight": {"min": 2, "max": 2, "median": 2, "desc": "라이트 고정"}
+      },
+      "top_colors": ["black (40%)", "dark brown (40%)", "charcoal grey (20%)"],
+      "garment_types": ["hooded zip-up jacket + shorts set", "half-zip hooded windbreaker + matching skirt", "t-shirt + shorts + sweater", "zip-up jacket + matching shorts"],
+      "key_features": ["후드 집업 상의 + 매칭 하의 (숏츠/스커트)", "톤온톤 세트", "라이트 웨이트 고정"]
+    }
+  },
+
+  "marketing_dna": {
+    "_source": "54 target marketing images (woven_jacket 44 + setup 10), detailed extraction",
+
+    "pose": {
+      "stance_distribution": {"stand": "74%", "sit": "20%", "lean": "4%", "recline": "2%"},
+      "framing_distribution": {"MCU": "43%", "MS": "26%", "FS": "19%", "MFS": "9%", "CU": "4%"},
+      "camera_height": "eye level 100% (예외 없음)",
+      "dominant_patterns": [
+        "서서 정면 응시 — 양팔 자연스럽게 내림, 한 손에 백 or 주머니 (stand/MCU/eye level)",
+        "의자에 앉아 다리 꼬거나 모음 — 팔은 무릎 or 의자 팔걸이 (sit/MS/eye level)",
+        "벽이나 가구에 기대어 서기 — 한쪽 어깨 기대기 (lean/MFS/eye level)"
+      ],
+      "body_direction": "정면 또는 3/4 앵글 (측면/뒤 거의 없음)",
+      "brand_rules": {
+        "금지": ["거울셀피", "힙합/스트릿 포즈", "Y2K 포즈", "피스사인", "하트손"],
+        "지향": ["자연스러운 스탠딩", "정적인 앉기", "캔디드 순간포착"]
+      }
+    },
+
+    "expression": {
+      "base_distribution": {"cool": "48%", "neutral": "20%", "serene": "9%", "confident": "6%", "candid": "4%", "dreamy": "2%"},
+      "gaze_distribution": {"camera": "85%", "down": "4%", "left/right": "4%", "distant": "2%"},
+      "dominant_pattern": "쿨/뉴트럴 — 무심하고 차분한 직시. 이를 드러내는 미소 없음. 입 다문 상태, 눈에 힘 빠진 부드러운 응시",
+      "brand_rules": {
+        "금지": ["bright smile", "teeth showing", "aegyo", "playful wink", "cute", "pouting"],
+        "지향": ["cool detachment", "relaxed confidence", "effortless calm"]
+      }
+    },
+
+    "background": {
+      "vibe_distribution": {"Korean studio": "72%", "Mediterranean/resort": "15%", "outdoor nature": "7%", "European street": "4%", "indoor cafe": "2%"},
+      "mood_distribution": {"minimalist premium": "56%", "quiet luxury": "30%", "adventurous premium": "7%", "urban casual": "4%"},
+      "dominant_pattern": "라이트그레이/오프화이트 미니멀 스튜디오 — 심리스 호리존, 소품 없음, 부드러운 확산광",
+      "secondary_pattern": "지중해 야외 — 돌담/빌라/해안, 자연광, 어스톤 건축물",
+      "brand_rules": {
+        "금지": ["한국 스트릿 (성수/홍대)", "그래피티", "네온사인", "인더스트리얼"],
+        "지향": ["미니멀 스튜디오", "지중해 야외", "어스톤/뉴트럴 건축물"]
+      }
+    }
+  }
+}

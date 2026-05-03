@@ -1,0 +1,60 @@
+{
+  "$schema": "Brand DNA Schema v1.0 — 전략실컷빌더",
+  "description": "소비자전략팀 포맷 기반. 모든 브랜드가 동일한 키값으로 정리됨.",
+  "keys": {
+    "positioning": {
+      "description": "브랜드 포지셔닝 한 줄 정의",
+      "example": "Old Money Sportive"
+    },
+    "mood": {
+      "description": "브랜드가 추구하는 라이프스타일 감성 키워드 (3~5개)",
+      "example": ["Premium Leisure", "Quiet Luxury", "Mediterranean Summer"]
+    },
+    "color": {
+      "description": "컬러 전략 — BASE/KEY/ACCENT 비율 + 코드",
+      "structure": {
+        "base": { "ratio": "70%", "colors": [{"code": "IVL", "name": "Ivory", "hex": "#F5F0E8"}] },
+        "key": { "ratio": "20%", "colors": [] },
+        "accent": { "ratio": "10%", "colors": [] }
+      }
+    },
+    "silhouette": {
+      "description": "핏감/구조감/드레이프",
+      "keys": ["fit", "structure", "drape"]
+    },
+    "fabric": {
+      "description": "소재/두께/광택/질감",
+      "keys": ["material", "weight", "sheen", "avoid"]
+    },
+    "length": {
+      "description": "카테고리별 기장 기준",
+      "keys": ["tops", "bottoms_shorts", "bottoms_pants", "dress", "outerwear"]
+    },
+    "styling": {
+      "description": "디테일/액세서리/착장법",
+      "keys": ["details", "accessories", "footwear"]
+    },
+    "setting": {
+      "description": "배경/세계관 — 장소/조명/건축",
+      "keys": ["location", "lighting", "architecture"]
+    },
+    "model": {
+      "description": "모델 디렉션 — 연령/뷰티/표정",
+      "keys": ["age_range", "beauty", "expression", "demographics"]
+    },
+    "photography": {
+      "description": "촬영 스타일 — 프레이밍/톤/분위기",
+      "keys": ["style", "framing", "tone"]
+    },
+    "categories": {
+      "description": "카테고리별 아이템 + 경쟁사",
+      "structure": {
+        "category_name": {
+          "items": ["아이템 유형"],
+          "competitors": ["경쟁사"],
+          "key_points": "핵심 디렉션"
+        }
+      }
+    }
+  }
+}

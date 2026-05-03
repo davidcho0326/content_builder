@@ -1,0 +1,219 @@
+{
+  "brand": "duvetica",
+  "model": "gemini-3.1-flash-lite-preview",
+  "generated_at": "2026-05-02T23:17:04+09:00",
+  "alignments": {
+    "mood": {
+      "minimalist premium": [
+        {
+          "target": "luxurious",
+          "weight": 0.7,
+          "rationale": "High-end aesthetic aligns with premium positioning."
+        },
+        {
+          "target": "chic",
+          "weight": 0.3,
+          "rationale": "Minimalism translates to a clean, sophisticated look."
+        }
+      ],
+      "quiet luxury": [
+        {
+          "target": "luxurious",
+          "weight": 0.8,
+          "rationale": "Direct semantic match for understated high-end quality."
+        },
+        {
+          "target": "relaxed",
+          "weight": 0.2,
+          "rationale": "Quiet luxury implies an effortless, comfortable elegance."
+        }
+      ],
+      "adventurous premium": [
+        {
+          "target": "active",
+          "weight": 0.6,
+          "rationale": "Captures the sportive functionality of the brand."
+        },
+        {
+          "target": "luxurious",
+          "weight": 0.4,
+          "rationale": "Maintains the premium standard within an active context."
+        }
+      ],
+      "urban casual": [
+        {
+          "target": "hip",
+          "weight": 0.5,
+          "rationale": "Urban street-level scenes align with a trendy, hip vibe."
+        },
+        {
+          "target": "relaxed",
+          "weight": 0.5,
+          "rationale": "Casual nature fits the relaxed, everyday lifestyle."
+        }
+      ]
+    },
+    "pose": {
+      "stand": [
+        {
+          "target": "full body shot",
+          "weight": 1.0,
+          "rationale": "Standard standing pose aligns best with full body presentation."
+        }
+      ],
+      "sit": [
+        {
+          "target": "sitting",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the sitting posture."
+        }
+      ],
+      "lean": [
+        {
+          "target": "full body shot",
+          "weight": 0.7,
+          "rationale": "Leaning is typically captured in a full body frame."
+        },
+        {
+          "target": "low angle shot",
+          "weight": 0.3,
+          "rationale": "Leaning poses often utilize low angles to emphasize stature."
+        }
+      ],
+      "recline": [
+        {
+          "target": "full body shot",
+          "weight": 0.5,
+          "rationale": "Reclining requires full body visibility to show silhouette."
+        },
+        {
+          "target": "sitting",
+          "weight": 0.5,
+          "rationale": "Reclining is a relaxed variation of a seated position."
+        }
+      ]
+    },
+    "expression": {
+      "cool": [
+        {
+          "target": "cool",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for the brand's sportive-chic aesthetic."
+        }
+      ],
+      "neutral": [
+        {
+          "target": "expressionless",
+          "weight": 1.0,
+          "rationale": "Neutrality in fashion imagery aligns with a stoic, expressionless look."
+        }
+      ],
+      "serene": [
+        {
+          "target": "expressionless",
+          "weight": 0.7,
+          "rationale": "Serenity is best captured by a calm, non-active facial state."
+        },
+        {
+          "target": "smile",
+          "weight": 0.3,
+          "rationale": "A soft, subtle smile can convey a serene, approachable mood."
+        }
+      ],
+      "confident": [
+        {
+          "target": "cool",
+          "weight": 0.6,
+          "rationale": "Confidence in Old Money Sportive is expressed through a cool gaze."
+        },
+        {
+          "target": "expressionless",
+          "weight": 0.4,
+          "rationale": "A steady, unmoving gaze projects high-fashion confidence."
+        }
+      ],
+      "candid": [
+        {
+          "target": "smile",
+          "weight": 0.5,
+          "rationale": "Candid moments often feature natural, unposed smiles."
+        },
+        {
+          "target": "surprised",
+          "weight": 0.3,
+          "rationale": "Candid shots capture spontaneous, reactive expressions."
+        },
+        {
+          "target": "wink",
+          "weight": 0.2,
+          "rationale": "A playful, spontaneous gesture typical of candid photography."
+        }
+      ],
+      "dreamy": [
+        {
+          "target": "expressionless",
+          "weight": 0.6,
+          "rationale": "A dreamy, distant look is best represented by a soft, blank expression."
+        },
+        {
+          "target": "smile",
+          "weight": 0.4,
+          "rationale": "A faint, ethereal smile aligns with a dreamy, romantic mood."
+        }
+      ]
+    },
+    "gaze": {
+      "camera": [
+        {
+          "target": "front",
+          "weight": 1.0,
+          "rationale": "Direct eye contact with the camera aligns with front-facing gaze."
+        }
+      ],
+      "down": [
+        {
+          "target": "downward",
+          "weight": 1.0,
+          "rationale": "Direct semantic match for downward gaze."
+        }
+      ],
+      "left/right": [
+        {
+          "target": "side",
+          "weight": 1.0,
+          "rationale": "Looking left or right is categorized as a side gaze."
+        }
+      ],
+      "distant": [
+        {
+          "target": "avoiding gaze",
+          "weight": 0.7,
+          "rationale": "Distant gaze implies looking away from the camera/viewer."
+        },
+        {
+          "target": "side",
+          "weight": 0.3,
+          "rationale": "Distant gaze often involves looking off-frame to the side."
+        }
+      ]
+    }
+  },
+  "_usage": {
+    "mood": {
+      "input_tokens": 485,
+      "output_tokens": 309
+    },
+    "pose": {
+      "input_tokens": 488,
+      "output_tokens": 250
+    },
+    "expression": {
+      "input_tokens": 495,
+      "output_tokens": 450
+    },
+    "gaze": {
+      "input_tokens": 479,
+      "output_tokens": 264
+    }
+  }
+}

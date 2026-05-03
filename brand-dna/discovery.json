@@ -1,0 +1,1084 @@
+{
+  "brand": "DISCOVERY EXPEDITION",
+  "season": "26FW",
+  "positioning": "하이테크 라이프를 위한 고기능성 라이프스타일웨어",
+  "insight": "기능성 합성소재가 천연소재를 대체하는 전환을 브랜드 경쟁력으로. 소재 미학 = 건강한 탱탱한 피부 텍스처.",
+  "mood": [
+    "Active Wellness",
+    "Hi-Tech Casualizing",
+    "Urban Athleisure",
+    "Outdoor Adventure",
+    "Dynamic Youth Energy"
+  ],
+  "core_concepts": {
+    "hi_tech_life": "하이테크가 만들어낸 새로운 미감의 라이프스타일. 기술이 아닌 기술이 만든 일상의 멋.",
+    "casualizing": "기능성 소재로 일상의 새로운 멋·패션을 창출하는 행위. 적합화를 넘어 새로운 미감 창출.",
+    "new_fashion": "하이테크·기능성 소재가 만들어낸 새로운 미의 기준이자 일상의 패션."
+  },
+  "design_coordinate": "웰니스 브랜드(룰루레몬·알로)보다 액티브하게 x 아웃도어(아크테릭스·노스페이스)보다 소프트하게",
+  "color": {
+    "source": "26FW 4차 KR 컬러 팔레트 + Instagram 피드 분석 (2026-04-30)",
+    "base": {
+      "ratio": "60%",
+      "colors": [
+        {
+          "code": "BKS",
+          "name": "Black",
+          "hex": "#111111",
+          "note": "남녀 공통 핵심 컬러, 피드 내 가장 높은 빈도"
+        },
+        {
+          "code": "WHS",
+          "name": "White",
+          "hex": "#FFFFFF"
+        },
+        {
+          "code": "IVL",
+          "name": "Ivory",
+          "hex": "#F5F0E4",
+          "note": "NEW, 27SS 공유"
+        },
+        {
+          "code": "IVS",
+          "name": "Ivory Sand",
+          "hex": "#EDE6D6"
+        },
+        {
+          "code": "GRS",
+          "name": "Grey",
+          "hex": "#8C8C8C"
+        },
+        {
+          "code": "DGS",
+          "name": "Dark Grey",
+          "hex": "#4A4A4A"
+        }
+      ]
+    },
+    "key": {
+      "ratio": "25%",
+      "colors": [
+        {
+          "code": "OLL",
+          "name": "Olive",
+          "hex": "#5C6B3E",
+          "note": "남성 핵심 컬러, 아웃도어 무드"
+        },
+        {
+          "code": "BES",
+          "name": "Beige Sand",
+          "hex": "#C8B99A"
+        },
+        {
+          "code": "BGS",
+          "name": "Beige",
+          "hex": "#B8A88A"
+        },
+        {
+          "code": "DWS",
+          "name": "Dark Warm Sand",
+          "hex": "#6B5B4B",
+          "note": "브라운/초콜릿 계열, 피드 내 높은 빈도"
+        },
+        {
+          "code": "NYD",
+          "name": "Navy Dark",
+          "hex": "#1A2744"
+        },
+        {
+          "code": "MGS",
+          "name": "Moss Green Sage",
+          "hex": "#7A8B6F"
+        }
+      ]
+    },
+    "accent": {
+      "ratio": "15%",
+      "colors": [
+        {
+          "code": "LPL",
+          "name": "Light Purple",
+          "hex": "#C4A6D4",
+          "note": "닝닝 시그니처 컬러, 여성 포인트"
+        },
+        {
+          "code": "PKL",
+          "name": "Pink Light",
+          "hex": "#E8B4B8",
+          "note": "여성 코랄/핑크 포인트"
+        },
+        {
+          "code": "SBL",
+          "name": "Sky Blue",
+          "hex": "#87CEEB",
+          "note": "애슬레져 여성 액센트"
+        },
+        {
+          "code": "ORS",
+          "name": "Orange",
+          "hex": "#E87040",
+          "note": "NEW, FW 시즌 액센트"
+        },
+        {
+          "code": "LGL",
+          "name": "Light Green",
+          "hex": "#90C088"
+        }
+      ]
+    },
+    "fall": [
+      {
+        "code": "IVD",
+        "name": "Ivory Dark"
+      },
+      {
+        "code": "LWS",
+        "name": "Light Warm Sand"
+      },
+      {
+        "code": "OLL",
+        "name": "Olive"
+      },
+      {
+        "code": "DWS",
+        "name": "Dark Warm Sand"
+      },
+      {
+        "code": "SBL",
+        "name": "Sky Blue"
+      },
+      {
+        "code": "ORS",
+        "name": "Orange",
+        "note": "NEW"
+      },
+      {
+        "code": "LPL",
+        "name": "Light Purple"
+      },
+      {
+        "code": "LGL",
+        "name": "Light Green"
+      },
+      {
+        "code": "SBS",
+        "name": "Sand Beige"
+      }
+    ],
+    "winter": [
+      {
+        "code": "CRS",
+        "name": "Cream"
+      },
+      {
+        "code": "GRD",
+        "name": "Grey Dark"
+      },
+      {
+        "code": "INL",
+        "name": "Ink"
+      },
+      {
+        "code": "LBL",
+        "name": "Light Blue",
+        "note": "NEW"
+      },
+      {
+        "code": "DGL",
+        "name": "Dark Grey Light"
+      },
+      {
+        "code": "PKL",
+        "name": "Pink Light"
+      },
+      {
+        "code": "DPS",
+        "name": "Deep"
+      },
+      {
+        "code": "DWS",
+        "name": "Dark Warm Sand"
+      },
+      {
+        "code": "SAD",
+        "name": "Sand"
+      },
+      {
+        "code": "EGS",
+        "name": "Egg Shell"
+      },
+      {
+        "code": "SIL",
+        "name": "Silver",
+        "note": "NEW, 27SS 공유"
+      }
+    ]
+  },
+  "silhouette": {
+    "aesthetic": "입체적인 몸을 돋보이게 설계, 몸과 싸우지 않는다",
+    "fit_women": "Fitted top(crop/slim) + Fitted bottom(bike shorts/leggings), 또는 Oversized top + Slim bottom — 건강한 몸매 강조",
+    "fit_men": "Regular to slim — 클린 라인, 활동적 실루엣",
+    "by_scene": {
+      "active_wellness": "슬림~레귤러 / 활동성+몸매. 여성: 크롭탑+바이크숏. 남성: 슬림핏 티+숏츠",
+      "casual_commute": "레귤러 / 착용성+몸매. 양성: 오버핏 상의+슬림 하의",
+      "outdoor_resort": "레귤러~세미오버 / 프리미엄 릴렉스감. 윈드브레이커+와이드팬츠"
+    }
+  },
+  "fabric": {
+    "philosophy": "기능성 합성소재가 천연소재를 대체 — 건강한 탱탱한 피부 텍스처",
+    "material": [
+      "4-way stretch",
+      "moisture-wicking nylon",
+      "recycled polyester",
+      "bonded fabric",
+      "softshell",
+      "scuba knit"
+    ],
+    "weight_by_scene": {
+      "active_wellness": "초경량~경량 (소프트 플레인 텍스처)",
+      "casual_commute": "경량~중량 (살짝 텍스처, 가벼운 조직감)",
+      "outdoor_resort": "중량 (고급스러운 텍스처, 천연소재급 표면감)"
+    },
+    "sheen": "matte to subtle sheen — 기능성 광택은 OK, 과한 반짝임은 X",
+    "avoid": [
+      "heavy cotton",
+      "pure denim",
+      "raw leather",
+      "traditional woven"
+    ]
+  },
+  "length": {
+    "tops_women": "crop to regular (크롭~허리선)",
+    "tops_men": "regular (허리선~엉덩이 위)",
+    "bottoms_women": "bike shorts (mid-thigh) / leggings (full) / mini skirt",
+    "bottoms_men": "shorts (무릎 위) / cargo pants (full length)",
+    "outerwear": "hip length windbreaker / anorak"
+  },
+  "styling": {
+    "details": [
+      "drawstring hood (기능성 후드)",
+      "zip-up front (반집업/풀집업)",
+      "elastic waistband",
+      "mesh ventilation panels",
+      "reflective logo (D 로고, 가슴 포인트)",
+      "buckle/strap details (테크니컬 베스트)",
+      "color blocking (2~3컬러 배색)"
+    ],
+    "accessories": [
+      "bucket hat (버킷햇, 아웃도어 필수)",
+      "cap (캡, 스포츠 무드)",
+      "sunglasses (오버사이즈 프레임)",
+      "technical backpack (테크니컬 백팩)",
+      "crossbody bag (크로스백)",
+      "bandana/scarf (반다나, 포인트)"
+    ],
+    "footwear": [
+      "chunky trail sneakers (트레일 러닝화)",
+      "technical sandals (테크 샌들)",
+      "combat/hiking boots (하이킹 부츠, FW)",
+      "platform sneakers (플랫폼 스니커즈, 여성)"
+    ]
+  },
+  "setting": {
+    "location": [
+      "바위 해안/절벽 (서해안·제주 무드, 사막성 지형)",
+      "Jeep/SUV 차량 옆 (탐험 상징, 베이지/카키 차량)",
+      "해변/바다 (서핑보드, 모래사장)",
+      "도심 야간 스트릿 (어반 무드, 공업지구)",
+      "산/트레일 (바위, 자갈길)",
+      "루프탑/콘크리트 (인더스트리얼)",
+      "스튜디오 (웜 뉴트럴 배경 — 샌드/베이지 톤 직물 배경)"
+    ],
+    "lighting": {
+      "outdoor": "골든아워 자연광, 따뜻한 태양빛, 미디엄 컨트라스트",
+      "urban": "쿨/무디 가로등 조명, 강한 명암, 영화적 느낌",
+      "studio": "웜 뉴트럴 소프트 라이팅, 전신 균일 조명"
+    },
+    "props": [
+      "Jeep Wrangler (베이지/카키)",
+      "서핑보드",
+      "테크니컬 백팩",
+      "GoPro/카메라",
+      "커피컵"
+    ],
+    "architecture": "바위/돌 질감, 콘크리트, 철망 펜스, 컨테이너, 건조한 지형"
+  },
+  "model": {
+    "ambassadors": {
+      "male": "변우석 (Byeon Wooseok) — 어반+아웃도어 양면 대표",
+      "female": "닝닝 (NingNing, aespa) — 액티브 웰니스+스트릿 대표"
+    },
+    "age_range": "20s mid-late (20대 중후반)",
+    "beauty": {
+      "women": "내추럴 글로우, 미니멀 메이크업, 업스타일 머리(번/포니테일), 건강한 피부 톤",
+      "men": "내추럴, 짧은~미디엄 헤어, 클린 스킨"
+    },
+    "expression": "자신감 있고 다이나믹 — 액션(러닝, 점프) 포즈와 릴렉스드 포즈 혼합",
+    "demographics": "Korean/Asian exclusively — 서양인 미포함",
+    "body_type": "슬림~애슬레틱 (근육질이 아닌 건강한 슬림)"
+  },
+  "photography": {
+    "style": "아웃도어 어드벤처 라이프스타일 + 어반 스트릿 에디토리얼 — 두 축의 교차",
+    "framing": {
+      "primary": "full body (70%) — 전신 착장 강조",
+      "secondary": "upper body (20%) — 디테일/표정",
+      "detail": "product close-up (10%) — 로고/텍스처"
+    },
+    "tone": {
+      "outdoor": "웜 골든 그레이딩, 미디엄 대비, 살짝 디새추레이션 — 어스 톤 강조",
+      "urban": "쿨 블루/그린 그레이딩, 하이 대비, 시네마틱 — 밤거리 무드",
+      "studio": "뉴트럴 웜, 소프트 대비, 제품 디테일 강조"
+    },
+    "composition": {
+      "rule": "인물 중심 + 환경 포함 (인물 60%, 배경 40%)",
+      "depth": "얕은 심도 (f/1.8~2.8) 아웃도어 / 중간 심도 (f/4~5.6) 전신"
+    }
+  },
+  "scenes": {
+    "active_wellness": {
+      "definition": "러닝·애슬레져 등 웰니스 라이프. 도심·일상으로 확장된 기능성 웰니스.",
+      "instagram_visual": "닝닝 크롭탑+바이크숏, 변우석 슬림핏 티+숏츠. 바위해안/산 러닝 액션 포즈. 골든아워.",
+      "fabric": "소프트·경량·신축·흡한속건. 소프트·플레인 텍스처",
+      "silhouette": "슬림~레귤러. 건강한 몸매가 돋보이는 실루엣 + 고활동성",
+      "key_items": [
+        "performance tee",
+        "crop top",
+        "bike shorts",
+        "leggings",
+        "running shorts",
+        "lightweight windbreaker"
+      ],
+      "competitors": [
+        "Lululemon",
+        "Alo Yoga",
+        "Aritzia (FW only)",
+        "Salomon (running only)",
+        "Descente (China only)"
+      ]
+    },
+    "casual_commute": {
+      "definition": "출퇴근 포함 가장 일상적 씬. 3씬의 중심축. 기능성과 패션의 최적 밸런스.",
+      "instagram_visual": "오버핏 맨투맨+슬림팬츠. 어반 야경/스트릿. 쿨톤 시네마틱 그레이딩.",
+      "fabric": "기능성+캐쥬얼 균형. 살짝 텍스처 — 가벼운 조직감. 아웃도어 무드 탈피",
+      "silhouette": "레귤러 중심. 착용 편의성 + 적당한 몸매 표현",
+      "key_items": [
+        "crewneck sweatshirt",
+        "hoodie",
+        "cargo pants",
+        "joggers",
+        "tech jacket",
+        "logo tee"
+      ],
+      "competitors": [
+        "Uniqlo",
+        "Kolon Sport (China only)",
+        "Arc'teryx Veilance (reference)"
+      ]
+    },
+    "outdoor_resort": {
+      "definition": "도심 외곽, 주말·여유로운 도어아웃 라이프",
+      "instagram_visual": "윈드브레이커+와이드팬츠 or 숏츠. 지프 옆/바위해안/트레일. 웜 골든톤. 버킷햇+백팩.",
+      "fabric": "기능성 합성소재 x 천연소재 텍스처 MIX. 천연소재급 외관·터치감·드레이프. 프리미엄",
+      "silhouette": "레귤러~세미오버. 프리미엄 릴렉스 무드 최대",
+      "key_items": [
+        "windbreaker/anorak",
+        "utility vest",
+        "wide cargo pants",
+        "bucket hat",
+        "hiking boots",
+        "backpack"
+      ],
+      "competitors": [
+        "Moncler",
+        "Loro Piana",
+        "Herno"
+      ]
+    }
+  },
+  "categories": {
+    "windbreaker": {
+      "items": [
+        "lightweight windbreaker",
+        "anorak",
+        "hooded wind jacket",
+        "packable jacket"
+      ],
+      "competitors": [
+        "Arc'teryx",
+        "Patagonia",
+        "The North Face"
+      ],
+      "key_points": "경량, 컬러 블로킹, 후드, 반집업/풀집업, 패커블. 여성: 크롭 기장 옵션"
+    },
+    "sweatshirt_hoodie": {
+      "items": [
+        "crewneck sweatshirt",
+        "hoodie",
+        "half-zip pullover",
+        "crop hoodie"
+      ],
+      "competitors": [
+        "Nike ACG",
+        "Alo Yoga",
+        "Lululemon"
+      ],
+      "key_points": "레귤러~오버핏, 미니멀 D 로고, 어스 톤 중심. 여성: 크롭 옵션"
+    },
+    "tee": {
+      "items": [
+        "performance tee",
+        "graphic tee (D logo)",
+        "crop tee",
+        "basic crew"
+      ],
+      "competitors": [
+        "Lululemon",
+        "Nike",
+        "Alo"
+      ],
+      "key_points": "기능성 소재, Discovery 로고 가슴 포인트, 흡한속건"
+    },
+    "bottom_women": {
+      "items": [
+        "bike shorts",
+        "leggings",
+        "mini skirt (A-line)",
+        "shorts"
+      ],
+      "competitors": [
+        "Lululemon",
+        "Alo Yoga",
+        "Nike"
+      ],
+      "key_points": "하이웨이스트, 4-way stretch, 블랙 기본 + 컬러 포인트"
+    },
+    "bottom_men": {
+      "items": [
+        "cargo pants",
+        "joggers",
+        "shorts (mid-thigh)",
+        "tech pants"
+      ],
+      "competitors": [
+        "Nike ACG",
+        "Arc'teryx",
+        "Descente"
+      ],
+      "key_points": "카고 포켓, 드로스트링 웨이스트, 올리브/카키/블랙"
+    },
+    "technical_vest": {
+      "items": [
+        "utility vest",
+        "padded vest",
+        "buckle vest"
+      ],
+      "competitors": [
+        "Arc'teryx",
+        "Salomon",
+        "The North Face"
+      ],
+      "key_points": "버클/스트랩 디테일, 테크니컬 무드, 레이어링용"
+    },
+    "accessories": {
+      "items": [
+        "bucket hat",
+        "cap",
+        "backpack",
+        "crossbody bag",
+        "sunglasses"
+      ],
+      "competitors": [
+        "Salomon",
+        "Arc'teryx",
+        "Osprey"
+      ],
+      "key_points": "아웃도어 기능성, 미니멀 D 로고, 유틸리티"
+    }
+  },
+  "fabric_philosophy": {
+    "direction": "기능성 합성소재가 천연소재를 대체하는 전환",
+    "aesthetic": "건강한 탱탱한 피부를 표현하는 소재 미감",
+    "by_scene": {
+      "active_wellness": "소프트·플레인 텍스처. 초경량~경량. 4way 권장",
+      "casual_commute": "살짝 텍스처 — 가벼운 조직감. 경량~중량. 2way~4way",
+      "outdoor_resort": "고급스러운 텍스처 — 천연소재급 표면감. 중량. 2way"
+    }
+  },
+  "data_driven_guardrails": {
+    "_source": "113 images (official-site 60 + Instagram 53), analyzed 2026-04-30",
+    "_report": "db/strategy-cut-builder/discovery/_dna/full_dna_report.json",
+    "windbreaker": {
+      "sample_size": 33,
+      "attributes": {
+        "fabric": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "경량 테크니컬 소재. 소프트 터치 나일론/폴리"
+        },
+        "fit": {
+          "min": 2,
+          "max": 4,
+          "median": 3,
+          "desc": "레귤러 중심. 여성 크롭 옵션 있음"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "매트~세미매트"
+        },
+        "weight": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "초경량~경량 고정"
+        }
+      },
+      "top_colors": [
+        "black (30%)",
+        "white (27%)",
+        "off-white (9%)",
+        "beige (9%)",
+        "dark brown (6%)"
+      ],
+      "garment_types": [
+        "half-zip hooded windbreaker",
+        "windbreaker with utility vest",
+        "crop windbreaker + biker shorts"
+      ],
+      "key_features": [
+        "후드 기본",
+        "반집업/풀집업 혼재",
+        "컬러블로킹 (2~3색 배색)",
+        "여성 크롭 기장 옵션"
+      ]
+    },
+    "set": {
+      "sample_size": 14,
+      "attributes": {
+        "fabric": {
+          "min": 1,
+          "max": 3,
+          "median": 2,
+          "desc": "경량 테크니컬~미드 텍스처"
+        },
+        "fit": {
+          "min": 1,
+          "max": 4,
+          "median": 3,
+          "desc": "여성: 슬림~피티드 / 남성: 레귤러"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 2,
+          "median": 2,
+          "desc": "매트~세미매트"
+        },
+        "weight": {
+          "min": 2,
+          "max": 3,
+          "median": 2,
+          "desc": "라이트 중심"
+        }
+      },
+      "top_colors": [
+        "black (36%)",
+        "blue (21%)",
+        "brown (14%)",
+        "beige (7%)"
+      ],
+      "garment_types": [
+        "crop top + biker shorts",
+        "hooded windbreaker + cargo shorts",
+        "athletic set"
+      ],
+      "key_features": [
+        "크롭탑+바이크숏 여성 세트가 주력",
+        "남성 카고 숏츠 세트",
+        "스포티 무드"
+      ]
+    },
+    "tee": {
+      "sample_size": 14,
+      "attributes": {
+        "fabric": {
+          "min": 2,
+          "max": 2,
+          "median": 2,
+          "desc": "소프트 텍스처 저지"
+        },
+        "fit": {
+          "min": 2,
+          "max": 3,
+          "median": 3,
+          "desc": "여성 슬림~크롭 / 남성 레귤러"
+        },
+        "sheen": {
+          "min": 1,
+          "max": 1,
+          "median": 1,
+          "desc": "완전 매트"
+        },
+        "weight": {
+          "min": 2,
+          "max": 2,
+          "median": 2,
+          "desc": "라이트 고정"
+        }
+      },
+      "top_colors": [
+        "white (43%)",
+        "navy (29%)",
+        "beige (21%)"
+      ],
+      "garment_types": [
+        "D-logo performance tee",
+        "crop top",
+        "crop polo shirt",
+        "graphic tee"
+      ],
+      "key_features": [
+        "D 로고 가슴 포인트",
+        "여성 크롭 기장",
+        "흡한속건 기능성 소재"
+      ]
+    }
+  },
+  "marketing_dna": {
+    "_source": "76 marketing images, detailed extraction",
+    "pose": {
+      "stance_distribution": {
+        "stand": "78%",
+        "lean": "10%",
+        "sit": "5%",
+        "walk": "3%",
+        "squat": "3%"
+      },
+      "framing_distribution": {
+        "MFS": "44%",
+        "FS": "30%",
+        "MS": "22%",
+        "MCU": "3%"
+      },
+      "camera_height": "eye level dominant",
+      "dominant_patterns": [
+        "서서 정면/3/4 — 자연스러운 스탠딩, 한 손 허리 or 가방 (stand/MFS/eye level)",
+        "바위/지프에 기대기 — 한쪽 어깨 기울임, 아웃도어 무드 (lean/FS/eye level)",
+        "러닝/점프 액션 — 다이나믹 포즈, 아웃도어 배경 (walk/FS/eye level)"
+      ],
+      "body_direction": "정면 70%, 3/4 앵글 25%, 측면 5%",
+      "brand_rules": {
+        "avoid": [
+          "정적인 올드머니 포즈",
+          "극단적 하이패션 포즈",
+          "귀여운/아기자기한 포즈"
+        ],
+        "prefer": [
+          "다이나믹 스탠딩",
+          "아웃도어 액션 포즈",
+          "자연스러운 린 포즈",
+          "스포티한 에너지"
+        ]
+      }
+    },
+    "expression": {
+      "base_distribution": {
+        "cool": "48%",
+        "serene": "28%",
+        "neutral": "14%",
+        "confident": "3%"
+      },
+      "gaze_distribution": {
+        "camera": "73%",
+        "away": "15%",
+        "down": "3%"
+      },
+      "dominant_pattern": "쿨+고요함 혼합 — 시크하지만 부드러운 눈빛. 입 다문 상태. 아웃도어에서는 serene, 어반에서는 cool 우세",
+      "brand_rules": {
+        "avoid": [
+          "환하게 웃기",
+          "이를 보이는 미소",
+          "애교/큐트",
+          "과한 섹시"
+        ],
+        "prefer": [
+          "cool detachment",
+          "serene confidence",
+          "natural calm",
+          "quiet strength"
+        ]
+      }
+    },
+    "background": {
+      "mood_distribution": {
+        "studio neutral": "28%",
+        "outdoor adventure": "21%",
+        "lifestyle": "18%",
+        "sporty": "15%",
+        "urban street": "15%"
+      },
+      "location_distribution": {
+        "studio": "35%",
+        "urban city": "25%",
+        "outdoor nature": "22%",
+        "beach": "5%",
+        "indoor": "8%"
+      },
+      "dominant_pattern": "스튜디오(웜 뉴트럴 배경) + 아웃도어(바위해안/산/지프) 투트랙",
+      "secondary_pattern": "어반 야경 — 인더스트리얼/콘크리트, 쿨톤 조명",
+      "brand_rules": {
+        "avoid": [
+          "프리미엄 럭셔리 인테리어",
+          "유러피안 건축물",
+          "리조트/풀사이드",
+          "파스텔 배경"
+        ],
+        "prefer": [
+          "바위해안/절벽/사막 지형",
+          "지프/SUV 옆",
+          "웜 뉴트럴 스튜디오",
+          "어반 야경 스트릿"
+        ]
+      }
+    }
+  },
+  "vlm_analysis": {
+    "source": "Gemini 3 Flash VLM — 113장 분석 (인스타53 + 공식몰60)",
+    "analysis_date": "2026-04-30",
+    "total_analyzed": 112,
+    "image_type_ratio": {
+      "marketing": 76,
+      "product": 36
+    },
+    "category_distribution": {
+      "windbreaker": {
+        "count": 37,
+        "ratio": "33%",
+        "note": "핵심 아이템. 컬러블로킹+후드+반집업"
+      },
+      "tee": {
+        "count": 36,
+        "ratio": "32%",
+        "note": "D로고 퍼포먼스 티 + 크롭탑"
+      },
+      "set": {
+        "count": 14,
+        "ratio": "13%",
+        "note": "크롭+바이크숏 매칭 세트"
+      },
+      "shorts": {
+        "count": 12,
+        "ratio": "11%",
+        "note": "바이크숏(여) + 카고숏(남)"
+      },
+      "pants": {
+        "count": 5,
+        "ratio": "4%"
+      },
+      "hoodie_sweatshirt": {
+        "count": 4,
+        "ratio": "4%"
+      },
+      "jacket": {
+        "count": 3,
+        "ratio": "3%"
+      }
+    },
+    "gender_ratio": {
+      "male": "42%",
+      "female": "31%",
+      "unisex": "27%"
+    },
+    "color_ranking": {
+      "1st": "black (27%) — 남녀 공통 핵심",
+      "2nd": "white (21%) — 클린 룩",
+      "3rd": "beige (10%) — 뉴트럴 베이스",
+      "4th": "brown (6%) + navy (6%)",
+      "5th": "cream (5%) + grey (4%)",
+      "accent": "lavender, pink, teal, olive green, khaki (각 1~2%)"
+    },
+    "background_distribution": {
+      "studio_neutral": "48% — 웜 뉴트럴 배경 (제품 포커스)",
+      "outdoor_adventure": "14% — 바위해안, 산, 지프",
+      "sporty": "14% — 러닝, 액티브 무드",
+      "lifestyle": "13% — 일상/카페/캐주얼",
+      "urban_street": "11% — 야간 스트릿/인더스트리얼"
+    },
+    "expression_profile": {
+      "cool": "33% — 시크+자신감 (가장 빈번)",
+      "serene": "20% — 차분+내추럴",
+      "neutral": "10% — 무표정/프로덕트"
+    },
+    "logo_strategy": {
+      "subtle": "61%",
+      "prominent": "39%",
+      "note": "미니멀 D로고 위주, 과한 브랜딩 지양"
+    },
+    "mood_keywords": [
+      "sporty chic",
+      "clean functional",
+      "clean casual",
+      "adventurous cool",
+      "cool urban",
+      "clean sporty"
+    ],
+    "pose_profile": {
+      "stand": "53%",
+      "lean": "7%",
+      "sit": "4%",
+      "walk": "2%"
+    }
+  },
+  "instagram_analysis": {
+    "source": "@discoveryexpedition_kr (팔로워 21.5만, 게시물 5,743개)",
+    "analysis_date": "2026-04-30",
+    "posts_analyzed": "113장 (인스타53 + 공식몰60) Gemini VLM 분석 완료",
+    "campaign_tagline": "DISCOVER YOUR ACTIVE SUMMER — RUN FURTHER. DISCOVER MORE.",
+    "content_mix": {
+      "campaign_editorial": "40% — 변우석/닝닝 캠페인 화보 (아웃도어+스튜디오)",
+      "product_focused": "20% — 제품 클로즈업/착장 스튜디오",
+      "influencer_ugc": "25% — 인플루언서 스트릿 착장 (선글라스+도심 배경)",
+      "brand_event": "15% — 매장 팝업/런칭 이벤트 현장"
+    },
+    "visual_pattern": {
+      "outdoor_ratio": "55% — 바위해안, 사막지형, 산, 해변, 지프 옆",
+      "urban_ratio": "30% — 야간 스트릿, 루프탑, 인더스트리얼",
+      "studio_ratio": "15% — 웜 뉴트럴 배경, 제품 포커스"
+    },
+    "color_frequency": {
+      "1st": "Black (블랙) — 남녀 모두 가장 빈번",
+      "2nd": "Brown/Chocolate (브라운/초콜릿) — 25SS 시즌 핵심",
+      "3rd": "Olive/Khaki (올리브/카키) — 남성 아웃도어 핵심",
+      "4th": "White/Ivory (화이트/아이보리) — 여성 클린 룩",
+      "5th": "Lavender/Purple (라벤더) — 여성 포인트 컬러",
+      "6th": "Beige/Sand (베이지/샌드) — 뉴트럴 베이스"
+    }
+  },
+  "marketing_strategy_26fw": {
+    "_source": "F&F 마케팅본부 전략 문서 (2026-04-30 수령)",
+    "_images": "db/strategy-cut-builder/discovery/references/strategy_*.png",
+    "content_pillars": {
+      "fall": [
+        {
+          "name": "러닝 라이프",
+          "mood": "Active + City",
+          "hashtags": [
+            "#러닝룩",
+            "#러닝중간남동커피"
+          ],
+          "desc": "액티브 출퇴근 콘텐츠 트렌드 추가"
+        },
+        {
+          "name": "액티브 웰니스",
+          "mood": "Premium + Active",
+          "hashtags": [
+            "#운동가는길OOTD",
+            "#건강하고스포티한나"
+          ],
+          "desc": "웰니스 라이프 + 러닝 행사"
+        }
+      ],
+      "winter": [
+        {
+          "name": "프리미엄 리조트",
+          "mood": "Premium + Cozy",
+          "hashtags": [
+            "#프리미엄여행",
+            "#프리미엄리조트"
+          ],
+          "desc": "프리미엄 리조트 에뛰드 이미지"
+        },
+        {
+          "name": "커뮤트 라이프",
+          "mood": "Premium + City",
+          "hashtags": [
+            "#데일리리틀",
+            "#출근룩",
+            "#겨울코디"
+          ],
+          "desc": "출퇴근 캐주얼 라이프"
+        }
+      ],
+      "note": "가을→러닝/웰니스 집중, 겨울→프리미엄 리조트+커뮤트+레이브 라이프스타일"
+    },
+    "category_strategy": {
+      "padding_boots": {
+        "positioning": "연말 리조트 & 도심 라이프에서 따뜻하고 트렌디하게 착용할 수 있는 패딩 부츠",
+        "strategy_point": "테크니컬한 프리미엄 접지력, 안정성에 소프트한 볼륨감으로 큐트하다!",
+        "competitors": [
+          "노스페이스 눕시 마시엔",
+          "아디다스 슈퍼스타 부츠"
+        ],
+        "keywords": [
+          "#리조트룩",
+          "#출근룩",
+          "#소프트한",
+          "#따뜻한",
+          "#볼륨감"
+        ],
+        "key_features": "착화감+소프트 볼륨감+큐트 포지셔닝"
+      },
+      "crop_short_down": {
+        "positioning": "출퇴근 & 리조트 라이프에서 따뜻하고 고급스럽게 착용할 수 있는 크롭/숏 다운",
+        "strategy_point": "가볍고 따뜻한데, 실루엣이 뛰어나다! — 여 출근길, 레이브에서 프리미엄하게 입을 수 있겠다",
+        "competitors": [
+          "노스페이스 눕시",
+          "K2 컨택트",
+          "세비 부츠다운크롭"
+        ],
+        "keywords": [
+          "#리조트룩",
+          "#출근룩",
+          "#따뜻한",
+          "#실루엣",
+          "#프리미엄"
+        ],
+        "key_features": "가볍고+기능성+올드머니실루엣+프리미엄 포인트"
+      }
+    },
+    "ai_content_pipeline": {
+      "step_1": "Claude AI Trends Analysis — 트렌드 분석 + 전략 도출",
+      "step_2": "Instagram Digital Content — 해시태그별 콘텐츠 기획",
+      "step_3": "Claude Strategy — 감정태일/크로세일/수체력을 → 라이프스타일 연결",
+      "note": "자사 제품 기능성과 AI 트렌드 분석 결과를 연결하여 디스커버리만의 라이프스타일 콘텐츠로 제품적 연출"
+    }
+  },
+  "official_mall": {
+    "url": "https://www.discovery-expedition.com",
+    "navigation": [
+      "남성",
+      "여성",
+      "신발",
+      "용품",
+      "키즈",
+      "배러핏"
+    ],
+    "hero_male": "변우석 — 화이트 Discovery 로고 티, 웜 뉴트럴(우드 블라인드) 배경",
+    "hero_female": "닝닝 — 아이보리 후드 탑, 베이지 지프 옆, 웜 스튜디오 조명",
+    "brand_copy": "DISCOVER YOUR ACTIVE SUMMER — 여름의 움직임을 배우는 액티브 웰니스 라이프스타일",
+    "promo": "공식몰 5만원 이상 구매 시 변우석 포토카드 증정"
+  },
+  "influencers": {
+    "source": "DX_26SS_인플루언서 리스트_260430.pptx (DX 인플 마케팅 담당자 전달)",
+    "images_path": "scripts/strategy_cut_builder/dx_influencers/",
+    "female_crew": {
+      "count": "약 11명 (슬라이드 1-2)",
+      "label": "F&F CREW — 디스커버리 핏 인플루언서",
+      "style": "애슬레져/피트니스 — 크롭탑+바이크숏, 윈드브레이커, 짐웨어",
+      "note": "개별 핸들 미기재, 이미지만 수록. 슬라이드 1-2에서 추출"
+    },
+    "male": [
+      {
+        "name": "김한영",
+        "handle": "@yolohan0",
+        "followers": "23.7만",
+        "mood": "모델 / 디스커버리 협업 이력",
+        "tier": "top"
+      },
+      {
+        "name": "고형범",
+        "handle": "@kohyungbeom",
+        "followers": "8.2만",
+        "mood": "모델 / 캐주얼, 애슬레저 무드",
+        "tier": "mid"
+      },
+      {
+        "name": "안정훈",
+        "handle": "@a.aj.ajh",
+        "followers": "5.8만",
+        "mood": "캐주얼 스타일 / 마라톤 이력",
+        "tier": "mid"
+      },
+      {
+        "name": "형석",
+        "handle": "@sinartt",
+        "followers": "5.2만",
+        "mood": "모델 / 디스커버리 협업 이력",
+        "tier": "mid"
+      },
+      {
+        "name": "김규한",
+        "handle": "@kkyu_h",
+        "followers": "5.2만",
+        "mood": "모델 / 캐주얼, 애슬레저 무드",
+        "tier": "mid"
+      },
+      {
+        "name": "신혁",
+        "handle": "@livhsoo",
+        "followers": "4.6만",
+        "mood": "모델 / 캐주얼, 애슬레저 무드",
+        "tier": "mid"
+      },
+      {
+        "name": "차상현",
+        "handle": "@pluiean",
+        "followers": "4.1만",
+        "mood": "애슬레저 무드 / 러닝 행사 이력",
+        "tier": "mid"
+      },
+      {
+        "name": "정호",
+        "handle": "@bewarmhearted",
+        "followers": "3.2만",
+        "mood": "모델 / 애슬레저 무드",
+        "tier": "mid"
+      },
+      {
+        "name": "홍준",
+        "handle": "@hongjun.k",
+        "followers": "3만",
+        "mood": "미니멀, 캐주얼 무드",
+        "tier": "mid"
+      },
+      {
+        "name": "성현",
+        "handle": "@h.y8en",
+        "followers": "1.7만",
+        "mood": "모델 / 러닝, 애슬레저 무드",
+        "tier": "micro"
+      },
+      {
+        "name": "박준원",
+        "handle": "@won.pp",
+        "followers": "1.7만",
+        "mood": "큰 피지컬 / 애슬레저 무드",
+        "tier": "micro"
+      },
+      {
+        "name": "양유현",
+        "handle": "@0.uhyn",
+        "followers": "1.6만",
+        "mood": "미니멀, 캐주얼 무드",
+        "tier": "micro"
+      }
+    ],
+    "common_traits": {
+      "gender_ratio": "여성 ~11명 + 남성 12명 = 약 23명",
+      "style_keywords": [
+        "애슬레저",
+        "캐주얼",
+        "러닝/마라톤",
+        "피트니스",
+        "미니멀"
+      ],
+      "body_type": "슬림~애슬레틱, 모델급 피지컬",
+      "age_range": "20대 중후반",
+      "collaboration_note": "김한영, 형석은 기존 디스커버리 협업 이력 있음"
+    }
+  },
+  "missing_for_image_generation": {
+    "hex_values": "일부 컬러 HEX 추정값 — COLORO 공식 매칭 필요",
+    "fw_product_images": "26FW 제품 이미지 미확보 (25SS 피드 기반 분석)",
+    "female_influencer_handles": "여성 인플루언서 개별 핸들/이름 미기재 — 확인 필요"
+  },
+  "references": {
+    "instagram": "https://www.instagram.com/discoveryexpedition_kr/",
+    "official_mall": "https://www.discovery-expedition.com",
+    "dna_document": "c:/Users/AC1060/Downloads/DISCOVERY_BRAND_DNA_v14.md",
+    "color_palette": "c:/Users/AC1060/Downloads/디스커버리_[26FW 4차] KR컬러 파레트_260403.pdf",
+    "influencer_pptx": "c:/Users/AC1060/Downloads/DX_26SS_인플루언서 리스트_260430.pptx",
+    "influencer_images": "scripts/strategy_cut_builder/dx_influencers/"
+  }
+}

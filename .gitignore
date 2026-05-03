@@ -1,0 +1,35 @@
+# --- secrets ---
+.env
+.env.*
+!.env.example
+
+# --- large local-only directories ---
+data/
+results/
+
+# --- generated outputs / caches ---
+*.npz
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- venvs / IDEs ---
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+
+# --- logs & OS ---
+*.log
+.DS_Store
+Thumbs.db
+
+# --- temp ---
+*.tmp
+*.bak
+~$*

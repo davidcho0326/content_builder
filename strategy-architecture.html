@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마케팅컷 생성 에이전트 — PM 운영 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ====== DESIGN TOKENS ====== */
+:root {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #141414;
+  --bg-card: #1A1A1A;
+  --text-primary: #FAFAFA;
+  --text-secondary: #A0A0A0;
+  --text-muted: #666666;
+  --accent-good: #4ADE80;
+  --accent-bad: #F87171;
+  --accent-purple: #22D3EE;
+  --accent-cyan: #22D3EE;
+  --accent-yellow: #FBBF24;
+  --accent-brand: #E5E5E5;
+  --border-subtle: #222222;
+  --border-hover: #333333;
+  --max-width: 1600px;
+  --content-padding: clamp(2rem, 5vw, 5rem);
+  --section-gap: clamp(6rem, 12vh, 12rem);
+}
+
+html.theme-light {
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #EBEBEB;
+  --bg-card: #FFFFFF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --accent-brand: #333333;
+  --border-subtle: #D8D8D8;
+  --border-hover: #BBBBBB;
+}
+html.theme-light .accent-green { color: #16A34A; }
+html.theme-light .accent-red { color: #DC2626; }
+html.theme-light .accent-cyan-text { color: #0891B2; }
+html.theme-light .hero { background: radial-gradient(ellipse at 20% 80%, rgba(74,222,128,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.05) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(34,211,238,0.03) 0%, transparent 60%), #0A0A0A !important; color: #FAFAFA !important; }
+html.theme-light .hero .text-secondary { color: #A0A0A0 !important; }
+html.theme-light .hero .text-muted { color: #666666 !important; }
+html.theme-light .navbar { background: rgba(245,245,245,0.8); }
+html.theme-light .badge-accent { background: rgba(8,145,178,0.12); color: #0891B2; }
+html.theme-light .flow-arrow { color: #0891B2; }
+html.theme-light .stat-number { color: #0891B2; }
+html.theme-light .dna-card-bar { opacity: 0.85; }
+html.theme-light .code-block { background: #E8E8E8; color: #1A1A1A; }
+html.theme-light .contract-required { color: #16A34A; }
+html.theme-light .contract-optional { color: #CA8A04; }
+html.theme-light .step-badge { background: rgba(8,145,178,0.12); color: #0891B2; }
+
+/* ====== RESET & BASE ====== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Pretendard Variable', 'Inter', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ====== FONTS ====== */
+.font-display { font-family: 'Playfair Display', serif; }
+.font-body { font-family: 'Inter', sans-serif; }
+.font-kr { font-family: 'Pretendard Variable', sans-serif; }
+
+/* ====== 1. SCROLL PROGRESS BAR ====== */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-good));
+  z-index: 10001; transition: width 0.1s linear;
+}
+
+/* ====== 2. FIXED NAV ====== */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10000;
+  padding: 0 var(--content-padding);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  background: rgba(10,10,10,0.6);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.navbar.scrolled { border-bottom-color: var(--border-subtle); }
+.navbar-inner {
+  max-width: var(--max-width); margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.navbar-brand {
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-primary);
+}
+.navbar-nav { display: flex; gap: 1.5rem; list-style: none; }
+.navbar-nav a {
+  font-family: 'Inter', sans-serif; font-weight: 500; font-size: 0.8rem;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  transition: color 0.2s; text-decoration: none;
+}
+.navbar-nav a:hover, .navbar-nav a.active { color: var(--text-primary); }
+
+/* ====== 3. THEME TOGGLE ====== */
+.theme-toggle {
+  background: none; border: 1px solid var(--border-subtle); border-radius: 8px;
+  color: var(--text-muted); cursor: pointer; padding: 6px 10px; font-size: 0.85rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.theme-toggle:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+/* ====== 4. HERO ====== */
+.hero {
+  min-height: 100vh; display: flex; align-items: flex-end;
+  padding: 0 var(--content-padding) 6rem;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(74,222,128,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(34,211,238,0.03) 0%, transparent 60%),
+    var(--bg-primary);
+}
+.hero-content { max-width: var(--max-width); margin: 0 auto; width: 100%; }
+.hero-eyebrow {
+  font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif; font-weight: 300;
+  font-size: clamp(3rem, 7vw, 5.5rem); line-height: 1.1;
+  letter-spacing: -0.02em; margin-bottom: 1.5rem;
+}
+.hero-title em { font-style: italic; }
+.hero-subtitle {
+  font-family: 'Pretendard Variable', sans-serif; font-weight: 300;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem); color: var(--text-secondary);
+  margin-bottom: 1.5rem; max-width: 700px;
+}
+.hero-meta {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 1rem;
+  color: var(--text-muted); margin-bottom: 2rem;
+}
+.hero-divider {
+  width: 56px; height: 1px; background: rgba(255,255,255,0.4);
+  margin-bottom: 1.5rem;
+}
+.hero-date {
+  font-family: 'Inter', sans-serif; font-size: 0.85rem;
+  letter-spacing: 0.1em; color: var(--text-muted);
+}
+
+/* ====== 5. TABLE OF CONTENTS ====== */
+.toc {
+  padding: var(--section-gap) var(--content-padding);
+  max-width: var(--max-width); margin: 0 auto;
+}
+.toc-title {
+  font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+.toc-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px; background: var(--border-subtle);
+}
+.toc-item {
+  background: var(--bg-card); padding: 2rem 2.5rem; cursor: pointer;
+  transition: background 0.3s; text-decoration: none; display: block;
+}
+.toc-item:hover { background: var(--bg-secondary); text-decoration: none; }
+.toc-num {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 1.8rem; font-weight: 300; color: var(--accent-cyan);
+  margin-bottom: 0.5rem;
+}
+.toc-label {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 1.1rem;
+  font-weight: 400; color: var(--text-primary); line-height: 1.4;
+}
+.toc-desc {
+  font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+/* ====== 6. SECTION HEADER ====== */
+.section {
+  padding: var(--section-gap) var(--content-padding);
+  max-width: var(--max-width); margin: 0 auto;
+}
+.section-eyebrow {
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: 'Playfair Display', serif; font-weight: 300;
+  font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: -0.02em;
+  line-height: 1.15; margin-bottom: 0.75rem;
+}
+.section-title em { font-style: italic; }
+.section-title-kr {
+  font-family: 'Pretendard Variable', sans-serif; font-weight: 300;
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem); color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+.section-desc {
+  font-size: 1.1rem; color: var(--text-secondary); max-width: 800px;
+  line-height: 1.85;
+}
+
+/* ====== 7. FADE-UP ====== */
+.fade-up {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+              transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+.stagger-4 { transition-delay: 0.4s; }
+.stagger-5 { transition-delay: 0.5s; }
+
+/* ====== CARDS ====== */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 16px; padding: 2.5rem;
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: var(--border-hover); }
+
+/* ====== FLOW DIAGRAM ====== */
+.pipeline-flow {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.75rem; flex-wrap: wrap; padding: 2rem 0;
+}
+.flow-step {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 12px; padding: 1.5rem 2rem; text-align: center;
+  min-width: 180px; flex: 1; max-width: 300px;
+  transition: border-color 0.3s;
+}
+.flow-step:hover { border-color: var(--accent-cyan); }
+.flow-step-label {
+  font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-cyan);
+  margin-bottom: 0.5rem;
+}
+.flow-step-title {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 1rem;
+  font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem;
+}
+.flow-step-desc {
+  font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;
+}
+.flow-arrow {
+  font-size: 1.5rem; color: var(--accent-cyan); flex-shrink: 0;
+  animation: arrow-bounce 2s ease-in-out infinite;
+}
+
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+/* ====== STAT CARDS ====== */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--border-subtle); border-radius: 16px; overflow: hidden;
+  margin-top: 2.5rem;
+}
+.stat-card {
+  background: var(--bg-card); padding: 2.5rem 2rem; text-align: center;
+}
+.stat-number {
+  font-family: 'Playfair Display', serif; font-weight: 300;
+  font-size: clamp(2.5rem, 5vw, 3.5rem); color: var(--accent-cyan);
+  letter-spacing: -0.02em; line-height: 1;
+}
+.stat-label {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 0.9rem;
+  color: var(--text-secondary); margin-top: 0.75rem;
+}
+
+/* ====== DNA CARDS ====== */
+.dna-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem; margin-top: 2.5rem;
+}
+.dna-card {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 16px; overflow: hidden; transition: border-color 0.3s;
+}
+.dna-card:hover { border-color: var(--border-hover); }
+.dna-card-bar {
+  height: 4px; width: 100%;
+}
+.dna-card-body { padding: 2rem; }
+.dna-card-brand {
+  font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.dna-card-identity {
+  font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 300;
+  font-style: italic; margin-bottom: 1.25rem; line-height: 1.3;
+}
+.dna-attr {
+  display: flex; align-items: baseline; gap: 0.5rem;
+  padding: 0.35rem 0; border-bottom: 1px solid var(--border-subtle);
+}
+.dna-attr:last-child { border-bottom: none; }
+.dna-attr-key {
+  font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted);
+  min-width: 70px;
+}
+.dna-attr-val {
+  font-size: 0.9rem; color: var(--text-secondary);
+}
+
+/* ====== WORKFLOW STEPS ====== */
+.workflow-steps {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 1rem; margin-top: 2.5rem;
+}
+.workflow-step {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 12px; padding: 1.5rem; text-align: center;
+  transition: border-color 0.3s;
+}
+.workflow-step:hover { border-color: var(--border-hover); }
+.step-badge {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(34,211,238,0.1); color: var(--accent-cyan);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.step-title {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 0.95rem;
+  font-weight: 500; color: var(--text-primary); margin-bottom: 0.35rem;
+}
+.step-desc {
+  font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;
+}
+
+/* ====== GENERATION PIPELINE ====== */
+.gen-pipeline {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.gen-card {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 16px; padding: 2rem; transition: border-color 0.3s;
+}
+.gen-card:hover { border-color: var(--border-hover); }
+.gen-card-num {
+  font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  display: inline-block; padding: 4px 10px; border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.gen-card-title {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 1.1rem;
+  font-weight: 500; margin-bottom: 0.75rem;
+}
+.gen-card-desc {
+  font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;
+}
+
+/* ====== CODE BLOCK ====== */
+.code-block {
+  background: #111111; border-radius: 12px; padding: 1.5rem 2rem;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem; line-height: 1.7; color: #A0A0A0;
+  overflow-x: auto; margin-top: 1.5rem; border: 1px solid var(--border-subtle);
+}
+.code-comment { color: #555; }
+.code-key { color: #22D3EE; }
+.code-string { color: #4ADE80; }
+.code-brace { color: #888; }
+
+/* ====== CONTRACT TABLE ====== */
+.contract-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 16px; overflow: hidden; margin-top: 2rem;
+}
+.contract-table th {
+  background: var(--bg-secondary); padding: 1.1rem 1.5rem;
+  font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted);
+  text-align: left;
+}
+.contract-table td {
+  background: var(--bg-card); padding: 1rem 1.5rem;
+  font-size: 0.9rem; color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.contract-table tr:last-child td { border-bottom: none; }
+.contract-required { color: var(--accent-good); font-weight: 600; }
+.contract-optional { color: var(--accent-yellow); font-weight: 600; }
+
+/* ====== OUTPUT TREE ====== */
+.output-tree {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 16px; padding: 2rem 2.5rem; margin-top: 2rem;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem; line-height: 2; color: var(--text-secondary);
+}
+.tree-folder { color: var(--accent-cyan); font-weight: 600; }
+.tree-file { color: var(--text-secondary); }
+.tree-comment { color: var(--text-muted); font-style: italic; font-family: 'Pretendard Variable', sans-serif; }
+
+/* ====== CONNECT STEPS ====== */
+.connect-steps {
+  display: grid; grid-template-columns: 1fr; gap: 0;
+  margin-top: 2.5rem;
+}
+.connect-step {
+  display: grid; grid-template-columns: 60px 1fr;
+  gap: 1.5rem; padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.connect-step:last-child { border-bottom: none; }
+.connect-step-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+  color: var(--accent-cyan);
+}
+.connect-step-content {}
+.connect-step-title {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 1rem;
+  font-weight: 500; margin-bottom: 0.25rem;
+}
+.connect-step-desc {
+  font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;
+}
+.connect-step-code {
+  font-family: 'SF Mono', 'Consolas', monospace; font-size: 0.82rem;
+  background: rgba(34,211,238,0.06); padding: 2px 8px; border-radius: 4px;
+  color: var(--accent-cyan);
+}
+
+/* ====== CALLOUT ====== */
+.callout {
+  background: var(--bg-secondary); border-radius: 12px;
+  padding: 1.5rem 2rem; margin-top: 1.5rem;
+}
+.callout-border {
+  border-left: 3px solid var(--accent-cyan); padding-left: 1.5rem;
+  margin-top: 1.5rem;
+}
+.callout-title {
+  font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent-cyan);
+  margin-bottom: 0.5rem;
+}
+
+/* ====== BADGE ====== */
+.badge-accent {
+  display: inline-block; font-family: 'Inter', sans-serif;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+  background: rgba(34,211,238,0.1); color: var(--accent-cyan);
+}
+
+/* ====== CLOSING ====== */
+.closing {
+  padding: var(--section-gap) var(--content-padding);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 80%, rgba(34,211,238,0.04) 0%, transparent 50%),
+    var(--bg-primary);
+}
+.closing-inner { max-width: 600px; margin: 0 auto; }
+.closing-title {
+  font-family: 'Playfair Display', serif; font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+.closing-desc {
+  font-size: 1rem; color: var(--text-secondary); line-height: 1.85;
+}
+
+/* ====== 8. BACK TO TOP ====== */
+.back-to-top {
+  position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px;
+  border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle);
+  color: var(--text-muted); cursor: pointer; display: none;
+  align-items: center; justify-content: center; font-size: 1.2rem;
+  transition: border-color 0.2s, color 0.2s; z-index: 9999;
+}
+.back-to-top.show { display: flex; }
+.back-to-top:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+/* ====== 9. FOOTER ====== */
+.footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 3rem var(--content-padding); text-align: center;
+}
+.footer-org {
+  font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+.footer-report {
+  font-family: 'Pretendard Variable', sans-serif; font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ====== LINK MAPPING ====== */
+.link-grid {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 1rem; align-items: center; margin-top: 2rem;
+}
+.link-source, .link-target {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: 12px; padding: 1.25rem 1.5rem;
+}
+.link-arrow {
+  font-size: 1.3rem; color: var(--accent-cyan);
+  animation: arrow-bounce 2s ease-in-out infinite;
+}
+.link-label {
+  font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 0.35rem;
+}
+.link-text {
+  font-size: 0.9rem; color: var(--text-secondary);
+}
+
+/* ====== SCROLL HINT ====== */
+.scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif; font-size: 0.75rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); animation: floatDown 2s ease-in-out infinite;
+}
+@keyframes floatDown {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+  50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
+}
+
+/* ====== 10. PRINT ====== */
+@media print {
+  .navbar, .scroll-progress, .back-to-top, .theme-toggle, .scroll-hint { display: none !important; }
+  .hero { min-height: auto; padding-top: 3rem; }
+  .fade-up { opacity: 1 !important; transform: none !important; }
+  body { background: white; color: black; }
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 1100px) {
+  .workflow-steps { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .dna-grid, .gen-pipeline, .link-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .workflow-steps { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .navbar-nav { display: none; }
+  .pipeline-flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  .toc-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- 1. Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- 2. Fixed Nav -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <span class="navbar-brand">Strategy Cut Agent</span>
+    <ul class="navbar-nav">
+      <li><a href="#overview">개요</a></li>
+      <li><a href="#dna">DNA</a></li>
+      <li><a href="#generation">생성</a></li>
+      <li><a href="#output">결과물</a></li>
+      <li><a href="#input-contract">입력</a></li>
+      <li><a href="#output-contract">출력</a></li>
+      <li><a href="#connect">연결</a></li>
+    </ul>
+    <!-- 3. Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">Light</button>
+  </div>
+</nav>
+
+<!-- 4. Hero -->
+<header class="hero" id="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow fade-up stagger-1">PM Operational Guide</p>
+    <h1 class="hero-title fade-up stagger-2">
+      마케팅컷 생성<br><em>에이전트</em>
+    </h1>
+    <p class="hero-subtitle text-secondary fade-up stagger-3">
+      PM 운영 가이드 — 연결하고, 실행하고, 결과 받기
+    </p>
+    <p class="hero-meta text-muted fade-up stagger-4">
+      담당: 송예린 (AX팀) / 연결: 김효은 PM
+    </p>
+    <div class="hero-divider fade-up stagger-4"></div>
+    <p class="hero-date text-muted fade-up stagger-5">2026.04.30</p>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</header>
+
+<!-- 5. Table of Contents -->
+<section class="toc" id="toc">
+  <p class="toc-title fade-up">Table of Contents</p>
+  <div class="toc-grid fade-up stagger-1">
+    <a href="#overview" class="toc-item">
+      <div class="toc-num">01</div>
+      <div class="toc-label">이 에이전트가 뭘 하는 거야?</div>
+      <div class="toc-desc">트렌드 마케팅컷 → DNA 매칭 → 우리 브랜드 스타일로 변환</div>
+    </a>
+    <a href="#dna" class="toc-item">
+      <div class="toc-num">02</div>
+      <div class="toc-label">DNA는 어떻게 만들었어?</div>
+      <div class="toc-desc">크롤링 → 분류 → 정량분석 → JSON</div>
+    </a>
+    <a href="#generation" class="toc-item">
+      <div class="toc-num">03</div>
+      <div class="toc-label">이미지는 어떻게 생성해?</div>
+      <div class="toc-desc">참조 가이드 + Anti-AI + 3모델 병렬</div>
+    </a>
+    <a href="#output" class="toc-item">
+      <div class="toc-num">04</div>
+      <div class="toc-label">결과물은 어떻게 나와?</div>
+      <div class="toc-desc">폴더 구조, 포맷, 자동 검수</div>
+    </a>
+    <a href="#input-contract" class="toc-item">
+      <div class="toc-num">05</div>
+      <div class="toc-label">앞 에이전트한테 뭘 받아야 해?</div>
+      <div class="toc-desc">입력 계약서 — 필수/선택 인풋</div>
+    </a>
+    <a href="#output-contract" class="toc-item">
+      <div class="toc-num">06</div>
+      <div class="toc-label">뒷 에이전트한테 뭘 넘겨?</div>
+      <div class="toc-desc">출력 계약서 — 이미지/프롬프트/가드레일</div>
+    </a>
+    <a href="#results" class="toc-item">
+      <div class="toc-num">07</div>
+      <div class="toc-label">실제 결과물 예시</div>
+      <div class="toc-desc">3브랜드 × 3모델 비교 — INPUT → OUTPUT</div>
+    </a>
+    <a href="#connect" class="toc-item">
+      <div class="toc-num">08</div>
+      <div class="toc-label">내가 연결하려면 어떻게 해?</div>
+      <div class="toc-desc">레포 clone부터 첫 실행까지</div>
+    </a>
+  </div>
+</section>
+
+<!-- ====== SECTION 1: 이 에이전트가 뭘 하는 거야? ====== -->
+<section class="section" id="overview">
+  <p class="section-eyebrow fade-up">01 / Overview</p>
+  <h2 class="section-title fade-up stagger-1"><em>What</em> It Does</h2>
+  <p class="section-title-kr fade-up stagger-2">이 에이전트가 뭘 하는 거야?</p>
+  <p class="section-desc fade-up stagger-3">
+    경쟁사/트렌드 마케팅 이미지를 수집하고, 우리 브랜드 DNA와 매칭하여 적합한 이미지를 선별한 뒤, 우리 브랜드 스타일(옷/컬러/소재)로 변환하여 캠페인/인플 이미지를 대량 생성합니다.
+    패션 에디토리얼 수준의 퀄리티를, 프롬프트 텍스트만으로 만들어 냅니다.
+  </p>
+
+  <!-- 4-step flow (정확한 파이프라인) -->
+  <div class="pipeline-flow fade-up stagger-3">
+    <div class="flow-step">
+      <div class="flow-step-label">Step 1</div>
+      <div class="flow-step-title">경쟁사 마케팅 이미지 크롤링</div>
+      <div class="flow-step-desc">몽클레어/프라다/알로 등 경쟁사의 캠페인/인플 이미지 수집</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-step-label">Step 2</div>
+      <div class="flow-step-title">DNA 가드레일 매칭</div>
+      <div class="flow-step-desc">5속성 분석 &rarr; 우리 DNA에 맞는 이미지만 A등급으로 자동 선별</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-step-label">Step 3</div>
+      <div class="flow-step-title">우리 브랜드 스타일로 변환</div>
+      <div class="flow-step-desc">A등급 이미지의 구도/무드는 유지, 옷/컬러/소재만 DNA로 교체</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-step-label">Output</div>
+      <div class="flow-step-title">마케팅컷 생성</div>
+      <div class="flow-step-desc">Gemini + GPT + Higgsfield 3모델 병렬 생성 &rarr; 베스트 셀렉</div>
+    </div>
+  </div>
+
+  <!-- 만드는 것 / 안 만드는 것 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2rem;" class="fade-up stagger-4">
+    <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px; padding:2rem;">
+      <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent-good); margin-bottom:1rem;">O 이 에이전트가 만드는 것</div>
+      <div style="font-size:0.95rem; color:var(--text-secondary); line-height:1.8;">
+        &bull; 캠페인 에디토리얼 이미지 (화보 수준)<br>
+        &bull; 인플루언서 스냅 이미지 (인스타 감성)<br>
+        &bull; 브랜드별 DNA 가드레일 JSON<br>
+        &bull; 마케팅 DNA (포즈/표정/배경 프리셋)
+      </div>
+    </div>
+    <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px; padding:2rem;">
+      <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent-bad); margin-bottom:1rem;">X 이 에이전트의 범위 밖</div>
+      <div style="font-size:0.95rem; color:var(--text-secondary); line-height:1.8;">
+        &bull; 제품 디자인 이미지 (→ 디자인 에이전트 담당)<br>
+        &bull; 트렌드 데이터 수집/분석 (→ 트렌드 에이전트 담당)<br>
+        &bull; IMC 캠페인 기획 (→ 마케팅 캠페인 빌더)<br>
+        &bull; 매장 VMD 시뮬레이션 (→ 리테일 빌더)
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid fade-up stagger-4" style="margin-top:2rem;">
+    <div class="stat-card">
+      <div class="stat-number">3</div>
+      <div class="stat-label">지원 브랜드 (DV / MLB / DX)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">3</div>
+      <div class="stat-label">AI 모델 (Gemini / GPT / Higgsfield)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">~5min</div>
+      <div class="stat-label">배치당 소요 시간 (9장 기준)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 2: DNA는 어떻게 만들었어? ====== -->
+<section class="section" id="dna">
+  <p class="section-eyebrow fade-up">02 / Brand DNA</p>
+  <h2 class="section-title fade-up stagger-1"><em>DNA</em> Pipeline</h2>
+  <p class="section-title-kr fade-up stagger-2">DNA는 어떻게 만들었어?</p>
+  <p class="section-desc fade-up stagger-3">
+    수작업 감각이 아닙니다. 크롤링한 실제 브랜드 이미지 231장을 VLM이 분석하고,
+    정량 수치로 변환해서 brand-dna.json을 자동 생성합니다.
+  </p>
+
+  <!-- 5 steps -->
+  <div class="workflow-steps fade-up stagger-4">
+    <div class="workflow-step">
+      <div class="step-badge">1</div>
+      <div class="step-title">크롤링</div>
+      <div class="step-desc">자사몰 + 인스타<br>231장 수집</div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-badge">2</div>
+      <div class="step-title">분류</div>
+      <div class="step-desc">VLM이 제품/마케팅 자동 분류</div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-badge">3</div>
+      <div class="step-title">정량 분석</div>
+      <div class="step-desc">5속성 1-5점<br>fabric/fit/sheen/weight</div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-badge">4</div>
+      <div class="step-title">상세 추출</div>
+      <div class="step-desc">포즈/표정/배경<br>JSON 스키마 강제</div>
+    </div>
+    <div class="workflow-step">
+      <div class="step-badge">5</div>
+      <div class="step-title">DNA 생성</div>
+      <div class="step-desc">brand-dna.json<br>자동 생성</div>
+    </div>
+  </div>
+
+  <div class="callout-border fade-up stagger-5">
+    <div class="callout-title">핵심 원칙</div>
+    <p style="font-size:0.95rem; color:var(--text-secondary); line-height:1.7;">
+      VLM에게 "자유롭게 분석해"가 아니라, <strong>빈 JSON 스키마를 주고 값만 채우게</strong> 합니다.
+      자유형 분석은 품질이 들쑥날쑥하지만, 스키마 강제형은 프리셋 수준의 일관된 결과를 보장합니다.
+    </p>
+  </div>
+
+  <!-- 3 Brand DNA Cards -->
+  <div class="dna-grid fade-up stagger-4">
+    <!-- DUVETICA -->
+    <div class="dna-card">
+      <div class="dna-card-bar" style="background: linear-gradient(90deg, #D4A574, #F5E6D3);"></div>
+      <div class="dna-card-body">
+        <div class="dna-card-brand" style="color: #D4A574;">Duvetica</div>
+        <div class="dna-card-identity">Quiet Luxury</div>
+        <div class="dna-attr"><span class="dna-attr-key">소재</span><span class="dna-attr-val">테크니컬 나일론</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">컬러</span><span class="dna-attr-val">아이보리 / 크림</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">배경</span><span class="dna-attr-val">지중해 리조트</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">무드</span><span class="dna-attr-val">European Effortless Chic</span></div>
+      </div>
+    </div>
+    <!-- MLB -->
+    <div class="dna-card">
+      <div class="dna-card-bar" style="background: linear-gradient(90deg, #2563EB, #60A5FA);"></div>
+      <div class="dna-card-body">
+        <div class="dna-card-brand" style="color: #60A5FA;">MLB</div>
+        <div class="dna-card-identity">Y2K Street</div>
+        <div class="dna-attr"><span class="dna-attr-key">소재</span><span class="dna-attr-val">코튼 저지</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">컬러</span><span class="dna-attr-val">화이트 / 블루</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">배경</span><span class="dna-attr-val">한국 카페 / 스트릿</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">무드</span><span class="dna-attr-val">K-pop Day Off</span></div>
+      </div>
+    </div>
+    <!-- DISCOVERY -->
+    <div class="dna-card">
+      <div class="dna-card-bar" style="background: linear-gradient(90deg, #059669, #34D399);"></div>
+      <div class="dna-card-body">
+        <div class="dna-card-brand" style="color: #34D399;">Discovery</div>
+        <div class="dna-card-identity">Active Wellness</div>
+        <div class="dna-attr"><span class="dna-attr-key">소재</span><span class="dna-attr-val">립스탑 나일론</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">컬러</span><span class="dna-attr-val">블랙 / 그레이</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">배경</span><span class="dna-attr-val">러닝트레일 / 아웃도어</span></div>
+        <div class="dna-attr"><span class="dna-attr-key">무드</span><span class="dna-attr-val">Fitness Influencer Vibe</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DNA 구조 상세 -->
+  <div class="callout-border fade-up stagger-5" style="margin-top:3rem;">
+    <div class="callout-title">brand-dna.json 핵심 구조</div>
+    <p style="font-size:0.95rem; color:var(--text-secondary); line-height:1.7; margin-bottom:1.5rem;">
+      기획팀에서 제공한 브랜드 DNA 전략 방향과 이미지 생성에 최적화된 정량 분석을 결합하여, 자사몰+인스타 231장 기반의 실측 가드레일을 구축했습니다.
+      이 JSON이 <strong>"하네스"</strong> — 앞단과 뒷단을 연결하는 중심축입니다.
+    </p>
+  </div>
+
+  <!-- 5속성 가드레일 -->
+  <h3 class="fade-up" style="font-family:'Playfair Display',serif; font-weight:300; font-size:1.8rem; margin:3rem 0 1.5rem;">
+    <em>5-Attribute</em> Guardrail System
+  </h3>
+  <p class="fade-up" style="color:var(--text-secondary); margin-bottom:2rem; max-width:800px;">
+    모든 이미지(자사 제품 + 경쟁사 트렌드)를 동일한 5가지 축으로 정량화합니다. 각 속성은 1~5 스케일.
+  </p>
+
+  <div class="data-table-wrap fade-up" style="overflow-x:auto;">
+    <table class="data-table" style="width:100%;">
+      <thead>
+        <tr>
+          <th>속성</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
+          <th style="color:var(--accent-cyan);">듀베티카 가드레일</th>
+          <th style="color:#60A5FA;">MLB</th>
+          <th style="color:#34D399;">디스커버리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Fabric</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">소재 구성</span></td>
+          <td>천연 프리미엄<br>(린넨/실크)</td>
+          <td>천연+합성 혼방</td>
+          <td>중간 합성</td>
+          <td>테크니컬 나일론</td>
+          <td>헤비 테크니컬</td>
+          <td style="color:var(--accent-cyan);"><strong>4-4</strong></td>
+          <td style="color:#60A5FA;"><strong>1-2</strong></td>
+          <td style="color:#34D399;"><strong>2-4</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Fit</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">핏/실루엣</span></td>
+          <td>스키니</td>
+          <td>슬림</td>
+          <td>레귤러</td>
+          <td>세미오버</td>
+          <td>오버사이즈</td>
+          <td style="color:var(--accent-cyan);"><strong>3-4</strong></td>
+          <td style="color:#60A5FA;"><strong>1-3</strong></td>
+          <td style="color:#34D399;"><strong>2-3</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Sheen</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">광택감</span></td>
+          <td>풀 매트</td>
+          <td>소프트 매트</td>
+          <td>세미</td>
+          <td>세미 광택</td>
+          <td>하이 글로스</td>
+          <td style="color:var(--accent-cyan);"><strong>1-4</strong></td>
+          <td style="color:#60A5FA;"><strong>1-1</strong></td>
+          <td style="color:#34D399;"><strong>1-3</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Weight</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">중량감</span></td>
+          <td>초경량</td>
+          <td>경량</td>
+          <td>미드</td>
+          <td>중량</td>
+          <td>초중량</td>
+          <td style="color:var(--accent-cyan);"><strong>2-3</strong></td>
+          <td style="color:#60A5FA;"><strong>1-2</strong></td>
+          <td style="color:#34D399;"><strong>2-3</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="fade-up" style="font-size:0.85rem; color:var(--text-muted); margin-top:1rem;">
+    * 가드레일 범위 = 해당 브랜드 자사몰 제품의 실측 min~max. 경쟁사 이미지가 이 범위 안이면 A등급(그대로 사용), 밖이면 B등급(변환 필요) 또는 C등급(리젝).
+  </p>
+
+  <!-- 마케팅 DNA -->
+  <h3 class="fade-up" style="font-family:'Playfair Display',serif; font-weight:300; font-size:1.8rem; margin:3rem 0 1.5rem;">
+    <em>Marketing</em> DNA — VLM이 추출하는 촬영 스타일 전체 항목
+  </h3>
+  <p class="fade-up" style="color:var(--text-secondary); margin-bottom:1rem; max-width:800px;">
+    마케팅 이미지 125장에서 포즈/표정/배경을 <strong>기존 프리셋(db/presets/) 수준</strong>으로 추출합니다.
+    핵심: VLM에게 "자유롭게 분석해"가 아니라 <strong>빈 JSON 스키마를 주고 값만 채우게</strong> 합니다.
+  </p>
+
+  <!-- POSE SCHEMA 상세 -->
+  <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px; padding:2.5rem; margin-bottom:1.5rem;" class="fade-up">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div>
+        <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent-cyan); margin-bottom:0.3rem;">POSE SCHEMA</div>
+        <div style="font-size:1.2rem; font-weight:500;">포즈 — 14개 필드 추출</div>
+      </div>
+      <div style="background:rgba(34,211,238,0.1); color:var(--accent-cyan); padding:0.4rem 1rem; border-radius:8px; font-size:0.8rem; font-weight:600;">stand 74% / sit 20% / lean 6%</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1rem;">
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem;">왼팔 (left_arm)</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+          <strong>description</strong>: 팔 전체 위치/동작<br>
+          <strong>hand</strong>: 손이 뭘 하는지<br>
+          <strong>elbow_angle</strong>: <span style="color:var(--accent-cyan);">약 140도</span><br>
+          <strong>elbow_direction</strong>: 바깥쪽/앞쪽/뒤쪽
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem;">왼다리 (left_leg)</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+          <strong>knee_angle</strong>: <span style="color:var(--accent-cyan);">서기=175° 앉기=90°</span><br>
+          <strong>knee_direction</strong>: 정면/왼쪽/오른쪽<br>
+          <strong>knee_height</strong>: 바닥/좌석/가슴높이<br>
+          <strong>foot_direction</strong>: 발 방향<br>
+          <strong>foot_position</strong>: 바닥/교차/프레임밖
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem;">상체 + 카메라</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+          <strong>hip</strong>: 무게중심 + 상체기울기<br>
+          <strong>shoulder_line</strong>: 비대칭/기울기<br>
+          <strong>face_direction</strong>: 정면/3/4/프로필<br>
+          <strong>neck_tilt</strong>: <span style="color:var(--accent-cyan);">왼쪽 5도</span><br>
+          <strong>camera.angle</strong>: 정면/측면<br>
+          <strong>camera.height</strong>: 눈높이/하이/로우<br>
+          <strong>camera.framing</strong>: CU/MS/FS/LS
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.2rem; padding:1rem; background:#0D0D0D; border-radius:8px; font-size:0.8rem; line-height:1.5; color:var(--accent-good); font-family:monospace; overflow-x:auto;">
+      // 실제 추출 예시 (casalina_BGS_02.jpg)<br>
+      "summary": "정면을 응시하며 양팔을 자연스럽게 내리고 곧게 선 정적인 전신 포즈",<br>
+      "left_arm.elbow_angle": "175 degrees", "right_leg.knee_direction": "slightly inward",<br>
+      "camera": {"angle": "front", "height": "eye level", "framing": "FS"}
+    </div>
+  </div>
+
+  <!-- EXPRESSION SCHEMA 상세 -->
+  <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px; padding:2.5rem; margin-bottom:1.5rem;" class="fade-up">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div>
+        <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent-good); margin-bottom:0.3rem;">EXPRESSION SCHEMA</div>
+        <div style="font-size:1.2rem; font-weight:500;">표정 — 7개 필드 추출</div>
+      </div>
+      <div style="background:rgba(74,222,128,0.1); color:var(--accent-good); padding:0.4rem 1rem; border-radius:8px; font-size:0.8rem; font-weight:600;">cool 48% / neutral 20% / serene 9%</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.8;">
+          <strong>base</strong>: cool / neutral / serene<br>
+          <strong>eyes</strong>: <span style="color:var(--accent-good);">눈 상태 상세 묘사</span><br>
+          <strong>gaze_direction</strong>: 카메라/왼/오/아래
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.8;">
+          <strong>mouth</strong>: <span style="color:var(--accent-good);">입 상태 상세</span><br>
+          <strong>face_angle</strong>: 정면에서 10도 회전<br>
+          <strong>chin</strong>: 자연/올림/내림
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.8;">
+          <strong>note</strong>: <span style="color:var(--accent-good);">한국어 맥락 설명</span><br>
+          <em style="font-size:0.8rem;">"스튜디오의 정제된 조명 아래 차분하고 정적인 분위기"</em>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.2rem; padding:1rem; background:#0D0D0D; border-radius:8px; font-size:0.8rem; line-height:1.5; color:var(--accent-good); font-family:monospace; overflow-x:auto;">
+      "eyes": "direct, steady gaze with soft focus; upper eyelids relaxed and slightly heavy",<br>
+      "mouth": "closed, lips relaxed with no tension, forming a soft horizontal line",<br>
+      "note": "감정을 배제한 듯한 무심한 표정이지만, 부드러운 눈빛이 세련된 느낌"
+    </div>
+  </div>
+
+  <!-- BACKGROUND SCHEMA 상세 -->
+  <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px; padding:2.5rem; margin-bottom:1.5rem;" class="fade-up">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div>
+        <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent-yellow); margin-bottom:0.3rem;">BACKGROUND SCHEMA</div>
+        <div style="font-size:1.2rem; font-weight:500;">배경 — 11개 필드 추출</div>
+      </div>
+      <div style="background:rgba(251,191,36,0.1); color:var(--accent-yellow); padding:0.4rem 1rem; border-radius:8px; font-size:0.8rem; font-weight:600;">studio 72% / 지중해 15% / outdoor 13%</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1rem;">
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem;">장소 & 분위기</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+          <strong>type</strong>: 카페앞/풀사이드/거리 등<br>
+          <strong>region_vibe</strong>: 한국/지중해/유럽<br>
+          <strong>time_of_day</strong>: 골든아워/한낮<br>
+          <strong>mood</strong>: minimalist premium
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem;">상세 묘사</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+          <strong>setting_description</strong>: <span style="color:var(--accent-yellow);">한국어 2~3문장</span><br>
+          <strong>colors</strong>: 배경 지배색<br>
+          <strong>lighting_detail</strong>: 광원방향+그림자<br>
+          <strong>notes</strong>: 특이사항
+        </div>
+      </div>
+      <div style="background:var(--bg-secondary); border-radius:12px; padding:1.2rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.8rem;">활용 정보</div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+          <strong>provided_elements</strong>: 벽/의자/식물<br>
+          <strong>available_poses</strong>: stand/sit/lean<br>
+          <strong>sit_surfaces</strong>: 계단/벤치/없음
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.2rem; padding:1rem; background:#0D0D0D; border-radius:8px; font-size:0.8rem; line-height:1.5; color:var(--accent-yellow); font-family:monospace; overflow-x:auto;">
+      "setting_description": "매끄러운 질감의 라이트 그레이 색상 호리존 스튜디오 배경.<br>
+      &nbsp;&nbsp;벽과 바닥이 경계 없이 이어지는 심리스 구조로, 극도의 미니멀리즘을 강조함.",<br>
+      "provided_elements": ["wall"], "sit_surfaces": "none"
+    </div>
+  </div>
+
+  <!-- 왜 + 연결 -->
+  <div class="callout-border fade-up" style="margin-top:2rem;">
+    <div class="callout-title">이 DNA 구조가 연결에서 왜 중요한가</div>
+    <p style="font-size:0.95rem; color:var(--text-secondary); line-height:1.8; margin-bottom:1rem;">
+      기획팀의 DNA 전략과 자사몰+인스타 231장 실측 분석을 결합하여 <strong>이미지 생성에 최적화된 DNA 가드레일</strong>을 구축했습니다.
+    </p>
+    <p style="font-size:0.95rem; color:var(--text-secondary); line-height:1.8; margin-bottom:1rem;">
+      <strong>나중에 트렌드 에이전트가 연결되면:</strong> 이 가드레일 수치를 트렌드 데이터로 자동 업데이트합니다.
+      구조만 맞으면 — <code style="background:var(--bg-secondary); padding:2px 6px; border-radius:4px;">data_driven_guardrails.{category}.attributes.{속성}.min/max/median</code> — 누가 만들든 우리 파이프라인이 작동합니다.
+    </p>
+    <p style="font-size:0.95rem; color:var(--text-secondary); line-height:1.8;">
+      <strong>즉, 이 DNA JSON이 "하네스"</strong> — 앞단(트렌드/디자인)과 뒷단(캠페인/리테일)을 연결하는 표준 인터페이스입니다.
+      PM이 다른 에이전트를 연결할 때, 그 에이전트의 output이 이 JSON 구조에 맞기만 하면 됩니다.
+    </p>
+  </div>
+
+</section>
+
+<!-- ====== SECTION 3: 이미지는 어떻게 생성해? ====== -->
+<section class="section" id="generation">
+  <p class="section-eyebrow fade-up">03 / Generation</p>
+  <h2 class="section-title fade-up stagger-1"><em>How</em> It Generates</h2>
+  <p class="section-title-kr fade-up stagger-2">이미지는 어떻게 생성해?</p>
+  <p class="section-desc fade-up stagger-3">
+    레퍼런스 이미지를 직접 AI에 넘기는 게 아닙니다.
+    VLM이 "촬영 감독 지시서"로 변환하고, DNA를 블렌딩하고, Anti-AI 기법을 주입한 뒤 프롬프트 텍스트만으로 생성합니다.
+  </p>
+
+  <!-- Generation Pipeline -->
+  <div class="gen-pipeline fade-up stagger-3">
+    <div class="gen-card">
+      <div class="gen-card-num badge-accent">STEP 1</div>
+      <div class="gen-card-title">트렌드 마케팅컷를 참조로 직접 첨부</div>
+      <div class="gen-card-desc">
+        라이프스타일 비전 이미지를 VLM이 초정밀 분석합니다.
+        포즈, 카메라, 라이팅, 컬러 그레이딩, 불완전함까지 — 8개 항목을
+        "촬영 감독 지시서" 수준으로 추출합니다.
+      </div>
+    </div>
+    <div class="gen-card">
+      <div class="gen-card-num badge-accent">STEP 2</div>
+      <div class="gen-card-title">DNA에서 옷/컬러/소재 자동 블렌딩</div>
+      <div class="gen-card-desc">
+        추출된 지시서에 brand-dna.json의 제품 속성(소재, 컬러, 패턴, 핏)을 덮어씌웁니다.
+        레퍼런스의 구도/무드는 유지하면서 옷/컬러/소재만 우리 브랜드 DNA로 교체하는 원리입니다.
+      </div>
+    </div>
+    <div class="gen-card">
+      <div class="gen-card-num badge-accent">STEP 3</div>
+      <div class="gen-card-title">Anti-AI 프롬프트 주입</div>
+      <div class="gen-card-desc">
+        "~하는 순간을 포착" (Captured Moment), Hasselblad 500CM + Kodak Portra 400 필름 스펙,
+        바람에 흩날리는 머리카락 같은 자연스러운 불완전함을 프롬프트에 주입합니다.
+        이게 없으면 "AI가 만든 티"가 납니다.
+      </div>
+    </div>
+    <div class="gen-card">
+      <div class="gen-card-num badge-accent">STEP 4</div>
+      <div class="gen-card-title">3모델 병렬 생성</div>
+      <div class="gen-card-desc">
+        동일 프롬프트로 Gemini, GPT Image 2, Higgsfield 3개 모델이 동시에 이미지를 생성합니다.
+        각 모델의 강점이 다르므로, 비교 후 베스트를 셀렉합니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- Higgsfield MCP -->
+  <div class="callout fade-up stagger-4">
+    <div class="callout-title">Higgsfield MCP 연결 방법</div>
+    <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.6;">
+      Higgsfield는 MCP(Model Context Protocol) 서버로 연결합니다.
+      프로젝트 루트의 <span class="connect-step-code">.mcp.json</span>에 아래를 추가하세요.
+    </p>
+    <div class="code-block">
+<span class="code-brace">{</span>
+  <span class="code-key">"higgsfield"</span>: <span class="code-brace">{</span>
+    <span class="code-key">"command"</span>: <span class="code-string">"npx"</span>,
+    <span class="code-key">"args"</span>: [<span class="code-string">"-y"</span>, <span class="code-string">"mcp-remote"</span>, <span class="code-string">"https://mcp.higgsfield.ai/mcp"</span>]
+  <span class="code-brace">}</span>
+<span class="code-brace">}</span>
+    </div>
+    <div style="margin-top:1rem;">
+      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
+        첫 연결 시 브라우저 OAuth 로그인이 필요합니다.<br>
+        추천 모델: <strong style="color:var(--text-primary)">soul_2</strong> (패션 에디토리얼) /
+        <strong style="color:var(--text-primary)">nano_banana_2</strong> (최고 퀄리티 4K)
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 4: 결과물은 어떻게 나와? ====== -->
+<section class="section" id="output">
+  <p class="section-eyebrow fade-up">04 / Output</p>
+  <h2 class="section-title fade-up stagger-1"><em>Output</em> Structure</h2>
+  <p class="section-title-kr fade-up stagger-2">결과물은 어떻게 나와?</p>
+  <p class="section-desc fade-up stagger-3">
+    모든 결과물은 타임스탬프 폴더 안에 정리됩니다.
+    각 씬별로 3모델 비교가 가능하고, 사용된 프롬프트와 설정이 함께 저장됩니다.
+  </p>
+
+  <!-- Output Tree -->
+  <div class="output-tree fade-up stagger-3">
+    <span class="tree-folder">{timestamp}_{type}/</span><br>
+    <span style="padding-left:1.5rem" class="tree-file">WJ_01_gemini.png</span> <span class="tree-comment">&larr; Gemini 결과</span><br>
+    <span style="padding-left:1.5rem" class="tree-file">WJ_01_gpt.png</span> <span class="tree-comment">&larr; GPT 결과</span><br>
+    <span style="padding-left:1.5rem" class="tree-file">WJ_01_higgsfield.png</span> <span class="tree-comment">&larr; Higgsfield 결과</span><br>
+    <span style="padding-left:1.5rem" class="tree-file">WJ_01_00_reference.jpg</span> <span class="tree-comment">&larr; 트렌드 마케팅컷 원본</span><br>
+    <span style="padding-left:1.5rem" class="tree-file">WJ_01_prompt.txt</span> <span class="tree-comment">&larr; 사용된 프롬프트</span><br>
+    <span style="padding-left:1.5rem" class="tree-file">config.json</span> <span class="tree-comment">&larr; 생성 설정 (비율, 모델, DNA 버전)</span>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1rem; margin-top:2rem;" class="fade-up stagger-4">
+    <div class="card" style="text-align:center; padding:1.5rem;">
+      <div style="font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; font-family:'Inter',sans-serif;">포맷</div>
+      <div style="font-size:1.1rem; font-weight:500;">PNG, 3:4 세로형</div>
+    </div>
+    <div class="card" style="text-align:center; padding:1.5rem;">
+      <div style="font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; font-family:'Inter',sans-serif;">비교</div>
+      <div style="font-size:1.1rem; font-weight:500;">씬별 3모델 비교</div>
+    </div>
+    <div class="card" style="text-align:center; padding:1.5rem;">
+      <div style="font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; font-family:'Inter',sans-serif;">검수</div>
+      <div style="font-size:1.1rem; font-weight:500;">7-Gate 자동 Pass/Fail</div>
+    </div>
+  </div>
+
+  <div class="callout-border fade-up stagger-5">
+    <div class="callout-title">자동 검수</div>
+    <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.7;">
+      <span class="connect-step-code">inspect_results.py</span>로 7-Gate 자동 검수를 실행할 수 있습니다.
+      브랜드 DNA 대비 컬러 일치도, 모델 비율, 의류 디테일, 배경 적합성 등을 자동으로 pass/fail 판정합니다.
+    </p>
+  </div>
+</section>
+
+<!-- ====== SECTION 5: 앞 에이전트한테 뭘 받아야 해? ====== -->
+<section class="section" id="input-contract">
+  <p class="section-eyebrow fade-up">05 / Input Contract</p>
+  <h2 class="section-title fade-up stagger-1"><em>Input</em> Requirements</h2>
+  <p class="section-title-kr fade-up stagger-2">앞 에이전트한테 뭘 받아야 해?</p>
+  <p class="section-desc fade-up stagger-3">
+    이 에이전트에 넘겨줄 인풋의 명세입니다.
+    필수 항목이 없으면 자체 대안(Plan B)이 있는 경우도 있지만, 트렌드 마케팅컷는 반드시 필요합니다. (AI 자동 셀렉 또는 수동 큐레이션)
+  </p>
+
+  <table class="contract-table fade-up stagger-3">
+    <thead>
+      <tr>
+        <th style="width:22%;">인풋</th>
+        <th style="width:18%;">형식</th>
+        <th style="width:10%; text-align:center;">필수?</th>
+        <th>없으면?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">brand-dna.json</td>
+        <td>JSON</td>
+        <td style="text-align:center;"><span class="contract-optional">선택</span></td>
+        <td>자체 크롤링 + VLM 분석으로 자동 생성</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">트렌드 마케팅컷 폴더</td>
+        <td>이미지 7~15장</td>
+        <td style="text-align:center;"><span class="contract-required">필수</span></td>
+        <td>Plan A: AI 자동 셀렉 / Plan B: 수동 선택</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">시즌 / 카테고리</td>
+        <td>텍스트</td>
+        <td style="text-align:center;"><span class="contract-required">필수</span></td>
+        <td>사용자가 지정 (예: "27SS WJ")</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">제품 이미지</td>
+        <td>이미지 폴더</td>
+        <td style="text-align:center;"><span class="contract-optional">선택</span></td>
+        <td>DNA에서 제품 속성 자동 참조</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== SECTION 6: 뒷 에이전트한테 뭘 넘겨? ====== -->
+<section class="section" id="output-contract">
+  <p class="section-eyebrow fade-up">06 / Output Contract</p>
+  <h2 class="section-title fade-up stagger-1"><em>Output</em> Deliverables</h2>
+  <p class="section-title-kr fade-up stagger-2">뒷 에이전트한테 뭘 넘겨?</p>
+  <p class="section-desc fade-up stagger-3">
+    이 에이전트가 생산하는 결과물 목록입니다.
+    뒷단 에이전트(컨텐츠 기획안, 채널배너 등)가 이 아웃풋을 바로 받아서 사용합니다.
+  </p>
+
+  <table class="contract-table fade-up stagger-3">
+    <thead>
+      <tr>
+        <th style="width:25%;">아웃풋</th>
+        <th style="width:15%;">형식</th>
+        <th>용도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">캠페인컷 이미지</td>
+        <td>PNG 3:4</td>
+        <td>IMC 설계, 매거진, 배너 소스</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">인플컷 이미지</td>
+        <td>PNG 3:4</td>
+        <td>SNS 컨텐츠, 인플루언서 가이드</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">프롬프트 텍스트</td>
+        <td>TXT</td>
+        <td>재생성/튜닝 시 재사용</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">DNA 가드레일</td>
+        <td>JSON</td>
+        <td>다음 빌더의 품질 기준</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500; color:var(--text-primary);">검수 결과</td>
+        <td>JSON</td>
+        <td>pass/fail 리포트</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== SECTION: 실제 결과물 예시 ====== -->
+<section class="section" id="results">
+  <p class="section-eyebrow fade-up">RESULTS / Examples</p>
+  <h2 class="section-title fade-up stagger-1"><em>Generated</em> Outputs</h2>
+  <p class="section-title-kr fade-up stagger-2">실제 결과물 — 뭘 넣어서 이런 이미지가 나왔나</p>
+  <p class="section-desc fade-up stagger-3">
+    각 브랜드별 트렌드 마케팅컷(레퍼런스)을 넣고 DNA 블렌딩 → Gemini / GPT / Higgsfield 3모델로 생성한 결과입니다.
+    같은 프롬프트로 3모델을 돌려 비교 셀렉합니다.
+  </p>
+
+  <!-- DUVETICA -->
+  <h3 class="fade-up" style="font-family:'Playfair Display',serif; font-weight:300; font-size:1.6rem; margin:2.5rem 0 1rem; color:#D4A574;">
+    Duvetica — <em>Quiet Luxury</em>
+  </h3>
+  <p class="fade-up" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+    방식: 레퍼런스 가이드 (ref_guided) / 카테고리: WJ + Setup / 모델: Gemini + GPT
+  </p>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;" class="fade-up">
+    <div style="text-align:center;">
+      <img src="results/duvetica/20260430_222257_dna_ref_guided/WJ_01_00_reference.jpg" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem;">INPUT: 트렌드 마케팅컷</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/duvetica/20260430_222257_dna_ref_guided/WJ_01_gemini.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-cyan); margin-top:0.5rem;">OUTPUT: Gemini</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/duvetica/20260430_222257_dna_ref_guided/WJ_01_gpt.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-good); margin-top:0.5rem;">OUTPUT: GPT Image 2</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/_higgsfield/DV_WJ_01_hf.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-yellow); margin-top:0.5rem;">OUTPUT: Higgsfield</div>
+    </div>
+  </div>
+  <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.5rem; margin-top:1rem; font-size:0.85rem; color:var(--text-secondary);" class="fade-up">
+    <strong>DNA 블렌딩:</strong> 컬러=Cream Stone (CRS) / 소재=lightweight technical nylon, soft semi-matte sheen / 핏=regular relaxed / 스타일링=open collar, half-tuck / 악세=leather belt, sunglasses / 모델="professional high-fashion model, angular jawline, high cheekbones"
+  </div>
+
+  <!-- MLB -->
+  <h3 class="fade-up" style="font-family:'Playfair Display',serif; font-weight:300; font-size:1.6rem; margin:3rem 0 1rem; color:#60A5FA;">
+    MLB — <em>Y2K Feminine</em>
+  </h3>
+  <p class="fade-up" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+    방식: VLM 추구미 분석 + DNA 튜닝 / 카테고리: Tee + Set / 모델: Gemini + GPT + Higgsfield
+  </p>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;" class="fade-up">
+    <div style="text-align:center;">
+      <img src="results/mlb/20260430_221345_tuned/MLB_00_00_ref.jpg" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem;">INPUT: 트렌드 마케팅컷</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/mlb/20260430_221345_tuned/MLB_00_gemini.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-cyan); margin-top:0.5rem;">OUTPUT: Gemini</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/mlb/20260430_221345_tuned/MLB_00_gpt.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-good); margin-top:0.5rem;">OUTPUT: GPT Image 2</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/mlb/20260430_221345_tuned/MLB_00_hf.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-yellow); margin-top:0.5rem;">OUTPUT: Higgsfield</div>
+    </div>
+  </div>
+  <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.5rem; margin-top:1rem; font-size:0.85rem; color:var(--text-secondary);" class="fade-up">
+    <strong>DNA 블렌딩:</strong> 컬러=White (WHS) / 소재=cotton jersey, matte / 핏=slim crop / 모델="K-pop girl group member on her day off — tiny small face, sharp V-line jaw, big double-eyelid eyes, flawless dewy glass skin"
+  </div>
+
+  <!-- DISCOVERY -->
+  <h3 class="fade-up" style="font-family:'Playfair Display',serif; font-weight:300; font-size:1.6rem; margin:3rem 0 1rem; color:#34D399;">
+    Discovery — <em>Active Wellness</em>
+  </h3>
+  <p class="fade-up" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+    방식: VLM 추구미 분석 + DNA 튜닝 / 카테고리: Windbreaker + Tee / 모델: Gemini + GPT + Higgsfield
+  </p>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;" class="fade-up">
+    <div style="text-align:center;">
+      <img src="results/discovery/20260430_221345_tuned/DISCOVERY_03_00_ref.jpg" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem;">INPUT: 트렌드 마케팅컷</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/discovery/20260430_221345_tuned/DISCOVERY_03_gemini.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-cyan); margin-top:0.5rem;">OUTPUT: Gemini</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/discovery/20260430_221345_tuned/DISCOVERY_03_gpt.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-good); margin-top:0.5rem;">OUTPUT: GPT Image 2</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="results/_higgsfield/DX_03_hf.png" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);" loading="lazy">
+      <div style="font-size:0.75rem; color:var(--accent-yellow); margin-top:0.5rem;">OUTPUT: Higgsfield</div>
+    </div>
+  </div>
+  <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.5rem; margin-top:1rem; font-size:0.85rem; color:var(--text-secondary);" class="fade-up">
+    <strong>DNA 블렌딩:</strong> 컬러=Black / 소재=lightweight ripstop nylon, semi-matte / 핏=athletic slim / 모델="stunningly beautiful Korean fitness influencer — tiny face, sharp jawline, toned but feminine athletic build, sun-kissed glowing skin"
+  </div>
+</section>
+
+<!-- ====== SECTION 7: 내가 연결하려면 어떻게 해? ====== -->
+<section class="section" id="connect">
+  <p class="section-eyebrow fade-up">07 / Connect</p>
+  <h2 class="section-title fade-up stagger-1"><em>How</em> to Connect</h2>
+  <p class="section-title-kr fade-up stagger-2">내가 연결하려면 어떻게 해?</p>
+  <p class="section-desc fade-up stagger-3">
+    이 레포를 clone한 뒤, 아래 8단계를 따라 파일을 복사하면 됩니다.
+    복사 완료 후 Claude Code에서 바로 실행할 수 있습니다.
+  </p>
+
+  <!-- 8 Steps -->
+  <div class="connect-steps fade-up stagger-3">
+    <div class="connect-step">
+      <div class="connect-step-num">1</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">이 레포 clone</div>
+        <div class="connect-step-desc"><span class="connect-step-code">git clone {repo-url}</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">2</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">agents/ 복사</div>
+        <div class="connect-step-desc"><span class="connect-step-code">agents/</span> &rarr; <span class="connect-step-code">.claude/agents/</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">3</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">skills/ 복사</div>
+        <div class="connect-step-desc"><span class="connect-step-code">skills/</span> &rarr; <span class="connect-step-code">.claude/skills/</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">4</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">rules/ 복사</div>
+        <div class="connect-step-desc"><span class="connect-step-code">rules/</span> &rarr; <span class="connect-step-code">.claude/rules/</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">5</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">hooks/ 복사</div>
+        <div class="connect-step-desc"><span class="connect-step-code">hooks/</span> &rarr; <span class="connect-step-code">.claude/hooks/</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">6</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">scripts/ 복사</div>
+        <div class="connect-step-desc"><span class="connect-step-code">scripts/</span> &rarr; <span class="connect-step-code">scripts/strategy_cut_builder/</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">7</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">brand-dna/ 복사</div>
+        <div class="connect-step-desc"><span class="connect-step-code">brand-dna/</span> &rarr; <span class="connect-step-code">.claude/projects/strategy-cut-builder/brand-dna/</span></div>
+      </div>
+    </div>
+    <div class="connect-step">
+      <div class="connect-step-num">8</div>
+      <div class="connect-step-content">
+        <div class="connect-step-title">실행</div>
+        <div class="connect-step-desc">Claude Code에서: <strong style="color:var(--text-primary);">"듀베티카 27SS WJ 캠페인컷 만들어줘"</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connection Mapping -->
+  <div style="margin-top: var(--section-gap);">
+    <h3 style="font-family:'Inter',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2rem;" class="fade-up">
+      Connection Mapping
+    </h3>
+
+    <!-- Upstream -->
+    <p style="font-family:'Inter',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent-cyan); margin-bottom:1rem;" class="fade-up">앞단 연결 (Upstream)</p>
+
+    <div class="link-grid fade-up stagger-1">
+      <div class="link-source">
+        <div class="link-label" style="color:var(--text-muted);">트렌드 에이전트 Output</div>
+        <div class="link-text">시즌 트렌드 데이터</div>
+      </div>
+      <div class="link-arrow">&rarr;</div>
+      <div class="link-target">
+        <div class="link-label" style="color:var(--accent-cyan);">이 에이전트 Input</div>
+        <div class="link-text">brand-dna.json의 data_driven_guardrails</div>
+      </div>
+    </div>
+
+    <div class="link-grid fade-up stagger-2" style="margin-top:1rem;">
+      <div class="link-source">
+        <div class="link-label" style="color:var(--text-muted);">디자인 에이전트 Output</div>
+        <div class="link-text">제품 디자인 이미지</div>
+      </div>
+      <div class="link-arrow">&rarr;</div>
+      <div class="link-target">
+        <div class="link-label" style="color:var(--accent-cyan);">이 에이전트 Input</div>
+        <div class="link-text">제품 이미지 폴더</div>
+      </div>
+    </div>
+
+    <!-- Downstream -->
+    <p style="font-family:'Inter',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent-good); margin-top:3rem; margin-bottom:1rem;" class="fade-up">뒷단 연결 (Downstream)</p>
+
+    <div class="link-grid fade-up stagger-1">
+      <div class="link-source">
+        <div class="link-label" style="color:var(--accent-cyan);">이 에이전트 Output</div>
+        <div class="link-text">캠페인/인플 이미지</div>
+      </div>
+      <div class="link-arrow">&rarr;</div>
+      <div class="link-target">
+        <div class="link-label" style="color:var(--text-muted);">컨텐츠 기획안 스킬</div>
+        <div class="link-text">30-slide PPTX 이미지 소스</div>
+      </div>
+    </div>
+
+    <div class="link-grid fade-up stagger-2" style="margin-top:1rem;">
+      <div class="link-source">
+        <div class="link-label" style="color:var(--accent-cyan);">이 에이전트 Output</div>
+        <div class="link-text">캠페인/인플 이미지</div>
+      </div>
+      <div class="link-arrow">&rarr;</div>
+      <div class="link-target">
+        <div class="link-label" style="color:var(--text-muted);">채널배너 스킬</div>
+        <div class="link-text">배너 소스 이미지</div>
+      </div>
+    </div>
+
+    <div class="link-grid fade-up stagger-3" style="margin-top:1rem;">
+      <div class="link-source">
+        <div class="link-label" style="color:var(--accent-cyan);">이 에이전트 Output</div>
+        <div class="link-text">캠페인/인플 이미지</div>
+      </div>
+      <div class="link-arrow">&rarr;</div>
+      <div class="link-target">
+        <div class="link-label" style="color:var(--text-muted);">SNS Grid</div>
+        <div class="link-text">피드 자동 등록</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Closing -->
+<section class="closing">
+  <div class="closing-inner fade-up">
+    <p class="hero-eyebrow" style="margin-bottom:1.5rem;">Ready to Connect</p>
+    <h2 class="closing-title">연결하고, 실행하고,<br>결과 받기.</h2>
+    <p class="closing-desc">
+      이 에이전트는 독립 실행도 가능하고, 다른 에이전트와 파이프라인으로 연결할 수도 있습니다.
+      brand-dna.json과 트렌드 마케팅컷만 있으면, 나머지는 에이전트가 알아서 합니다.
+    </p>
+  </div>
+</section>
+
+<!-- 9. Footer -->
+<footer class="footer">
+  <div class="footer-org">F&F AX Team</div>
+  <div class="footer-report">마케팅컷 생성 에이전트 — PM 운영 가이드</div>
+</footer>
+
+<!-- 8. Back to Top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+<!-- ====== JAVASCRIPT ====== -->
+<script>
+(function() {
+  // Hero instant show
+  requestAnimationFrame(function() {
+    document.querySelectorAll('.hero .fade-up').forEach(function(el) {
+      el.classList.add('visible');
+    });
+  });
+
+  // 7. IntersectionObserver for fade-up
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '-60px', threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up:not(.hero .fade-up)').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // Single scroll handler: progress bar + nav bg + back-to-top + section tracking
+  var progress = document.getElementById('scrollProgress');
+  var navbar = document.getElementById('navbar');
+  var backToTop = document.getElementById('backToTop');
+  var navLinks = document.querySelectorAll('.navbar-nav a');
+  var sections = document.querySelectorAll('.section, .toc');
+
+  window.addEventListener('scroll', function() {
+    var scrollTop = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+    // 1. Scroll progress
+    progress.style.width = scrollPercent + '%';
+
+    // 2. Nav background
+    if (scrollTop > 80) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+
+    // 8. Back to top
+    if (scrollTop > 600) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
+
+    // Section tracking for nav
+    var current = '';
+    sections.forEach(function(section) {
+      var top = section.offsetTop - 120;
+      if (scrollTop >= top) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(function(link) {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  // Anchor scroll with offset
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        var top = target.offsetTop - 80;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Back to top click
+  backToTop.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // 3. Theme toggle
+  var toggle = document.getElementById('themeToggle');
+  var saved = localStorage.getItem('report-theme');
+  if (saved === 'light') {
+    document.documentElement.classList.add('theme-light');
+    toggle.textContent = 'Dark';
+  }
+  toggle.addEventListener('click', function() {
+    document.documentElement.classList.toggle('theme-light');
+    var isLight = document.documentElement.classList.contains('theme-light');
+    toggle.textContent = isLight ? 'Dark' : 'Light';
+    localStorage.setItem('report-theme', isLight ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>
