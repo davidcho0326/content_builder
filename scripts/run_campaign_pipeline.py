@@ -1,9 +1,10 @@
-"""End-to-end Strategy-Cut pipeline:
+"""End-to-end Strategy-Cut pipeline (raw-only variant — branch: feature/raw-only-no-tryon):
 
     brand_dna + season/category
         -> [Step A] mood reference auto-select
         -> [Step B] influencer campaign proposal (intermediate human-readable)
-        -> [Step C] Gemini image generation (3:4 campaign cuts)
+        -> [Step C] image generation (3:4 campaign cuts)
+        -> [Step D] gallery (Step C+ try-on은 default OFF, --apply-tryon으로 opt-in)
 
 CLI:
     python st_cut-dev/scripts/run_campaign_pipeline.py \\
@@ -318,12 +319,14 @@ def main() -> int:
                     help="selector algorithm: v1 (legacy top-K) or v2 "
                          "(embedding + stratified + diversity, default)")
     # Step C+ Virtual Try-On (v3.2, IMC mode only)
+    # raw-only branch: default OFF — Step C → Step D 직행.
+    # 시뮬레이션/저비용 빠른 시연용. Try-on 필요시 명시적 --apply-tryon.
     ap.add_argument("--apply-tryon", dest="apply_tryon", action="store_true",
-                    default=True,
+                    default=False,
                     help="Run Step C+ virtual try-on after image generation "
-                         "(default true, IMC mode only)")
+                         "(default false on raw-only branch — opt-in only)")
     ap.add_argument("--no-tryon", dest="apply_tryon", action="store_false",
-                    help="Skip Step C+ virtual try-on")
+                    help="Skip Step C+ virtual try-on (default on this branch)")
     ap.add_argument("--tryon-engines", nargs="+",
                     default=["gpt"],
                     choices=["gemini", "gpt"],
