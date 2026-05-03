@@ -81,6 +81,138 @@ NEGATIVE: no Y2K poses, no mirror selfies, no exaggerated cute gestures, no plas
 CRITICAL: Match the reference photograph's POSE, COMPOSITION, and CAMERA ANGLE as closely as possible. The model should be in the same position and the framing should be nearly identical. Only the garment, styling, and minor setting details should differ."""
 
 
+# ---------- IMC-driven prompt (v3, Option α) -----------------------------
+
+IMC_PROMPT_TEMPLATE = """You are given a REFERENCE photograph. Generate a NEW high-end fashion editorial image for the campaign described below.
+
+USE THE REFERENCE FOR (anchor):
+- POSE and BODY POSITION (replicate the exact pose, limb positions, head angle)
+- COMPOSITION and FRAMING (same camera angle, distance, crop, rule-of-thirds placement)
+- The MODEL'S age range, gender, and proportions
+
+IGNORE FROM THE REFERENCE (replace entirely):
+- Setting, location, background, architecture
+- Lighting and color grading
+- Clothing, accessories, footwear
+- Color palette and styling
+
+CAMPAIGN: {brand} {season} — {lifestyle}
+HEADLINE: "{headline_en}" / "{headline_ko}"
+CAMPAIGN KEYWORDS: {keywords_csv}
+
+SCENE {scene_num} · {scene_title}
+TONE & COLOR: {scene_tone}
+MOOD: {scene_mood}
+LOCATION: {scene_location}
+VISUAL DIRECTION: {scene_visual}
+TARGET INFLUENCER PROFILE: {scene_influencer_profile}
+
+THE MOMENT: {moment}
+
+THE MODEL: {persona_demo}. {brand_model_keyword}.
+EXPRESSION: {expression} (gaze: {gaze}).
+SIGNATURE POSE: {pose}.
+
+WEARING:
+- Hero: {hero_desc}
+- Sub: {sub_desc_csv}
+ACCESSORIES (scene-appropriate, light): {accessories}
+FOOTWEAR: {footwear}
+
+PHOTOGRAPHY:
+- Camera: {camera}, {lens}.
+- Film: {film} — visible fine grain, organic tonal transitions.
+- Aspect ratio: {aspect_ratio}.
+
+POST-PRODUCTION: rich tonal depth, creamy highlight rolloff, neutral white balance,
+visible skin pores and natural skin texture, fine fabric grain.
+
+ANTI-AI DETAILS: {anti_ai}.
+
+NEGATIVE: no Y2K poses, no mirror selfies, no exaggerated cute gestures, no plastic skin, no AI-symmetric features, no team mascots in the foreground.
+
+CRITICAL: Match the REFERENCE photograph's POSE / COMPOSITION / CAMERA ANGLE precisely. The model's SETTING, COLOR PALETTE, CLOTHING, and ACCESSORIES must match the SCENE BRIEF above — NOT the reference image. The TONE & COLOR direction ({scene_tone}) must dominate the rendered image's color grading."""
+
+
+def build_prompt_from_imc_scene(
+    scene,                        # imc_plan_loader.Scene
+    spec,                         # imc_plan_loader.CampaignSpec
+    ref: dict,                    # selected reference (selector_v3 output)
+    *,
+    moment: Optional[str] = None,
+    accessories: Optional[str] = None,
+    footwear: Optional[str] = None,
+) -> str:
+    """Render the IMC-aware prompt for one scene + ref + persona.
+
+    Inputs are dataclass instances (Scene, CampaignSpec) for clarity. Optional
+    overrides allow downstream injection of LLM-generated moments and
+    scene-specific accessory choices.
+    """
+    persona = spec.persona_by_id(scene.persona_match) or (spec.personas[0] if spec.personas else None)
+
+    brand_lower = (spec.brand or "").strip().lower()
+    brand_kw = BRAND_MODEL_KEYWORDS.get(
+        brand_lower,
+        "natural minimal makeup model, editorial proportions",
+    )
+
+    # Pose / expression / gaze come from the reference's labels — that's the
+    # selector's anchor. Defaults are conservative.
+    rmodel = ref.get("model") or {}
+    pose = (rmodel.get("pose") if isinstance(rmodel.get("pose"), str)
+            else (", ".join(rmodel.get("pose") or []) if isinstance(rmodel.get("pose"), list)
+                  else "full body shot"))
+    expression = (rmodel.get("expression") if isinstance(rmodel.get("expression"), str)
+                  else "cool")
+    gaze = (rmodel.get("gaze direction") if isinstance(rmodel.get("gaze direction"), str)
+            else "front")
+
+    persona_demo = persona.demo if persona and persona.demo else "young adult"
+
+    keywords_csv = ", ".join(k.get("kw", "") for k in (spec.keywords or [])[:5]) or "(none)"
+    sub_desc_csv = "; ".join(f"{x.get('code', '')} {x.get('desc', '')}".strip()
+                             for x in (spec.sub_garments or [])[:3]) or "(none)"
+    scene_influencer_profile = (
+        ", ".join(scene.influencer_categories_match[:6])
+        if getattr(scene, "influencer_categories_match", None)
+        else "(unspecified)"
+    )
+
+    return IMC_PROMPT_TEMPLATE.format(
+        brand=spec.brand or "",
+        season=spec.season or "",
+        lifestyle=spec.lifestyle_display or spec.lifestyle or "",
+        headline_en=spec.headline_en or "",
+        headline_ko=spec.headline_ko or "",
+        keywords_csv=keywords_csv,
+        scene_num=scene.num,
+        scene_title=scene.title,
+        scene_tone=scene.tone or "(unspecified)",
+        scene_mood=scene.mood or "(unspecified)",
+        scene_location=scene.location or "(unspecified)",
+        scene_visual=scene.visual or "(unspecified)",
+        scene_influencer_profile=scene_influencer_profile,
+        moment=moment or "a candid editorial moment captured mid-flow",
+        persona_demo=persona_demo,
+        brand_model_keyword=brand_kw,
+        expression=expression or "cool",
+        gaze=gaze or "front",
+        pose=pose or "full body shot",
+        hero_desc=f"[{spec.hero_garment.get('code', '')}] {spec.hero_garment.get('desc', '')}".strip(),
+        sub_desc_csv=sub_desc_csv,
+        accessories=accessories or "minimal scene-appropriate items",
+        footwear=footwear or "scene-appropriate footwear",
+        camera="Hasselblad 500CM",
+        lens="85mm f/1.8",
+        film="Kodak Portra 400",
+        aspect_ratio="3:4 portrait",
+        anti_ai="wind-displaced hair strands, natural skin texture and pores visible, fabric caught mid-movement, slight imperfect symmetry",
+    )
+
+
+# ---------- legacy (v2) prompt build --------------------------------------
+
 def build_prompt_from_scene(scene: dict, campaign: dict) -> str:
     m = scene["model_direction"]
     g = scene["garment_brief"]

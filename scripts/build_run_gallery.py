@@ -22,23 +22,26 @@ import webbrowser
 from pathlib import Path
 from typing import Optional
 
-# image filename suffixes per provider
+# image filename suffixes per provider.
+# Order = display order in galleries. Standard 3 (gpt + hf_gpt + hf_mkt) first,
+# legacy providers (gemini / hf_soul / hf_nano) kept for backward compat with
+# older runs but rendered after the standard set.
 PROVIDER_SUFFIX = {
-    "gemini":  "_gemini.png",
-    "gpt":     "_gpt.png",
-    "hf_soul": "_hf_soul.png",
-    "hf_nano": "_hf_nano.png",
-    "hf_gpt":  "_hf_gpt.png",
-    "hf_mkt":  "_hf_mkt.png",
+    "gpt":     "_gpt.png",          # Direct (current standard)
+    "hf_gpt":  "_hf_gpt.png",       # HF GPT Image 2 (standard)
+    "hf_mkt":  "_hf_mkt.png",       # HF Marketing Studio (standard)
+    "gemini":  "_gemini.png",       # legacy Direct
+    "hf_soul": "_hf_soul.png",      # legacy HF Soul 2.0
+    "hf_nano": "_hf_nano.png",      # legacy HF Nano-Banana Pro
 }
 
 PROVIDER_LABEL = {
-    "gemini":  "Gemini-3-pro",
     "gpt":     "GPT-image-2",
-    "hf_soul": "HF Soul 2.0",
-    "hf_nano": "HF Nano-Banana Pro",
     "hf_gpt":  "HF GPT-image 2",
     "hf_mkt":  "HF Marketing Studio",
+    "gemini":  "Gemini-3-pro (legacy)",
+    "hf_soul": "HF Soul 2.0 (legacy)",
+    "hf_nano": "HF Nano-Banana Pro (legacy)",
 }
 
 
@@ -612,18 +615,415 @@ details.prompt pre {{ background: var(--panel2); border:1px solid var(--line);
     return out_path
 
 
+# ============================================================================
+# IMC-driven scene-grouped gallery (v3)
+# ============================================================================
+
+def render_imc(run_dir: Path) -> Path:
+    """Render the IMC-driven run directory as a 3-scene grouped gallery.
+
+    Expected dir layout:
+      run_dir/
+        00_imc_snapshot.json
+        01_references/{scene.slug}_R{NN}_*.jpg + selection.json
+        02_proposal/campaign_proposal.json (imc proposal — schema_version=imc-1.0)
+        03_images/{scene.slug}_R{NN}_{provider}.png + ..._prompt.txt
+
+    Output: run_dir / "gallery.html"
+    """
+    proposal = _safe_load(run_dir / "02_proposal" / "campaign_proposal.json") or {}
+    if proposal.get("schema_version") != "imc-1.0":
+        # Not an IMC proposal — caller should fall back to render() instead.
+        raise ValueError(f"not an imc-1.0 proposal: {run_dir}")
+
+    campaign = proposal.get("campaign") or {}
+    personas = proposal.get("personas") or []
+    scene_plan = proposal.get("scene_plan") or []
+    images_dir = run_dir / "03_images"
+    refs_dir = run_dir / "01_references"
+
+    out_path = run_dir / "gallery.html"
+
+    # Hero/Bottom product manifests (Step C+ output) — optional
+    hero_product_manifest = _safe_load(run_dir / "04_products" / "hero_product.json")
+    bottom_product_manifest = _safe_load(run_dir / "04_products" / "bottom_product.json")
+    hero_product_used = None
+    bottom_product_used = None
+    products_dir = run_dir / "04_products"
+    if products_dir.exists():
+        for p in products_dir.iterdir():
+            if p.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
+                continue
+            if p.name.startswith("hero_product_used"):
+                hero_product_used = p.name
+            elif p.name.startswith("bottom_product_used"):
+                bottom_product_used = p.name
+
+    def _img_tag(rel_path: str, alt: str = "", caption: str = "") -> str:
+        cap = caption or alt
+        return (f'<img src="{_esc(rel_path)}" alt="{_esc(alt)}" '
+                f'data-caption="{_esc(cap)}" class="zoomable" loading="lazy" />')
+
+    def _persona_for(scene: dict) -> Optional[dict]:
+        pid = scene.get("persona_match")
+        for p in personas:
+            if p.get("id") == pid:
+                return p
+        return None
+
+    def _scene_card(scene: dict) -> str:
+        sid = scene.get("scene_id") or ""
+        scene_title = scene.get("title") or sid
+        persona = _persona_for(scene)
+        persona_label = (
+            f"{persona['id']} · {persona['name']} · {persona['demo']}"
+            if persona else "(persona unmatched)"
+        )
+        refs = scene.get("references") or []
+
+        # Each ref row: [ref] [gemini] [gpt] [hf_soul] [hf_nano] [hf_gpt] [hf_mkt]
+        # Skip provider cells whose file is missing.
+        provider_keys = list(PROVIDER_SUFFIX.keys())  # canonical order
+        rows_html: list[str] = []
+        for r in refs:
+            rank = r.get("rank") or 0
+            unit = f"{sid}_R{rank:02d}"
+            ref_jpg = next(
+                (p.name for p in refs_dir.glob(f"{unit}_*.jpg")), None
+            )
+            handle = r.get("handle") or ""
+            cells = []
+            ref_rel = f"01_references/{ref_jpg}" if ref_jpg else None
+            ref_caption = f"REF · {scene_title} · Variant {rank} · @{handle}"
+            cells.append(
+                f'<div class="cell ref"><div class="cap">REF · @{_esc(handle)} '
+                f'(rank {rank}, score {r.get("score", 0):.3f})</div>'
+                f'{_img_tag(ref_rel, "ref", ref_caption) if ref_rel else "<div class=\"missing\">no ref</div>"}'
+                + (f'<div class="moment">{_esc((r.get("moment") or "")[:160])}</div>'
+                   if r.get("moment") else "")
+                + "</div>"
+            )
+            tryon_engines = [
+                ("gemini", "TRY-ON · Gemini-3-pro"),
+                ("gpt",    "TRY-ON · GPT-image-2"),
+            ]
+            for pk in provider_keys:
+                fname = _resolve_image(images_dir, unit, PROVIDER_SUFFIX[pk])
+                cell_caption = f"{scene_title} · Variant {rank} · {PROVIDER_LABEL[pk]}"
+                cells.append(
+                    f'<div class="cell">'
+                    f'<div class="cap">{_esc(PROVIDER_LABEL[pk])}</div>'
+                    + (_img_tag(f"03_images/{fname}", pk, cell_caption)
+                       if fname else f'<div class="missing">{_esc(pk)} —</div>')
+                    + "</div>"
+                )
+                # Step C+ try-on cells (only for providers that have raw image present
+                # AND a try-on file on disk)
+                if not fname:
+                    continue
+                for engine_id, engine_label in tryon_engines:
+                    tname = (
+                        f"{unit}_{pk.replace('hf_', 'hf_')}_tryon_{engine_id}.png"
+                    )
+                    # match new naming: {unit}_{provider_key}_tryon_{engine}.png
+                    tname = f"{unit}_{pk}_tryon_{engine_id}.png"
+                    tpath = images_dir / tname
+                    if not tpath.exists():
+                        continue
+                    tcap = (
+                        f"{scene_title} · Variant {rank} · {PROVIDER_LABEL[pk]} → "
+                        f"{engine_label}"
+                    )
+                    cells.append(
+                        f'<div class="cell tryon">'
+                        f'<div class="cap">{_esc(engine_label)}</div>'
+                        + _img_tag(f"03_images/{tname}", f"{pk}_tryon_{engine_id}", tcap)
+                        + "</div>"
+                    )
+            # prompt link if it exists
+            prompt_path = images_dir / f"{unit}_prompt.txt"
+            prompt_link = (f'<a class="prompt-link" href="03_images/{unit}_prompt.txt" '
+                           f'target="_blank">prompt.txt</a>'
+                           if prompt_path.exists() else "")
+            rows_html.append(
+                f'<div class="ref-row">'
+                f'<div class="ref-row-head">Variant {rank} {prompt_link}</div>'
+                f'<div class="cells">{"".join(cells)}</div>'
+                f'</div>'
+            )
+
+        cats = scene.get("influencer_categories_match") or []
+        cats_html = (
+            f'<div style="grid-column: 1 / -1;">'
+            f'<span class="mlabel">Target Influencer</span> '
+            f'{_esc(", ".join(cats[:6]))}'
+            f'{" <span style=\"opacity:.6\">+" + str(len(cats) - 6) + " more</span>" if len(cats) > 6 else ""}'
+            f'</div>' if cats else ""
+        )
+        moods_inline = (
+            f'<div class="meta-grid">'
+            f'<div><span class="mlabel">Tone</span> {_esc(scene.get("tone"))}</div>'
+            f'<div><span class="mlabel">Mood</span> {_esc(scene.get("mood"))}</div>'
+            f'<div><span class="mlabel">Location</span> {_esc(scene.get("location"))}</div>'
+            f'<div><span class="mlabel">Visual</span> {_esc(scene.get("visual"))}</div>'
+            f'{cats_html}'
+            f'</div>'
+        )
+
+        return f"""
+<section class="scene-card">
+  <header class="scene-head">
+    <div class="scene-title">SCENE {scene.get("scene_num")} · {_esc(scene.get("title"))}</div>
+    <div class="scene-persona">{_esc(persona_label)}</div>
+  </header>
+  {moods_inline}
+  <div class="ref-rows">{''.join(rows_html)}</div>
+</section>
+"""
+
+    scene_cards_html = "\n".join(_scene_card(s) for s in scene_plan)
+
+    keyword_chips = " · ".join(
+        f'<span class="kw">{_esc(k.get("kw"))}</span>'
+        for k in (campaign.get("keywords") or [])
+    )
+
+    hero = campaign.get("hero_garment") or {}
+    sub = campaign.get("sub_garments") or []
+
+    def _product_block(manifest, used_filename, label_tag):
+        if not (manifest and used_filename):
+            return ""
+        m = manifest
+        return (
+            f'<div class="hero-product">'
+            f'<img src="04_products/{_esc(used_filename)}" alt="{_esc(label_tag.lower())}" />'
+            f'<div class="hp-text">'
+            f'<span class="hp-tag">{_esc(label_tag)}</span>'
+            f'<b>[{_esc(m.get("code"))} → {_esc(m.get("code_folder"))}]</b> '
+            f'{_esc(m.get("brand_folder"))} · {_esc(m.get("season"))} · '
+            f'{_esc(m.get("lifestyle_folder"))}<br/>'
+            f'<span style="opacity:.65;">file: {_esc(Path(m.get("hero_image","")).name)} '
+            f'· match: {_esc(m.get("match_strategy"))}/{_esc(m.get("hero_strategy"))}</span>'
+            f'</div></div>'
+        )
+
+    hero_product_html = (
+        _product_block(hero_product_manifest, hero_product_used, "TRY-ON HERO (TOP)")
+        + _product_block(bottom_product_manifest, bottom_product_used, "TRY-ON BOTTOM")
+    )
+
+    html = f"""<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8" />
+<title>{_esc(campaign.get("brand"))} {_esc(campaign.get("season"))} · IMC Gallery</title>
+<style>
+  :root {{
+    --bg: #0e1116; --card: #181c24; --line: #262b35; --ink: #e8eaed;
+    --muted: #8a9099; --accent: #d7ff3f;
+  }}
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ background: var(--bg); color: var(--ink); font-family:
+        -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        padding: 24px; line-height: 1.5; }}
+  header.run-head {{ margin-bottom: 24px; padding: 16px 20px;
+        background: linear-gradient(160deg, #161a22, #1f2530);
+        border: 1px solid var(--line); border-radius: 12px; }}
+  .brand-line {{ font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }}
+  .brand-line .accent {{ color: var(--accent); }}
+  .headline {{ margin-top: 8px; font-size: 14px; color: var(--ink); opacity: 0.9; }}
+  .headline .ko {{ color: var(--muted); display: block; margin-top: 2px; }}
+  .keywords {{ margin-top: 8px; font-size: 12px; }}
+  .keywords .kw {{ background: var(--card); border: 1px solid var(--line);
+        padding: 3px 9px; border-radius: 999px; margin-right: 6px;
+        color: var(--accent); font-weight: 600; }}
+  .garments {{ margin-top: 10px; font-size: 12px; color: var(--muted); }}
+  .garments b {{ color: var(--ink); }}
+  .scene-card {{ margin-bottom: 32px; padding: 18px; background: var(--card);
+        border: 1px solid var(--line); border-radius: 12px; }}
+  .scene-head {{ display: flex; justify-content: space-between; align-items: baseline;
+        margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }}
+  .scene-title {{ font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }}
+  .scene-persona {{ font-size: 11px; color: var(--accent); letter-spacing: 0.06em; }}
+  .meta-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 18px;
+        font-size: 11.5px; color: var(--muted); padding: 8px 0; margin-bottom: 12px;
+        border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); }}
+  .meta-grid .mlabel {{ color: var(--accent); font-weight: 700; letter-spacing: 0.08em;
+        margin-right: 6px; font-size: 9.5px; text-transform: uppercase; }}
+  .ref-rows {{ display: flex; flex-direction: column; gap: 14px; }}
+  .ref-row {{ }}
+  .ref-row-head {{ font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
+        margin-bottom: 6px; text-transform: uppercase; }}
+  .ref-row .prompt-link {{ margin-left: 10px; color: var(--accent);
+        text-decoration: none; font-size: 10.5px; }}
+  .ref-row .prompt-link:hover {{ text-decoration: underline; }}
+  .cells {{ display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 8px; }}
+  .cell {{ background: #0d1018; border: 1px solid var(--line); border-radius: 8px;
+        padding: 6px; display: flex; flex-direction: column; gap: 4px; }}
+  .cell.ref {{ border-color: #3a4055; }}
+  .cell .cap {{ font-size: 9.5px; color: var(--muted); letter-spacing: 0.06em;
+        text-transform: uppercase; }}
+  .cell img {{ width: 100%; aspect-ratio: 3/4; object-fit: cover;
+        border-radius: 4px; background: #000; }}
+  .cell .missing {{ display: flex; align-items: center; justify-content: center;
+        aspect-ratio: 3/4; background: #1a1f2a; color: #5a6273; font-size: 11px;
+        border-radius: 4px; }}
+  .cell .moment {{ font-size: 10.5px; color: var(--muted); line-height: 1.3;
+        font-style: italic; padding-top: 2px; }}
+
+  /* Step C+ try-on cell highlight */
+  .cell.tryon {{ border-color: #d7ff3f55; box-shadow: 0 0 0 1px #d7ff3f22 inset; }}
+  .cell.tryon .cap {{ color: var(--accent); }}
+
+  /* Hero product thumbnail in run-head */
+  .hero-product {{ margin-top: 12px; display: flex; align-items: center;
+        gap: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }}
+  .hero-product img {{ width: 84px; height: 112px; object-fit: cover;
+        border-radius: 6px; background: #000; flex-shrink: 0; }}
+  .hero-product .hp-text {{ font-size: 11.5px; color: var(--muted); line-height: 1.45; }}
+  .hero-product .hp-text b {{ color: var(--ink); }}
+  .hero-product .hp-text .hp-tag {{ display: inline-block;
+        background: var(--accent); color: #000; font-weight: 700;
+        padding: 2px 7px; border-radius: 999px; font-size: 9.5px;
+        letter-spacing: 0.06em; margin-right: 6px; }}
+
+  /* Lightbox */
+  img.zoomable {{ cursor: zoom-in; transition: filter .12s ease; }}
+  img.zoomable:hover {{ filter: brightness(1.08); }}
+  .lightbox {{ position: fixed; inset: 0; background: rgba(0,0,0,.92);
+        display: none; align-items: center; justify-content: center;
+        z-index: 1000; padding: 24px; flex-direction: column; gap: 12px; }}
+  .lightbox.open {{ display: flex; }}
+  .lightbox img {{ max-width: min(96vw, 1400px);
+        max-height: calc(100vh - 110px); object-fit: contain;
+        border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+        cursor: zoom-out; }}
+  .lightbox .lb-cap {{ color: #fff; font-size: 12px; letter-spacing: 0.04em;
+        max-width: 90vw; text-align: center; opacity: 0.9; }}
+  .lightbox .lb-close {{ position: absolute; top: 18px; right: 22px;
+        width: 38px; height: 38px; border-radius: 50%; border: 1px solid #444;
+        background: rgba(20,20,20,.8); color: #fff; font-size: 22px;
+        line-height: 0; cursor: pointer; }}
+  .lightbox .lb-close:hover {{ background: var(--accent); color: #000;
+        border-color: var(--accent); }}
+  .lightbox .lb-nav {{ position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(20,20,20,.65); color: #fff; border: 1px solid #444;
+        width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+        font-size: 20px; line-height: 0; user-select: none; }}
+  .lightbox .lb-nav:hover {{ background: var(--accent); color: #000;
+        border-color: var(--accent); }}
+  .lightbox .lb-prev {{ left: 24px; }}
+  .lightbox .lb-next {{ right: 24px; }}
+  .lightbox .lb-counter {{ position: absolute; top: 24px; left: 24px;
+        color: #888; font-size: 11px; letter-spacing: 0.08em; }}
+</style>
+</head><body>
+
+<header class="run-head">
+  <div class="brand-line">
+    <span class="accent">{_esc(campaign.get("brand"))}</span>
+    {_esc(campaign.get("season"))} · {_esc(campaign.get("lifestyle_display") or campaign.get("lifestyle"))}
+    <span style="opacity:.5; font-size:11px; margin-left:10px;">imc_driven · {_esc(campaign.get("id"))}</span>
+  </div>
+  <div class="headline">
+    {_esc(campaign.get("headline_en"))}
+    <span class="ko">{_esc(campaign.get("headline_ko"))}</span>
+  </div>
+  <div class="keywords">{keyword_chips}</div>
+  <div class="garments">
+    <b>HERO</b>: [{_esc(hero.get("code"))}] {_esc(hero.get("desc"))}
+    {' &nbsp;·&nbsp; ' if sub else ''}
+    {' '.join(f'<b>{_esc(s.get("code"))}</b>: {_esc(s.get("desc"))}' for s in sub)}
+  </div>
+  {hero_product_html}
+</header>
+
+{scene_cards_html}
+
+<div class="lightbox" id="lb" role="dialog" aria-hidden="true">
+  <button class="lb-close" id="lb-close" aria-label="Close">×</button>
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous">‹</button>
+  <button class="lb-nav lb-next" id="lb-next" aria-label="Next">›</button>
+  <div class="lb-counter" id="lb-counter"></div>
+  <img id="lb-img" alt="" />
+  <div class="lb-cap" id="lb-cap"></div>
+</div>
+
+<script>
+(function() {{
+  const imgs = Array.from(document.querySelectorAll('img.zoomable'));
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+  const lbCap = document.getElementById('lb-cap');
+  const lbCounter = document.getElementById('lb-counter');
+  let idx = -1;
+
+  function open(i) {{
+    if (i < 0 || i >= imgs.length) return;
+    idx = i;
+    const t = imgs[i];
+    lbImg.src = t.src;
+    lbImg.alt = t.alt || '';
+    lbCap.textContent = t.dataset.caption || t.alt || '';
+    lbCounter.textContent = (i + 1) + ' / ' + imgs.length;
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }}
+  function close() {{
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    idx = -1;
+  }}
+  function next(d) {{
+    if (idx < 0) return;
+    open((idx + d + imgs.length) % imgs.length);
+  }}
+
+  imgs.forEach((el, i) => el.addEventListener('click', e => {{
+    e.preventDefault();
+    open(i);
+  }}));
+  document.getElementById('lb-close').addEventListener('click', close);
+  document.getElementById('lb-prev').addEventListener('click', e => {{ e.stopPropagation(); next(-1); }});
+  document.getElementById('lb-next').addEventListener('click', e => {{ e.stopPropagation(); next(1); }});
+  lb.addEventListener('click', e => {{ if (e.target === lb) close(); }});
+  lbImg.addEventListener('click', close);
+  document.addEventListener('keydown', e => {{
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') next(-1);
+    else if (e.key === 'ArrowRight') next(1);
+  }});
+}})();
+</script>
+
+</body></html>
+"""
+    out_path.write_text(html, encoding="utf-8")
+    return out_path
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description="Render run dir → gallery.html")
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--no-open", action="store_true",
                     help="don't auto-open in browser")
+    ap.add_argument("--imc", action="store_true",
+                    help="render IMC-driven layout (3 scene cards)")
     args = ap.parse_args()
     run_dir = Path(args.run_dir).resolve()
     if not run_dir.is_dir():
         print(f"[ERROR] not a directory: {run_dir}", file=sys.stderr)
         return 1
-    out = render(run_dir)
+    if args.imc:
+        out = render_imc(run_dir)
+    else:
+        out = render(run_dir)
     print(f"[OK] gallery: {out}")
     if not args.no_open:
         try:

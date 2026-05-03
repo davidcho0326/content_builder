@@ -468,4 +468,134 @@ def proposal_to_markdown(p: dict) -> str:
     return "\n".join(out)
 
 
-__all__ = ["build_campaign_proposal", "proposal_to_markdown"]
+# ---------- IMC-driven proposal (v3, Option α) ----------------------------
+
+def build_imc_proposal(
+    spec,                                    # imc_plan_loader.CampaignSpec
+    refs_by_scene: dict[str, list[dict]],    # selector_v3 output
+    *,
+    moments_by_key: Optional[dict[str, str]] = None,  # {scene.slug + "__" + post_id: moment}
+) -> dict:
+    """Compose proposal JSON from IMC plan + selected refs.
+
+    Output schema is intentionally distinct from build_campaign_proposal —
+    keeps imc_driven runs traceable and avoids confusion with legacy v2 runs.
+    """
+    moments_by_key = moments_by_key or {}
+    scene_blocks = []
+    for scene in spec.scenes:
+        refs = refs_by_scene.get(scene.slug, []) or []
+        persona = spec.persona_by_id(scene.persona_match)
+        scene_blocks.append({
+            "scene_id": scene.slug,
+            "scene_num": scene.num,
+            "title": scene.title,
+            "tone": scene.tone,
+            "mood": scene.mood,
+            "location": scene.location,
+            "visual": scene.visual,
+            "persona_match": scene.persona_match,
+            "persona_demo": persona.demo if persona else None,
+            "influencer_categories_match": list(
+                getattr(scene, "influencer_categories_match", []) or []
+            ),
+            "n_refs": len(refs),
+            "references": [
+                {
+                    "rank": r["rank"],
+                    "post_id": r["post_id"],
+                    "handle": r["handle"],
+                    "score": r["score"],
+                    "image": r["image"],
+                    "post_url": r["post_url"],
+                    "matched_axes": r["matched_axes"],
+                    "model": r["model"],
+                    "moment": moments_by_key.get(f"{scene.slug}__{r['post_id']}"),
+                }
+                for r in refs
+            ],
+        })
+
+    return {
+        "schema_version": "imc-1.0",
+        "generated_at": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+        "campaign": {
+            "id": spec.campaign_id,
+            "brand": spec.brand,
+            "season": spec.season,
+            "lifestyle": spec.lifestyle,
+            "lifestyle_display": spec.lifestyle_display,
+            "headline_en": spec.headline_en,
+            "headline_ko": spec.headline_ko,
+            "season_message": spec.season_message,
+            "keywords": spec.keywords,
+            "hero_garment": spec.hero_garment,
+            "sub_garments": spec.sub_garments,
+            "core_hook": spec.core_hook,
+            "dna_grid": spec.dna_grid,
+            "imc_source_path": spec.source_path,
+        },
+        "personas": [
+            {"id": p.id, "name": p.name, "demo": p.demo,
+             "age_range": [p.age_min, p.age_max], "gender": p.gender,
+             "situations": p.situations, "jtbd": p.jtbd,
+             "cluster_size": p.cluster_size}
+            for p in spec.personas
+        ],
+        "influencer_categories": spec.influencer_categories,
+        "scene_plan": scene_blocks,
+    }
+
+
+def imc_proposal_to_markdown(p: dict) -> str:
+    c = p["campaign"]
+    out: list[str] = []
+    out.append(f"# {c['brand']} {c['season']} — {c.get('lifestyle_display') or c.get('lifestyle')} 캠페인 제안 (IMC-driven)")
+    out.append("")
+    out.append(f"_생성: {p['generated_at']}_  |  _IMC source: `{c['imc_source_path']}`_")
+    out.append("")
+    out.append(f"**Headline** — {c['headline_en']}  /  {c['headline_ko']}")
+    if c.get("season_message"):
+        out.append("")
+        out.append(f"> {c['season_message']}")
+    out.append("")
+    if c.get("keywords"):
+        out.append("**Keywords**")
+        for kw in c["keywords"]:
+            out.append(f"- `{kw.get('kw')}` ({kw.get('score')})  — {kw.get('rationale', '')[:120]}")
+    out.append("")
+    out.append(f"**Hero** — `[{c['hero_garment']['code']}]` {c['hero_garment']['desc']}")
+    if c.get("sub_garments"):
+        out.append("**Sub** — " + " / ".join(f"`[{x['code']}]` {x['desc']}"
+                                              for x in c["sub_garments"]))
+    out.append("")
+    out.append("## Personas")
+    for ps in p.get("personas", []):
+        out.append(f"- **{ps['id']}** {ps['name']} — {ps['demo']}")
+    out.append("")
+    out.append(f"## Influencer Categories ({len(p.get('influencer_categories', []))})")
+    out.append(", ".join(p.get("influencer_categories") or []))
+    out.append("")
+    for s in p.get("scene_plan", []):
+        out.append(f"## SCENE {s['scene_num']} · {s['title']} (persona {s.get('persona_match')})")
+        out.append("")
+        out.append(f"- **Tone & Color**: {s['tone']}")
+        out.append(f"- **Mood**: {s['mood']}")
+        out.append(f"- **Location**: {s['location']}")
+        out.append(f"- **Visual**: {s['visual']}")
+        if s.get("influencer_categories_match"):
+            out.append(f"- **Target Influencer Profile**: "
+                       f"{', '.join(s['influencer_categories_match'])}")
+        out.append("")
+        out.append(f"References ({s['n_refs']}):")
+        for r in s.get("references", []):
+            mom = (r.get("moment") or "")[:90]
+            out.append(f"- `@{r['handle']}` (rank {r['rank']}, score {r['score']:.3f}) — {mom}")
+        out.append("")
+    return "\n".join(out)
+
+
+__all__ = [
+    "build_campaign_proposal", "proposal_to_markdown",
+    "build_imc_proposal", "imc_proposal_to_markdown",
+]
