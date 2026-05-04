@@ -102,6 +102,22 @@ SCENE_PERSONA_HINTS: list[tuple[str, str]] = [
     ("office", "G3"),
     ("commute", "G3"),
     ("출퇴근", "G3"),
+    # Duvetica-style scenes (Premium_Resort lifestyle)
+    ("morning veranda", "G1"),
+    ("veranda", "G1"),
+    ("como", "G1"),
+    ("hotel", "G1"),
+    ("lounge", "G1"),
+    ("yacht", "G2"),
+    ("yachting", "G2"),
+    ("private deck", "G2"),
+    ("deck", "G2"),
+    ("navy", "G2"),
+    ("italian garden", "G3"),
+    ("garden soir", "G3"),  # soirée (with é); also covers 'garden soiree'
+    ("garden", "G3"),
+    ("soir", "G3"),
+    ("italian", "G3"),
 ]
 
 
@@ -168,18 +184,48 @@ class CampaignSpec:
     source_path: str
 
     def persona_by_id(self, pid: Optional[str]) -> Optional[Persona]:
+        """Match by exact id, then by suffix (DV-27SS-PR-G1 ↔ G1).
+
+        SCENE_PERSONA_HINTS yield short ids like "G1"/"G2"/"G3", but persona
+        ids may be fully namespaced ("DV-27SS-PR-G1"). Fall back to suffix
+        match so DV/MLB scenes both route correctly.
+        """
         if not pid:
             return None
         for p in self.personas:
             if p.id == pid:
+                return p
+        # suffix match — split by dash and compare last segment
+        for p in self.personas:
+            tail = p.id.rsplit("-", 1)[-1]
+            if tail == pid or pid in p.id.split("-"):
                 return p
         return None
 
 
 # ---------- parsing helpers --------------------------------------------------
 
-_AGE_RANGE_RX = re.compile(r"(\d{2})\s*[-~]\s*(\d{2})\s*세")
-_AGE_SINGLE_RX = re.compile(r"(\d{2})\s*세")
+_AGE_RANGE_RX = re.compile(r"(\d{2})\s*[-~]\s*(\d{2})\s*세?")
+_AGE_SINGLE_RX = re.compile(r"(\d{2})\s*세?")
+
+
+def _normalize_demo(demo) -> str:
+    """Accept either MLB-style string ("20-24세 / 여성 / ...") or DV-style dict
+    ({"age": "35-44", "gender": "female"}). Returns a flat string for storage
+    and pattern parsing."""
+    if not demo:
+        return ""
+    if isinstance(demo, dict):
+        parts = []
+        if demo.get("age"):
+            parts.append(str(demo["age"]))
+        if demo.get("gender"):
+            parts.append(str(demo["gender"]))
+        for k in ("occupation", "lifestyle", "income"):
+            if demo.get(k):
+                parts.append(str(demo[k]))
+        return " / ".join(parts)
+    return str(demo)
 
 
 def _parse_age(demo: str) -> tuple[Optional[int], Optional[int]]:
@@ -203,6 +249,17 @@ def _parse_gender(demo: str) -> Optional[str]:
     if "남성" in demo or "남자" in demo or "male" in demo.lower():
         return "male"
     return None
+
+
+def _parse_scene_num(num_field, fallback: int) -> int:
+    """Accept int, "1", or "Scene 1" → 1."""
+    if isinstance(num_field, int):
+        return num_field
+    if isinstance(num_field, str):
+        m = re.search(r"\d+", num_field)
+        if m:
+            return int(m.group(0))
+    return fallback
 
 
 def _infer_persona_match(scene: dict) -> Optional[str]:
@@ -306,15 +363,18 @@ def load_campaign_spec(imc_plan_path: str | Path) -> CampaignSpec:
     plan = json.loads(p.read_text(encoding="utf-8"))
 
     ctx = plan.get("campaign_context") or {}
+    meta = plan.get("_meta") or {}
     headline = plan.get("headline") or {}
 
-    cats = ctx.get("categories") or {}
+    # categories: MLB has them inside campaign_context; DV has them top-level.
+    cats = ctx.get("categories") or plan.get("categories") or {}
     hero = cats.get("hero") or {}
     sub = cats.get("sub") or []
 
     personas: list[Persona] = []
     for pg in plan.get("persona_groups") or []:
-        demo = pg.get("demo") or ""
+        demo_raw = pg.get("demo") or ""
+        demo = _normalize_demo(demo_raw)
         amin, amax = _parse_age(demo)
         personas.append(Persona(
             id=pg.get("id") or f"P{len(personas)+1}",
@@ -331,7 +391,7 @@ def load_campaign_spec(imc_plan_path: str | Path) -> CampaignSpec:
     scenes: list[Scene] = []
     for s in plan.get("scenes") or []:
         scenes.append(Scene(
-            num=int(s.get("num") or len(scenes) + 1),
+            num=_parse_scene_num(s.get("num"), len(scenes) + 1),
             title=s.get("title") or f"Scene {len(scenes)+1}",
             tone=s.get("tone") or "",
             mood=s.get("mood") or "",
@@ -343,21 +403,50 @@ def load_campaign_spec(imc_plan_path: str | Path) -> CampaignSpec:
     influencer_cats = _flatten_influencer_categories(plan.get("influencer_tiers") or [])
     _route_categories_to_scenes(scenes, influencer_cats)
 
+    # Normalize keywords to [{kw, score, rationale}] regardless of source format.
+    # MLB: keywords_3 = [{kw, score, rationale}]
+    # DV:  keywords_3 = [str]; keyword_scores = [{label, score}]
+    raw_kw = plan.get("keywords_3") or []
+    raw_score = plan.get("keyword_scores") or []
+    score_by_label = {(s.get("label") or "").lower(): s.get("score")
+                      for s in raw_score if isinstance(s, dict)}
+    keywords: list[dict] = []
+    for k in raw_kw:
+        if isinstance(k, dict):
+            keywords.append({
+                "kw": k.get("kw") or k.get("label") or "",
+                "score": k.get("score"),
+                "rationale": k.get("rationale") or "",
+            })
+        else:
+            label = str(k)
+            keywords.append({
+                "kw": label,
+                "score": score_by_label.get(label.lower()),
+                "rationale": "",
+            })
+
     return CampaignSpec(
-        brand=plan.get("brand") or "BRAND",
-        season=plan.get("season") or "",
-        lifestyle=plan.get("lifestyle") or ctx.get("lifestyle") or "",
-        lifestyle_display=ctx.get("lifestyle_display")
-                          or (plan.get("lifestyle") or "").replace("_", " "),
+        brand=plan.get("brand") or meta.get("brand") or "BRAND",
+        season=plan.get("season") or meta.get("season") or "",
+        lifestyle=(plan.get("lifestyle")
+                   or ctx.get("lifestyle")
+                   or meta.get("lifestyle")
+                   or ""),
+        lifestyle_display=(ctx.get("lifestyle_display")
+                           or (plan.get("lifestyle")
+                               or meta.get("lifestyle")
+                               or "").replace("_", " ")),
         headline_en=headline.get("en_main") or "",
         headline_ko=headline.get("ko_sub") or "",
         season_message=headline.get("season_message") or "",
-        keywords=list(plan.get("keywords_3") or []),
+        keywords=keywords,
         hero_garment={
             "code": hero.get("code") or "",
-            "desc": hero.get("desc") or "",
+            "desc": hero.get("desc") or hero.get("label") or "",
         },
-        sub_garments=[{"code": x.get("code") or "", "desc": x.get("desc") or ""}
+        sub_garments=[{"code": x.get("code") or "",
+                       "desc": x.get("desc") or x.get("label") or ""}
                       for x in sub],
         personas=personas,
         influencer_categories=influencer_cats,
