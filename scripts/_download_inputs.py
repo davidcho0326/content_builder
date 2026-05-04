@@ -1,21 +1,28 @@
-"""Fetch pipeline inputs from Google Drive public links.
+"""Fetch pipeline inputs from a single shared Google Drive folder.
 
-Each entry in MANIFEST has either a file ID (single file) or a folder ID
-(small folder, <= 50 items). For large directories like products_resource/,
-zip the brand folder once and ship as a single file — far more reliable than
-folder downloads.
+Drive folder layout expected (mirrors `_drive_upload_staging/`):
 
-How to obtain a Drive ID:
-- Right-click the file/folder in Drive → "Get link" → "Anyone with the link"
-- The ID is the segment between /d/ and /view (file) or after /folders/ (folder)
-  https://drive.google.com/file/d/<FILE_ID>/view
-  https://drive.google.com/drive/folders/<FOLDER_ID>
+    {GDRIVE_FOLDER_ID}/
+      ├── influencer_pool/
+      │     ├── _pool_embeddings.npz
+      │     ├── labels_adapted_index.jsonl
+      │     └── _pool_taxonomy.json
+      ├── imc_plans/
+      │     ├── 20260503_DV_27SS_imc_plan.json
+      │     ├── 20260503_DX_26FW_imc_plan.json
+      │     └── 20260503_MLB_27SS_imc_plan.json
+      └── products_resource/
+            ├── DV.zip
+            ├── DX.zip
+            └── MLB.zip
+
+The script uses `gdown` to download the whole folder into a tmp staging dir,
+then moves each file to its final location and extracts the brand zips.
 
 Usage:
     pip install gdown
     python st_cut-dev/scripts/_download_inputs.py            # dry-run, lists missing
-    python st_cut-dev/scripts/_download_inputs.py --apply    # actually download
-    python st_cut-dev/scripts/_download_inputs.py --brand MLB --apply
+    python st_cut-dev/scripts/_download_inputs.py --apply    # actually download + place
 """
 from __future__ import annotations
 
@@ -24,86 +31,39 @@ import shutil
 import sys
 import zipfile
 from pathlib import Path
-from typing import Iterable, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+# Public Drive folder share. Anyone with the link can view. Sharing as folder
+# means a single ID covers all 9 inputs.
+GDRIVE_FOLDER_ID = "1VQF_Qldg3JhZJRi5DUYNWiyu6R6qdPzN"
 
-# Fill in IDs once the Drive shares are created. Set value to None to keep an
-# entry in the manifest as a placeholder until its share is published.
-#
-# kind:
-#   "file"        — single file, lands at dest_path
-#   "zip"         — single zip archive, extracted into dest_path (parent dir)
-#   "folder"      — small Drive folder (<=50 items), mirrored into dest_path
-MANIFEST: list[dict] = [
-    # influencer pool
-    {
-        "kind": "file",
-        "id": None,  # TODO: paste Drive file ID for _pool_embeddings.npz
-        "dest": "source/sns-influencer-output/_pool_embeddings.npz",
-        "size": 65_000_000,
-        "brand": None,
-    },
-    {
-        "kind": "file",
-        "id": None,  # labels_adapted_index.jsonl
-        "dest": "source/sns-influencer-output/labels_adapted_index.jsonl",
-        "size": 20_000_000,
-        "brand": None,
-    },
-    {
-        "kind": "file",
-        "id": None,  # _pool_taxonomy.json
-        "dest": "source/sns-influencer-output/_pool_taxonomy.json",
-        "size": 4_000,
-        "brand": None,
-    },
-    # imc_plan per brand (DV currently lives under samples/, others under output/)
-    {
-        "kind": "file",
-        "id": None,  # DV imc_plan.json
-        "dest": "marketing_builder/samples/20260503_DV_27SS/05_marketing/output/imc_plan.json",
-        "size": 100_000,
-        "brand": "DV",
-    },
-    {
-        "kind": "file",
-        "id": None,  # DX imc_plan.json
-        "dest": "marketing_builder/output/20260503_DX_26FW/05_marketing/output/imc_plan.json",
-        "size": 100_000,
-        "brand": "DX",
-    },
-    {
-        "kind": "file",
-        "id": None,  # MLB imc_plan.json
-        "dest": "marketing_builder/output/20260503_MLB_27SS/05_marketing/output/imc_plan.json",
-        "size": 100_000,
-        "brand": "MLB",
-    },
-    # products_resource — ship as one zip per brand
-    {
-        "kind": "zip",
-        "id": None,  # DV/ zipped
-        "dest": "products_resource/DV",
-        "size": 80_000_000,
-        "brand": "DV",
-    },
-    {
-        "kind": "zip",
-        "id": None,  # DX/ zipped
-        "dest": "products_resource/DX",
-        "size": 42_000_000,
-        "brand": "DX",
-    },
-    {
-        "kind": "zip",
-        "id": None,  # MLB/ zipped
-        "dest": "products_resource/MLB",
-        "size": 76_000_000,
-        "brand": "MLB",
-    },
+
+# (relative path inside the Drive folder, dest relative to PROJECT_ROOT, brand, kind, size_estimate)
+# kind: "file" copies; "zip" extracts contents into dest dir.
+PLAN: list[tuple[str, str, str | None, str, int]] = [
+    ("influencer_pool/_pool_embeddings.npz",
+     "source/sns-influencer-output/_pool_embeddings.npz", None, "file", 65_000_000),
+    ("influencer_pool/labels_adapted_index.jsonl",
+     "source/sns-influencer-output/labels_adapted_index.jsonl", None, "file", 20_000_000),
+    ("influencer_pool/_pool_taxonomy.json",
+     "source/sns-influencer-output/_pool_taxonomy.json", None, "file", 4_000),
+    ("imc_plans/20260503_DV_27SS_imc_plan.json",
+     "marketing_builder/samples/20260503_DV_27SS/05_marketing/output/imc_plan.json",
+     "DV", "file", 100_000),
+    ("imc_plans/20260503_DX_26FW_imc_plan.json",
+     "marketing_builder/output/20260503_DX_26FW/05_marketing/output/imc_plan.json",
+     "DX", "file", 100_000),
+    ("imc_plans/20260503_MLB_27SS_imc_plan.json",
+     "marketing_builder/output/20260503_MLB_27SS/05_marketing/output/imc_plan.json",
+     "MLB", "file", 100_000),
+    ("products_resource/DV.zip", "products_resource/DV", "DV", "zip", 80_000_000),
+    ("products_resource/DX.zip", "products_resource/DX", "DX", "zip", 42_000_000),
+    ("products_resource/MLB.zip", "products_resource/MLB", "MLB", "zip", 76_000_000),
 ]
+
+
+STAGING = PROJECT_ROOT / "_drive_staging_tmp"  # where gdown drops the folder
 
 
 def _human(n: float) -> str:
@@ -114,88 +74,78 @@ def _human(n: float) -> str:
     return f"{n:.1f}TB"
 
 
-def _abs(rel: str) -> Path:
-    return PROJECT_ROOT / rel
-
-
-def _exists(entry: dict) -> bool:
-    p = _abs(entry["dest"])
-    if entry["kind"] == "zip" or entry["kind"] == "folder":
+def _exists(plan_entry) -> bool:
+    _, dst_rel, _, kind, _ = plan_entry
+    p = PROJECT_ROOT / dst_rel
+    if kind == "zip":
         return p.is_dir() and any(p.iterdir())
     return p.exists()
 
 
-def _filter(brands: Optional[Iterable[str]]) -> list[dict]:
+def _filter(brands):
     if not brands:
-        return list(MANIFEST)
+        return list(PLAN)
     bset = set(brands)
-    return [e for e in MANIFEST if e.get("brand") is None or e["brand"] in bset]
+    return [e for e in PLAN if e[2] is None or e[2] in bset]
 
 
-def _download_one(entry: dict) -> bool:
-    import gdown  # imported here so dry-run works without the dep
-
-    fid = entry["id"]
-    if not fid:
-        print(f"  [SKIP] no Drive ID configured for {entry['dest']}")
-        return False
-
-    dest = _abs(entry["dest"])
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    kind = entry["kind"]
-
-    if kind == "file":
-        gdown.download(id=fid, output=str(dest), quiet=False)
-        return dest.exists()
-
-    if kind == "zip":
-        # land the zip in a tmp file next to dest, extract, delete
-        tmp = dest.parent / (dest.name + ".gdown.zip")
-        gdown.download(id=fid, output=str(tmp), quiet=False)
-        if not tmp.exists():
-            return False
-        dest.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(tmp) as zf:
-            zf.extractall(dest)
-        tmp.unlink()
-        return any(dest.iterdir())
-
-    if kind == "folder":
-        dest.mkdir(parents=True, exist_ok=True)
-        gdown.download_folder(id=fid, output=str(dest), quiet=False, use_cookies=False)
-        return any(dest.iterdir())
-
-    print(f"  [ERROR] unknown kind={kind!r} for {entry['dest']}")
-    return False
+def _fetch_folder():
+    """Run gdown once for the entire folder. Returns the local path."""
+    import gdown
+    if STAGING.exists():
+        print(f"  [reuse] existing {STAGING} (delete it manually for a fresh fetch)")
+        return STAGING
+    STAGING.mkdir(parents=True, exist_ok=True)
+    url = f"https://drive.google.com/drive/folders/{GDRIVE_FOLDER_ID}"
+    gdown.download_folder(url=url, output=str(STAGING), quiet=False, use_cookies=False)
+    return STAGING
 
 
-def report(items: list[dict], *, apply: bool) -> int:
+def _place(plan_entries) -> int:
+    fail = 0
+    for src_rel, dst_rel, _brand, kind, _size in plan_entries:
+        src = STAGING / src_rel
+        if not src.exists():
+            print(f"  [MISS] {src_rel} not in staging")
+            fail += 1
+            continue
+        dst = PROJECT_ROOT / dst_rel
+        if kind == "file":
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            print(f"  [OK  ] {dst_rel}")
+        elif kind == "zip":
+            dst.mkdir(parents=True, exist_ok=True)
+            with zipfile.ZipFile(src) as zf:
+                zf.extractall(dst)
+            count = sum(1 for _ in dst.rglob("*") if _.is_file())
+            print(f"  [OK  ] {dst_rel}/  ({count} files extracted)")
+        else:
+            print(f"  [ERR ] unknown kind={kind!r}")
+            fail += 1
+    return fail
+
+
+def report(items, *, apply: bool) -> int:
     have = [e for e in items if _exists(e)]
     missing = [e for e in items if not _exists(e)]
 
     print(f"PROJECT_ROOT = {PROJECT_ROOT}")
-    print(f"Manifest items: {len(items)}  (have {len(have)}, missing {len(missing)})\n")
+    print(f"Drive folder = https://drive.google.com/drive/folders/{GDRIVE_FOLDER_ID}")
+    print(f"Plan items: {len(items)}  (have {len(have)}, missing {len(missing)})\n")
 
     if have:
         print("[present]")
-        for e in have:
-            tag = e.get("brand") or "ALL"
-            print(f"  {tag:4} {_human(e['size']):>10}  {e['dest']}")
+        for src_rel, dst_rel, brand, kind, size in have:
+            print(f"  {brand or 'ALL':4} {_human(size):>10}  {dst_rel}")
 
     if missing:
         print("\n[missing]")
         total = 0
-        unconfigured = 0
-        for e in missing:
-            tag = e.get("brand") or "ALL"
-            mark = "  " if e["id"] else "??"
-            print(f"  {tag:4} {_human(e['size']):>10}  {mark}  {e['dest']}")
-            total += e["size"]
-            if not e["id"]:
-                unconfigured += 1
+        for src_rel, dst_rel, brand, kind, size in missing:
+            print(f"  {brand or 'ALL':4} {_human(size):>10}  {dst_rel}")
+            total += size
         print(f"\nTotal to fetch: {_human(total)}")
-        if unconfigured:
-            print(f"({unconfigured} entries have no Drive ID set — paste them in scripts/_download_inputs.py)")
 
     if not apply:
         if missing:
@@ -212,19 +162,15 @@ def report(items: list[dict], *, apply: bool) -> int:
         print("\n[ERROR] gdown not installed.  pip install gdown", file=sys.stderr)
         return 2
 
-    print("\n=== applying ===")
-    fail = 0
-    for e in missing:
-        if not e["id"]:
-            print(f"  [SKIP] {e['dest']} — no Drive ID")
-            fail += 1
-            continue
-        print(f"  [GET ] {e['dest']}")
-        ok = _download_one(e)
-        if not ok:
-            print(f"  [FAIL] {e['dest']}")
-            fail += 1
-    return 1 if fail else 0
+    print("\n=== fetching folder ===")
+    _fetch_folder()
+    print("\n=== placing files ===")
+    fail = _place(missing)
+    if fail:
+        print(f"\n[done] {fail} entries failed")
+        return 1
+    print("\n[done] all good")
+    return 0
 
 
 def main() -> int:
@@ -232,7 +178,7 @@ def main() -> int:
     ap.add_argument("--brand", action="append",
                     help="Limit to one or more brands (DV/DX/MLB). Repeatable.")
     ap.add_argument("--apply", action="store_true",
-                    help="Actually download (requires gdown + Drive IDs filled in).")
+                    help="Actually download + place (requires gdown).")
     args = ap.parse_args()
     items = _filter(args.brand)
     return report(items, apply=args.apply)

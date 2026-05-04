@@ -81,14 +81,16 @@ In-repo at `brand-dna/{discovery,duvetica,mlb}.json` + alignment files. No downl
 | `imc_plan.json` | `marketing_builder` repo (`imc-plan` skill, run on a campaign brief) |
 | `products_resource/{brand}/...` | F&F internal asset library (manual sync) |
 
-## Distribution: Google Drive public links
+## Distribution: Google Drive public link
 
-Inputs are distributed as **public-link Google Drive shares**. `scripts/_download_inputs.py` reads a manifest of Drive IDs and fetches them via `gdown`.
+All 9 inputs (~280 MB) live in a single shared Drive folder. `scripts/_download_inputs.py` fetches the folder once via `gdown.download_folder`, then places each artifact at the path the pipeline expects.
 
-Layout in Drive (suggested):
+**Public folder**: https://drive.google.com/drive/folders/1VQF_Qldg3JhZJRi5DUYNWiyu6R6qdPzN
+
+Folder layout (mirrors `_drive_upload_staging/`):
 
 ```
-fnf-strategy-cut/  (Drive folder, "Anyone with the link" can view)
+fnf-strategy-cut/  (Drive — "Anyone with the link can view")
   ├── influencer_pool/
   │     ├── _pool_embeddings.npz
   │     ├── labels_adapted_index.jsonl
@@ -97,31 +99,22 @@ fnf-strategy-cut/  (Drive folder, "Anyone with the link" can view)
   │     ├── 20260503_DV_27SS_imc_plan.json
   │     ├── 20260503_DX_26FW_imc_plan.json
   │     └── 20260503_MLB_27SS_imc_plan.json
-  └── products_resource/         (ship as ONE zip per brand — folder-mode gdown
-        ├── DV.zip                 caps at ~50 files which is too small here)
+  └── products_resource/         (one zip per brand — gdown folder-mode caps
+        ├── DV.zip                 at ~50 items, so brand zips beat raw folders)
         ├── DX.zip
         └── MLB.zip
 ```
-
-Each share's ID goes into `MANIFEST` in `_download_inputs.py`:
-
-```python
-{"kind": "file", "id": "1abcXYZ...",  "dest": "...", "size": ..., "brand": "MLB"},
-{"kind": "zip",  "id": "1defXYZ...",  "dest": "products_resource/MLB", "size": ..., "brand": "MLB"},
-```
-
-How to fetch the ID: right-click the file in Drive → "Get link" → "Anyone with the link can view" → the ID is the segment between `/d/` and `/view` (file) or after `/folders/` (folder).
 
 ### Bootstrap
 
 ```bash
 pip install gdown
-python st_cut-dev/scripts/_download_inputs.py            # dry-run, lists what's missing + sizes
-python st_cut-dev/scripts/_download_inputs.py --apply    # actually download
-python st_cut-dev/scripts/_download_inputs.py --brand MLB --apply   # one brand only
+python st_cut-dev/scripts/_download_inputs.py            # dry-run, shows what's missing + sizes
+python st_cut-dev/scripts/_download_inputs.py --apply    # download + place files
+python st_cut-dev/scripts/_download_inputs.py --brand MLB --apply   # one brand only (still fetches the full folder, places only MLB)
 ```
 
-Until the Drive IDs are filled in, the script reports `(no Drive ID configured)` for those entries and skips them.
+The folder is fetched into `_drive_staging_tmp/` (sibling to st_cut-dev). Re-running with `--apply` reuses the existing staging — delete `_drive_staging_tmp/` for a fresh pull.
 
 ## Quick verification
 
