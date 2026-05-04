@@ -27,9 +27,9 @@ from sns_labeling.embedder import (
     embed_texts,
     save_cache,
 )
+from project_paths import SOURCE_DIR
 
-PROJECT_ROOT = _THIS.parents[3]
-POOL_JSONL = PROJECT_ROOT / "source" / "sns-influencer-output" / "labels_marketing_index.jsonl"
+POOL_JSONL = SOURCE_DIR / "labels_marketing_index.jsonl"
 
 
 def _fmt(v) -> str:

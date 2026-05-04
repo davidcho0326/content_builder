@@ -38,11 +38,15 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+_SCRIPTS = Path(__file__).resolve().parents[1]
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+
+from project_paths import BRAND_DNA_DIR, SOURCE_DIR
+
 load_dotenv()
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-BRAND_DNA_DIR = PROJECT_ROOT / "st_cut-dev" / "brand-dna"
-POOL_TAXONOMY = PROJECT_ROOT / "source" / "sns-influencer-output" / "_pool_taxonomy.json"
+POOL_TAXONOMY = SOURCE_DIR / "_pool_taxonomy.json"
 
 DEFAULT_MODEL = os.getenv("F_AND_F_ALIGNMENT_MODEL", "gemini-3.1-flash-lite-preview")
 

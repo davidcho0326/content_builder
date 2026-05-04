@@ -1,0 +1,119 @@
+{
+  "brand": "MLB",
+  "season": "27SS",
+  "lifestyle": "Feminine_Sportive",
+  "headline": {
+    "en_main": "DAYLIGHT CHEER CLUB",
+    "ko_sub": "도심과 스타디움을 오가는 페미닌 스포츠 무드",
+    "season_message": "27SS feminine sportive campaign smoke-test input"
+  },
+  "keywords_3": [
+    {
+      "kw": "stadium energy",
+      "score": 0.92,
+      "rationale": "Hero scene anchors the baseball-fandom moment."
+    },
+    {
+      "kw": "daylight commute",
+      "score": 0.86,
+      "rationale": "Soft daytime lifestyle links product to daily wear."
+    },
+    {
+      "kw": "backstage lounge",
+      "score": 0.8,
+      "rationale": "Premium third scene expands the campaign world."
+    }
+  ],
+  "campaign_context": {
+    "lifestyle_display": "Feminine Sportive",
+    "categories": {
+      "hero": {
+        "code": "TS",
+        "desc": "cropped team-logo tee with a clean feminine fit"
+      },
+      "sub": [
+        {
+          "code": "WP",
+          "desc": "wide woven pants with relaxed movement"
+        },
+        {
+          "code": "SH",
+          "desc": "low-profile summer sneakers"
+        }
+      ]
+    }
+  },
+  "persona_groups": [
+    {
+      "id": "G1",
+      "name": "Stadium Cheer Squad",
+      "cluster_size": "sample cluster",
+      "demo": "20-24세 / 여성 / 대학생·신입사회",
+      "situations": ["stadium opening day", "K-pop challenge filming"],
+      "jtbd": ["look energetic without losing polish", "capture team-spirit content"]
+    },
+    {
+      "id": "G2",
+      "name": "Daylight Wave Crew",
+      "cluster_size": "sample cluster",
+      "demo": "25-29세 / 여성 / 직장인·크리에이터",
+      "situations": ["cafe terrace pause", "wellness commute"],
+      "jtbd": ["move from morning errands to social plans", "keep a soft sporty silhouette"]
+    },
+    {
+      "id": "G3",
+      "name": "Dugout Lounge Mom",
+      "cluster_size": "sample cluster",
+      "demo": "30-35세 / 여성 / 프리미엄 라이프스타일",
+      "situations": ["backstage lounge", "festival VIP waiting area"],
+      "jtbd": ["look premium but approachable", "style sporty items as refined casualwear"]
+    }
+  ],
+  "influencer_tiers": [
+    {
+      "tier": "A",
+      "categories": [
+        "Stadium Regular",
+        "K-POP Challenge Leader",
+        "Pilates Enthusiast",
+        "Premium Working Mom"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "num": 1,
+      "title": "Cheer Line",
+      "tone": "deep green base with mint highlight",
+      "mood": "team spirit, motion, crisp summer night energy",
+      "visual": "stadium seats, light-stick curves, cropped tee and wide pants moving mid-cheer",
+      "location": "Jamsil baseball stadium cheer line"
+    },
+    {
+      "num": 2,
+      "title": "Daylight Wave",
+      "tone": "soft ivory daylight with clean navy accents",
+      "mood": "fresh, feminine, relaxed sporty",
+      "visual": "cafe terrace pause, hair moving in wind, sneakers visible in a clean full-body crop",
+      "location": "Songridan cafe terrace after a morning walk"
+    },
+    {
+      "num": 3,
+      "title": "Dugout Backstage",
+      "tone": "warm neutral lounge light with deep green shadow",
+      "mood": "premium, candid, quietly confident",
+      "visual": "backstage curtain, relaxed stance, refined sporty styling before stepping into the crowd",
+      "location": "private dugout lounge backstage"
+    }
+  ],
+  "dna_grid": {
+    "means": "female sportive styling",
+    "experience": "from stadium to daily city moments",
+    "core": "sport identity softened into lifestyle editorial",
+    "goal": "create reusable campaign and influencer visual directions"
+  },
+  "core_hook": {
+    "formula": "team energy + feminine ease",
+    "definition": "MLB summer sportswear presented as editorial lifestyle content"
+  }
+}

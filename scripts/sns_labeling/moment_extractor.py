@@ -135,6 +135,7 @@ Style requirements:
 - Anchor at least one sensory detail from the scene's TONE & COLOR (e.g. mint accent, golden afternoon, fluorescent green).
 - Match the body posture visible in the reference, but place it inside the SCENE.
 - Editorial, candid, present-progressive feel — NOT posed.
+- If the reference clearly includes a phone, selfie, or mirror-selfie posture, keep the action compatible with a real smartphone in the same hand/position/reflection. The phone is capture context, not an IMC prop. Otherwise avoid phone/selfie/reflection language.
 - DO NOT translate into Korean — keep the moment in English even when scene fields are Korean.
 
 Return strictly this JSON, nothing else:

@@ -10,12 +10,17 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Optional
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_POOL = PROJECT_ROOT / "source" / "sns-influencer-output" / "labels_marketing_index.jsonl"
-BRAND_DNA_DIR = PROJECT_ROOT / "st_cut-dev" / "brand-dna"
+_SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from project_paths import BRAND_DNA_DIR, SOURCE_DIR, resolve_project_path
+
+DEFAULT_POOL = SOURCE_DIR / "labels_marketing_index.jsonl"
 
 
 def _load_alignment(brand_dna: dict) -> Optional[dict]:
@@ -34,6 +39,13 @@ def _load_alignment(brand_dna: dict) -> Optional[dict]:
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception:
         return None
+
+
+def _record_image_path(rec: dict) -> str | None:
+    raw = (rec.get("image") or {}).get("path")
+    if not raw:
+        return None
+    return str(resolve_project_path(raw))
 
 
 def _apply_alignment(dist: dict[str, float], axis: str,
@@ -399,7 +411,7 @@ def query_marketing_pool(
             "handle": (rec.get("account") or {}).get("handle"),
             "brand": (rec.get("account") or {}).get("brand"),
             "post_url": (rec.get("account") or {}).get("post_url"),
-            "image": (rec.get("image") or {}).get("path"),
+            "image": _record_image_path(rec),
             "model": rec.get("model"),
             "background": rec.get("background"),
             "styling": rec.get("styling"),
@@ -597,7 +609,7 @@ def query_marketing_pool_v2(
             "handle": (rec.get("account") or {}).get("handle"),
             "brand": (rec.get("account") or {}).get("brand"),
             "post_url": (rec.get("account") or {}).get("post_url"),
-            "image": (rec.get("image") or {}).get("path"),
+            "image": _record_image_path(rec),
             "model": rec.get("model"),
             "background": rec.get("background"),
             "styling": rec.get("styling"),

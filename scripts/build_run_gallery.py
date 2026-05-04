@@ -22,6 +22,13 @@ import webbrowser
 from pathlib import Path
 from typing import Optional
 
+_THIS = Path(__file__).resolve()
+_SCRIPTS = _THIS.parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+
+from project_paths import BRAND_DNA_DIR, PROJECT_ROOT
+
 # image filename suffixes per provider.
 # Order = display order in galleries. Standard 3 (gpt + hf_gpt + hf_mkt) first,
 # legacy providers (gemini / hf_soul / hf_nano) kept for backward compat with
@@ -72,14 +79,13 @@ def _resolve_image(images_dir: Path, scene_id: str, suffix: str) -> Optional[str
 
 # Brand DNA + product image lookup -----------------------------------------
 
-PROJECT_ROOT_FROM_SCRIPT = Path(__file__).resolve().parents[2]
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 def _load_brand_dna(brand: Optional[str]) -> dict:
     if not brand:
         return {}
-    p = PROJECT_ROOT_FROM_SCRIPT / "st_cut-dev" / "brand-dna" / f"{brand.lower()}.json"
+    p = BRAND_DNA_DIR / f"{brand.lower()}.json"
     return _safe_load(p) or {}
 
 
@@ -88,8 +94,8 @@ def _scan_product_images(brand: Optional[str], cap: int = 24) -> list[Path]:
     if not brand:
         return []
     candidates = [
-        PROJECT_ROOT_FROM_SCRIPT / "st_cut-dev" / "data" / brand.lower() / "official-site",
-        PROJECT_ROOT_FROM_SCRIPT / "db" / "strategy-cut-builder" / brand.lower() / "official-site",
+        PROJECT_ROOT / "data" / brand.lower() / "official-site",
+        PROJECT_ROOT / "db" / "strategy-cut-builder" / brand.lower() / "official-site",
     ]
     out: list[Path] = []
     for root in candidates:
@@ -644,9 +650,12 @@ def render_imc(run_dir: Path) -> Path:
 
     out_path = run_dir / "gallery.html"
 
-    # Hero/Bottom product manifests (Step C+ output) — optional
+    # Single selected product manifest (Step 0 output) — optional.
+    outfit_manifest = _safe_load(run_dir / "04_products" / "outfit_manifest.json") or {}
+    selected_product_manifest = _safe_load(run_dir / "04_products" / "selected_product.json")
     hero_product_manifest = _safe_load(run_dir / "04_products" / "hero_product.json")
     bottom_product_manifest = _safe_load(run_dir / "04_products" / "bottom_product.json")
+    selected_product_used = None
     hero_product_used = None
     bottom_product_used = None
     products_dir = run_dir / "04_products"
@@ -654,7 +663,9 @@ def render_imc(run_dir: Path) -> Path:
         for p in products_dir.iterdir():
             if p.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
                 continue
-            if p.name.startswith("hero_product_used"):
+            if p.name.startswith("selected_product_used"):
+                selected_product_used = p.name
+            elif p.name.startswith("hero_product_used"):
                 hero_product_used = p.name
             elif p.name.startswith("bottom_product_used"):
                 bottom_product_used = p.name
@@ -808,10 +819,17 @@ def render_imc(run_dir: Path) -> Path:
             f'</div></div>'
         )
 
-    hero_product_html = (
-        _product_block(hero_product_manifest, hero_product_used, "TRY-ON HERO (TOP)")
-        + _product_block(bottom_product_manifest, bottom_product_used, "TRY-ON BOTTOM")
+    selected_role = (outfit_manifest.get("selected_role") or "").upper()
+    hero_product_html = _product_block(
+        selected_product_manifest,
+        selected_product_used,
+        f"SELECTED PRODUCT {selected_role}".strip(),
     )
+    if not hero_product_html:
+        hero_product_html = (
+            _product_block(hero_product_manifest, hero_product_used, "PRODUCT TOP")
+            + _product_block(bottom_product_manifest, bottom_product_used, "PRODUCT BOTTOM")
+        )
 
     html = f"""<!doctype html>
 <html lang="ko"><head>
@@ -877,7 +895,7 @@ def render_imc(run_dir: Path) -> Path:
   .cell.tryon {{ border-color: #d7ff3f55; box-shadow: 0 0 0 1px #d7ff3f22 inset; }}
   .cell.tryon .cap {{ color: var(--accent); }}
 
-  /* Hero product thumbnail in run-head */
+  /* Product thumbnail in run-head */
   .hero-product {{ margin-top: 12px; display: flex; align-items: center;
         gap: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }}
   .hero-product img {{ width: 84px; height: 112px; object-fit: cover;

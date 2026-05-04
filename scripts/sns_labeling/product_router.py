@@ -13,13 +13,18 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import Optional
 
+_SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_PRODUCTS_DIR = PROJECT_ROOT / "products_resource"
+from project_paths import PRODUCTS_DIR
+
+DEFAULT_PRODUCTS_DIR = PRODUCTS_DIR
 
 
 # brand display name → on-disk folder name.
@@ -88,11 +93,13 @@ def _pick_hero_image(folder: Path) -> tuple[Optional[Path], str, list[Path], lis
     """Pick the canonical product packshot from a lifestyle folder.
 
     Priority:
-      1. `representative_*.png` (explicit hero flag)
-      2. `V1_src01_*.png` (first product variant, source 01)
-      3. `V1_src02_*.png` (source 02)
-      4. any other `V*.png`
-      5. first `*.png` (last resort)
+      1. `V1_src01_*.png` (product-only packshot, source 01)
+      2. `V1_src02_*.png` (product-only packshot, source 02)
+      3. any other `V*.png`
+      4. `representative_*.png` (model-worn fit reference; avoid for gen input
+         unless no product-only asset exists)
+      5. first non-representative `*.png`
+      6. first `*.png` (last resort)
 
     Returns (hero_image, strategy, color_variants, trend_examples).
     """
@@ -107,18 +114,23 @@ def _pick_hero_image(folder: Path) -> tuple[Optional[Path], str, list[Path], lis
     v1_src02 = [p for p in pngs if re.match(r"^V1_src02_", p.name)]
     v_all = [p for p in pngs if re.match(r"^V\d", p.name)]
 
-    if rep:
-        hero = rep[0]
-        strategy = "representative"
-    elif v1_src01:
+    non_rep_pngs = [p for p in pngs if not p.name.lower().startswith("representative_")]
+
+    if v1_src01:
         hero = v1_src01[0]
-        strategy = "v1_src01"
+        strategy = "product_packshot_v1_src01"
     elif v1_src02:
         hero = v1_src02[0]
-        strategy = "v1_src02"
+        strategy = "product_packshot_v1_src02"
     elif v_all:
         hero = v_all[0]
-        strategy = "v_first"
+        strategy = "product_packshot_v_first"
+    elif rep:
+        hero = rep[0]
+        strategy = "model_worn_representative_fallback"
+    elif non_rep_pngs:
+        hero = non_rep_pngs[0]
+        strategy = "first_non_representative_png"
     elif pngs:
         hero = pngs[0]
         strategy = "first_png"

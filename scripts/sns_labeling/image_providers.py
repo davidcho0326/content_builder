@@ -29,6 +29,8 @@ from sns_labeling.image_gen import (
     build_prompt_from_scene,
     generate_scene as generate_scene_gemini,  # re-export
 )
+from sns_labeling.product_grounding import product_image_paths
+from sns_labeling.higgsfield_mcp import HF_PROVIDER_MODELS, write_hf_mcp_plan
 
 
 # ----------------------------- GPT ---------------------------------------
@@ -206,9 +208,21 @@ def _save_prompt(out_dir: Path, unit_id: str, prompt: str) -> None:
     (out_dir / f"{unit_id}_prompt.txt").write_text(prompt, encoding="utf-8")
 
 
+def _image_buffer(path: Path, name: str, *, max_px: int = 1280) -> io.BytesIO:
+    img = Image.open(path).convert("RGBA")
+    if max(img.size) > max_px:
+        img.thumbnail((max_px, max_px), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    buf.name = name
+    return buf
+
+
 def _gemini_call(prompt: str, ref_path: Path, out: Path,
+                 product_paths: Optional[list[Path]] = None,
                  *, model: Optional[str] = None, retries: int = 2) -> dict:
-    """Direct Gemini image-edit call using the IMC prompt + ref image."""
+    """Direct Gemini image-edit call using the IMC prompt + ref/single-product image."""
     from google import genai as _genai
     from google.genai import types as _types
 
@@ -217,13 +231,17 @@ def _gemini_call(prompt: str, ref_path: Path, out: Path,
         raise RuntimeError("GEMINI_API_KEY not set")
     client = _genai.Client(api_key=key)
 
-    img = Image.open(ref_path).convert("RGB")
-    if max(img.size) > 1024:
-        img.thumbnail((1024, 1024), Image.LANCZOS)
-    buf = io.BytesIO()
-    img.save(buf, format="JPEG", quality=92)
-    img_part = _types.Part(inline_data=_types.Blob(mime_type="image/jpeg",
-                                                    data=buf.getvalue()))
+    def _part(path: Path) -> object:
+        img = Image.open(path).convert("RGB")
+        if max(img.size) > 1280:
+            img.thumbnail((1280, 1280), Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=92)
+        return _types.Part(inline_data=_types.Blob(
+            mime_type="image/jpeg",
+            data=buf.getvalue(),
+        ))
+
     text_part = _types.Part(text=prompt)
     model_name = model or GEMINI_MODEL
 
@@ -233,7 +251,9 @@ def _gemini_call(prompt: str, ref_path: Path, out: Path,
         try:
             resp = client.models.generate_content(
                 model=model_name,
-                contents=[text_part, img_part],
+                contents=[text_part, _part(ref_path)] + [
+                    _part(p) for p in (product_paths or []) if p.exists()
+                ],
             )
             for cand in (resp.candidates or []):
                 for part in (cand.content.parts or []):
@@ -256,6 +276,7 @@ def _gemini_call(prompt: str, ref_path: Path, out: Path,
 def generate_imc_unit_gemini(
     scene, spec, ref: dict, *,
     out_dir: Path, moment: Optional[str] = None,
+    outfit_manifest: Optional[dict] = None,
     model: Optional[str] = None,
 ) -> dict:
     """Generate one image for (scene, ref) via Gemini using IMC prompt."""
@@ -266,10 +287,13 @@ def generate_imc_unit_gemini(
         return {"unit_id": unit_id, "scene_id": scene.slug, "rank": rank,
                 "provider": "gemini", "status": "skip",
                 "error": f"reference image missing: {ref_path}"}
-    prompt = build_prompt_from_imc_scene(scene, spec, ref, moment=moment)
+    prompt = build_prompt_from_imc_scene(
+        scene, spec, ref, moment=moment, outfit_manifest=outfit_manifest
+    )
     _save_prompt(out_dir, unit_id, prompt)
     out_path = out_dir / f"{unit_id}_gemini.png"
-    res = _gemini_call(prompt, ref_path, out_path, model=model)
+    products = product_image_paths(outfit_manifest)
+    res = _gemini_call(prompt, ref_path, out_path, products, model=model)
     res.update({"unit_id": unit_id, "scene_id": scene.slug, "rank": rank,
                 "provider": "gemini"})
     return res
@@ -278,6 +302,7 @@ def generate_imc_unit_gemini(
 def generate_imc_unit_gpt(
     scene, spec, ref: dict, *,
     out_dir: Path, moment: Optional[str] = None,
+    outfit_manifest: Optional[dict] = None,
     model: Optional[str] = None, size: str = "1024x1536", retries: int = 2,
 ) -> dict:
     """Generate one image for (scene, ref) via OpenAI images.edit."""
@@ -288,15 +313,14 @@ def generate_imc_unit_gpt(
         return {"unit_id": unit_id, "scene_id": scene.slug, "rank": rank,
                 "provider": "gpt", "status": "skip",
                 "error": f"reference image missing: {ref_path}"}
-    prompt = build_prompt_from_imc_scene(scene, spec, ref, moment=moment)
+    prompt = build_prompt_from_imc_scene(
+        scene, spec, ref, moment=moment, outfit_manifest=outfit_manifest
+    )
     _save_prompt(out_dir, unit_id, prompt)
 
-    ref_img = Image.open(ref_path).convert("RGB")
-    ref_img.thumbnail((1024, 1024), Image.LANCZOS)
-    buf = io.BytesIO()
-    ref_img.save(buf, format="PNG")
-    buf.seek(0)
-    buf.name = f"{unit_id}_ref.png"
+    image_inputs = [_image_buffer(ref_path, f"{unit_id}_ref.png")]
+    for i, product_path in enumerate(product_image_paths(outfit_manifest), start=2):
+        image_inputs.append(_image_buffer(product_path, f"{unit_id}_product_{i}.png"))
 
     model_name = model or DEFAULT_GPT_MODEL
     client = _openai_client()
@@ -305,10 +329,11 @@ def generate_imc_unit_gpt(
     out_path = out_dir / f"{unit_id}_gpt.png"
     for attempt in range(1, retries + 1):
         try:
-            buf.seek(0)
+            for buf in image_inputs:
+                buf.seek(0)
             result = client.images.edit(
-                model=model_name, image=buf,
-                prompt=prompt[:4000], size=size, n=1,
+                model=model_name, image=image_inputs,
+                prompt=prompt[:6000], size=size, n=1,
             )
             data = result.data[0]
             img_bytes = (
@@ -335,9 +360,54 @@ def generate_imc_unit_gpt(
             "error": f"{type(last_err).__name__}: {last_err}"}
 
 
+def _generate_imc_unit_hf_pending(
+    provider: str,
+    scene,
+    ref: dict,
+) -> dict:
+    """Placeholder result for HF MCP providers.
+
+    Actual HF generation is done by executing `higgsfield_mcp_plan.json` in a
+    session where Higgsfield MCP tools are connected.
+    """
+    rank = ref.get("rank") or 1
+    unit_id = f"{scene.slug}_R{rank:02d}"
+    meta = HF_PROVIDER_MODELS[provider]
+    return {
+        "unit_id": unit_id,
+        "scene_id": scene.slug,
+        "rank": rank,
+        "provider": provider,
+        "status": "skip",
+        "model": meta["model"],
+        "error": "pending Higgsfield MCP execution; see 03_images/higgsfield_mcp_plan.json",
+        "expected_image": f"{unit_id}{meta['suffix']}",
+    }
+
+
+def generate_imc_unit_hf_gpt(
+    scene, spec, ref: dict, *,
+    out_dir: Path, moment: Optional[str] = None,
+    outfit_manifest: Optional[dict] = None,
+    model: Optional[str] = None,
+) -> dict:
+    return _generate_imc_unit_hf_pending("hf_gpt", scene, ref)
+
+
+def generate_imc_unit_hf_mkt(
+    scene, spec, ref: dict, *,
+    out_dir: Path, moment: Optional[str] = None,
+    outfit_manifest: Optional[dict] = None,
+    model: Optional[str] = None,
+) -> dict:
+    return _generate_imc_unit_hf_pending("hf_mkt", scene, ref)
+
+
 IMC_PROVIDER_FUNCS = {
     "gemini": generate_imc_unit_gemini,
     "gpt": generate_imc_unit_gpt,
+    "hf_gpt": generate_imc_unit_hf_gpt,
+    "hf_mkt": generate_imc_unit_hf_mkt,
 }
 
 
@@ -348,6 +418,7 @@ def generate_campaign_imc(
     *,
     providers: list[str],
     moments_by_key: Optional[dict[str, str]] = None,
+    outfit_manifest: Optional[dict] = None,
     max_workers: int = 4,
 ) -> dict:
     """IMC orchestrator: render every (scene, ref) with every provider."""
@@ -365,7 +436,12 @@ def generate_campaign_imc(
     results: list[dict] = []
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         futs = {
-            ex.submit(fn, scene, spec, ref, out_dir=out_dir, moment=mom):
+            ex.submit(
+                fn, scene, spec, ref,
+                out_dir=out_dir,
+                moment=mom,
+                outfit_manifest=outfit_manifest,
+            ):
                 (p, scene.slug, ref.get("rank"))
             for (p, scene, ref, mom, fn) in jobs
         }
@@ -384,13 +460,31 @@ def generate_campaign_imc(
             "fail": sum(1 for r in rs if r["status"] == "fail"),
             "skip": sum(1 for r in rs if r["status"] == "skip"),
         }
-    return {
+    summary = {
         "providers": providers,
         "n_scenes": len(spec.scenes),
         "n_units": len(jobs) // max(1, len(providers)),
         "by_provider": by_provider,
         "results": results,
     }
+    if any(p in HF_PROVIDER_MODELS for p in providers):
+        plan = write_hf_mcp_plan(
+            spec,
+            refs_by_scene,
+            out_dir,
+            providers=providers,
+            moments_by_key=moments_by_key,
+            outfit_manifest=outfit_manifest,
+        )
+        summary["higgsfield_mcp_plan"] = {
+            "json": plan.get("plan_json"),
+            "md": plan.get("plan_md"),
+            "tasks": len(plan.get("tasks") or []),
+            "providers": plan.get("providers"),
+            "status": plan.get("status"),
+        }
+        print(f"  [HF/MCP] plan → {plan.get('plan_md')} ({len(plan.get('tasks') or [])} tasks)")
+    return summary
 
 
 __all__ = [
@@ -404,4 +498,6 @@ __all__ = [
     "generate_scene_higgsfield",
     "generate_imc_unit_gemini",
     "generate_imc_unit_gpt",
+    "generate_imc_unit_hf_gpt",
+    "generate_imc_unit_hf_mkt",
 ]

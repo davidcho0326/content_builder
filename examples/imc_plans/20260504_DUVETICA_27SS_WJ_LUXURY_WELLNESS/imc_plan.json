@@ -1,0 +1,87 @@
+{
+  "brand": "DUVETICA",
+  "season": "27SS",
+  "lifestyle": "LUXURY_WELLNESS",
+  "campaign_context": {
+    "lifestyle": "LUXURY_WELLNESS",
+    "lifestyle_display": "Luxury Wellness",
+    "categories": {
+      "hero": {
+        "code": "WJ",
+        "desc": "27SS lightweight luxury wind jacket"
+      },
+      "sub": []
+    }
+  },
+  "headline": {
+    "en_main": "Quiet Motion, Resort Air",
+    "ko_sub": "올드머니 리조트 감도와 액티브 웰니스가 만나는 듀베티카 윈드재킷 캠페인",
+    "season_message": "A lightweight DUVETICA wind jacket styled for premium leisure, quiet luxury, and Mediterranean summer movement."
+  },
+  "keywords_3": [
+    {
+      "kw": "Quiet Luxury Sportive",
+      "score": 0.96,
+      "rationale": "DUVETICA 27SS WJ should feel premium, restrained, and active without becoming technical sportswear."
+    },
+    {
+      "kw": "Mediterranean Wellness",
+      "score": 0.93,
+      "rationale": "The scene should read as resort wellness: soft sun, stone architecture, fresh air, and calm movement."
+    },
+    {
+      "kw": "Lightweight Nylon Elegance",
+      "score": 0.91,
+      "rationale": "The wind jacket product DNA depends on light nylon, soft volume, drawstring/zip details, and refined neutral color."
+    }
+  ],
+  "persona_groups": [
+    {
+      "id": "G1",
+      "name": "Old Money Wellness Traveler",
+      "cluster_size": "Top 5 DUVETICA influencer references",
+      "demo": "25-35 female",
+      "situations": [
+        "morning walk from resort suite to pool terrace",
+        "light wellness routine before brunch",
+        "quiet luxury travel moment in Mediterranean architecture"
+      ],
+      "jtbd": [
+        "look polished while staying comfortable in a lightweight outer layer",
+        "signal premium resort taste without loud styling",
+        "make active wellness feel elegant and aspirational"
+      ]
+    }
+  ],
+  "influencer_tiers": [
+    {
+      "tier": "Top 5",
+      "categories": [
+        "Premium Resort Travelers",
+        "Luxury Wellness Look-book Creators",
+        "Quiet Luxury Fitness Creators",
+        "Heritage Expert"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "num": 1,
+      "title": "Luxury Wellness",
+      "tone": "Ivory, cream stone, beige sand, oatmeal, sage, and a restrained wellness blue accent.",
+      "mood": "Premium leisure, old money sportive, quiet luxury, Mediterranean summer, calm active elegance.",
+      "visual": "A high-end editorial resort wellness image: lightweight wind jacket integrated from the beginning, natural movement, refined styling, soft nylon texture, no pasted try-on feeling.",
+      "location": "Mediterranean villa, pale stone terrace, resort garden path, poolside corridor, or quiet coastal street in warm morning daylight."
+    }
+  ],
+  "dna_grid": {
+    "means": "Lightweight wind jacket as a premium travel and wellness layer.",
+    "experience": "Morning resort air, polished movement, understated comfort.",
+    "core": "Old Money Sportive meets active wellness.",
+    "goal": "Generate five influencer-reference campaign cuts that preserve one DUVETICA WJ product while letting the rest of the outfit and scene breathe."
+  },
+  "core_hook": {
+    "formula": "one selected WJ product + top five DUVETICA influencer references + quiet luxury resort wellness",
+    "definition": "The influencer reference controls pose and camera, while the product packshot controls only the wind jacket DNA."
+  }
+}

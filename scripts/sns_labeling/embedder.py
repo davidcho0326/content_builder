@@ -12,6 +12,7 @@ Env:
 from __future__ import annotations
 
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Iterable, Optional
@@ -21,11 +22,16 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+_SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from project_paths import SOURCE_DIR
+
 load_dotenv()
 
 DEFAULT_MODEL = os.getenv("F_AND_F_EMBEDDING_MODEL", "gemini-embedding-2")
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-CACHE_PATH = PROJECT_ROOT / "source" / "sns-influencer-output" / "_pool_embeddings.npz"
+CACHE_PATH = SOURCE_DIR / "_pool_embeddings.npz"
 
 
 class EmbedderError(RuntimeError):

@@ -15,17 +15,24 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Optional
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from sns_labeling.mood_query import (
     _avoid_axes,
     _category_boosts,
     _extract_targets,
+    _record_image_path,
     _parse_pct,  # type: ignore  # may not exist; will fall back if not exported
     _normalise_dist,  # type: ignore
 )
+from project_paths import SOURCE_DIR
 
 # Import-friendly fallbacks
 try:
@@ -33,8 +40,7 @@ try:
 except Exception:
     _pp = None
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_POOL_PRODUCT = PROJECT_ROOT / "source" / "sns-influencer-output" / "labels_adapted_index.jsonl"
+DEFAULT_POOL_PRODUCT = SOURCE_DIR / "labels_adapted_index.jsonl"
 
 # Marketing axis weights (5-axis: pose/expr/gaze/mood/loc, total 0.70)
 AXIS_WEIGHT = {"pose": 0.18, "expression": 0.10, "gaze": 0.10,
@@ -320,7 +326,7 @@ def query_marketing_pool_product(
             "handle": (rec.get("account") or {}).get("handle"),
             "brand": (rec.get("account") or {}).get("brand"),
             "post_url": (rec.get("account") or {}).get("post_url"),
-            "image": (rec.get("image") or {}).get("path"),
+            "image": _record_image_path(rec),
             "model": rec.get("model"),
             "background": rec.get("background"),
             "styling": rec.get("styling"),
@@ -418,7 +424,7 @@ def query_marketing_pool_product_v2(
             "handle": (rec.get("account") or {}).get("handle"),
             "brand": (rec.get("account") or {}).get("brand"),
             "post_url": (rec.get("account") or {}).get("post_url"),
-            "image": (rec.get("image") or {}).get("path"),
+            "image": _record_image_path(rec),
             "model": rec.get("model"),
             "background": rec.get("background"),
             "styling": rec.get("styling"),

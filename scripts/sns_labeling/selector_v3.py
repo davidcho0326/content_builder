@@ -41,10 +41,10 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from sns_labeling.imc_plan_loader import Persona, Scene
+from project_paths import PROJECT_ROOT, SOURCE_DIR, resolve_project_path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_POOL = PROJECT_ROOT / "source" / "sns-influencer-output" / "labels_marketing_index.jsonl"
+DEFAULT_POOL = SOURCE_DIR / "labels_marketing_index.jsonl"
 
 
 # ---------- weights ---------------------------------------------------------
@@ -208,6 +208,16 @@ def _record_text_for_embedding(rec: dict) -> str:
             f"coordination: {_v(st.get('coordination method'))}.")
 
 
+def _record_image_path(rec: dict, pool_path: Path) -> str | None:
+    raw = (rec.get("image") or {}).get("path")
+    if not raw:
+        return None
+    p = Path(raw)
+    if not p.is_absolute():
+        p = resolve_project_path(p)
+    return str(p)
+
+
 def _embedding_lifestyle_scores(records: list[dict],
                                   persona: Persona) -> dict[str, float]:
     """Cosine similarity of persona text vs cached record embeddings.
@@ -345,10 +355,11 @@ def select_for_scene(
             "handle": (rec.get("account") or {}).get("handle"),
             "brand": (rec.get("account") or {}).get("brand"),
             "post_url": (rec.get("account") or {}).get("post_url"),
-            "image": (rec.get("image") or {}).get("path"),
+            "image": _record_image_path(rec, pool_path),
             "model": rec.get("model"),
             "background": rec.get("background"),
             "styling": rec.get("styling"),
+            "free_text": rec.get("free_text"),
             "confidence": (rec.get("free_text") or {}).get("_confidence"),
             "scene_id": scene.slug,
             "persona_id": persona.id,

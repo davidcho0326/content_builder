@@ -23,13 +23,20 @@ trigger-keywords:
 
 ```
 imc_plan.json
+   ↓ Step 0) Single-product outfit routing             (top or bottom 1 fixed for campaign) ★ v3.5
    ↓ Step A) Per-scene reference selection           (selector_v3, persona+pose anchor)
    ↓ Step B) IMC proposal                            (campaign + scenes + influencer_categories)
    ↓ Step B.5) THE MOMENT extraction                 (gemini-3.1-flash-lite, IMC-aware moments)  ★
-   ↓ Step C) 3-model image generation                (GPT-image-2 Direct + HF GPT-image 2 + HF Marketing Studio)
-   ↓ Step C+) Virtual try-on (hero product swap)     (Gemini-3-pro-image + GPT-image-2 두 엔진)  ★ v3.2
+   ↓ Step C) Product-grounded image generation       (Direct GPT + optional HF MCP plan)
+   ↓ Step C+) Optional virtual try-on comparison     (off by default; debug/comparison only)
    ↓ Step D) Scene-grouped gallery + lightbox        (자동 오픈)
 ```
+
+## v3.5 Single-Product Grounding 변경점
+
+기본 플로우는 더 이상 raw editorial image를 만든 뒤 try-on으로 옷만 바꾸지 않는다. 먼저 `products_resource`에서 캠페인 전체에 쓸 상/하의 중 정확히 1개 제품만 고정하고, GPT-image-2 호출에 `인플루언서 ref + 선택 제품 1개`만 첨부한다. 프롬프트는 인플루언서 ref를 포즈/구도/인물 비율의 최상위 anchor로 쓰고, 제품 이미지는 핏/길이감/로고/소재 디테일만 추출한다. 제품 이미지에 사람이 있어도 그 사람의 포즈·얼굴·체형·배경·스타일링은 무시한다. 나머지 착장, 가방, 액세서리, 신발은 씬 감도에 맞게 생성한다. Step C+ try-on은 `--apply-tryon`을 명시했을 때만 실행하는 비교/디버그 단계다.
+
+HF 모델 옵션은 `--providers gpt hf_gpt hf_mkt`로 요청한다. 현재 Python은 Direct GPT를 즉시 실행하고, `hf_gpt → gpt_image_2`, `hf_mkt → marketing_studio_image` 작업은 `03_images/higgsfield_mcp_plan.json/md`로 남긴다. Higgsfield MCP가 연결된 세션에서 이 plan을 실행하면 결과 파일명이 `{unit}_hf_gpt.png`, `{unit}_hf_mkt.png`로 저장되어 같은 갤러리 셀에 표시된다.
 
 ---
 
@@ -177,9 +184,9 @@ st_cut-dev/results/{brand}/imc_driven/{campaign_id}_{ts}/
 
 ---
 
-## Step C+ Virtual Try-On (v3.2, 2026-05-03 도입)
+## Step C+ Optional Virtual Try-On (v3.2, 비교/디버그 전용)
 
-이미지 생성(Step C) 결과 위에 한 단계 더 — `products_resource/{brand}/{season} {code}/{lifestyle}/` 의 **실제 자사 제품 이미지**를 가져와 **모델·포즈·배경은 그대로 두고 옷만** 실제 제품으로 swap.
+v3.4 이후 기본 산출물은 Step C에서 이미 제품 이미지를 첨부해 생성된다. Step C+는 기존 방식처럼 `products_resource/{brand}/{season} {code}/{lifestyle}/`의 실제 제품 이미지를 가져와 **모델·포즈·배경은 그대로 두고 옷만** swap하는 비교/디버그 옵션이다.
 
 ### 두 엔진 dual-run
 
@@ -208,7 +215,7 @@ imc_plan의 `brand` + `season` + `lifestyle` + `hero_garment.code` → products_
 
 | 인자 | 기본값 | 설명 |
 |---|---|---|
-| `--apply-tryon` / `--no-tryon` | `True` | Step C+ 실행 여부 (default ON) |
+| `--apply-tryon` / `--no-tryon` | `False` | Step C+ 실행 여부 (default OFF, 비교/디버그용) |
 | `--tryon-engines` | `gemini gpt` | 두 엔진 동시 실행 (default). 단독 실행 가능 |
 | `--tryon-target` | `gpt` | 어느 raw provider 결과에 try-on 적용. `gpt` (Direct GPT-image-2 18장만, 권장) / `hf_gpt` / `hf_mkt` / `all` |
 
@@ -232,9 +239,11 @@ results/{brand}/imc_driven/{campaign_id}_{ts}/
 │   ├── {unit}_gpt_tryon_gpt.png             (Step C+ Engine B)
 │   ├── {unit}_hf_gpt.png / {unit}_hf_mkt.png (raw Step C)
 │   └── _tryon_summary.json                  (engine별 ok/fail/elapsed)
-├── 04_products/                              (Step C+ 신규)
-│   ├── hero_product.json                    (resolved 매니페스트)
-│   └── hero_product_used.png                (선택된 제품 이미지 사본)
+├── 04_products/
+│   ├── outfit_manifest.json                 (Step 0 single-product 매니페스트)
+│   ├── selected_product.json                (선택 제품 매니페스트)
+│   ├── selected_product_used.png            (생성 입력으로 들어간 단일 제품 이미지)
+│   └── hero_product_used.png or bottom_product_used.png
 └── gallery.html                              (variant row에 try-on cell 추가, hero thumb)
 ```
 

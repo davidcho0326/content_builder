@@ -15,6 +15,7 @@ from PIL import Image
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from sns_labeling.product_grounding import format_product_prompt_section
 
 load_dotenv()
 
@@ -36,6 +37,61 @@ BRAND_MODEL_KEYWORDS = {
                    "sharp jawline, toned but feminine athletic build, "
                    "sun-kissed glowing skin"),
 }
+
+
+def _flatten_prompt_context(value) -> str:
+    """Compact nested label fields into text for prompt-rule detection."""
+    if value is None:
+        return ""
+    if isinstance(value, dict):
+        return " ".join(_flatten_prompt_context(v) for v in value.values())
+    if isinstance(value, (list, tuple, set)):
+        return " ".join(_flatten_prompt_context(v) for v in value)
+    return str(value)
+
+
+def _reference_has_phone_context(ref: dict) -> bool:
+    """Detect phone/selfie cues in reference labels."""
+    blob = _flatten_prompt_context({
+        "model": ref.get("model"),
+        "background": ref.get("background"),
+        "styling": ref.get("styling"),
+        "free_text": ref.get("free_text"),
+        "matched_axes": ref.get("matched_axes"),
+    }).lower()
+    cues = (
+        "phone", "smartphone", "iphone", "mobile", "cell phone",
+        "handphone", "selfie", "mirror selfie", "phone screen",
+        "핸드폰", "휴대폰", "스마트폰", "셀카", "거울셀카",
+    )
+    return any(cue in blob for cue in cues)
+
+
+def _phone_context_rule(ref: dict) -> str:
+    if _reference_has_phone_context(ref):
+        return (
+            "PHONE PRESERVATION DETECTED FROM THE REFERENCE LABELS: keep a real "
+            "smartphone as a smartphone in the same hand/position/reflection if "
+            "Image 1 shows it. Do not remove it and do not transform it into a "
+            "bag, cup, light stick, product, IMC prop, or accessory. Other "
+            "non-phone items may still be restyled from the campaign tone."
+        )
+    return (
+        "If Image 1 visibly includes a smartphone, selfie capture, mirror-selfie "
+        "phone, or phone-held shooting posture, preserve that real smartphone in "
+        "the same hand/position/reflection. Treat the phone as pose/capture "
+        "context, not as a restylable accessory. If Image 1 does not show a "
+        "phone, do not add one."
+    )
+
+
+def _phone_negative_clause(ref: dict) -> str:
+    if _reference_has_phone_context(ref):
+        return (
+            "do not remove or replace the reference phone, no phone-to-bag/cup/"
+            "light-stick/prop substitution"
+        )
+    return "do not add a phone unless Image 1 visibly includes one"
 
 
 # ---------- prompt build --------------------------------------------------
@@ -66,6 +122,12 @@ STYLING: {fashion_style} style with {coordination} coordination, {color_tone} to
 ACCESSORIES: {accessories}.
 FOOTWEAR: {footwear}.
 
+PHONE / SELFIE CONTEXT:
+- If the reference visibly includes a smartphone, selfie capture, mirror-selfie phone,
+  or phone-held shooting posture, preserve a real smartphone as a smartphone in
+  the same hand/position/reflection. Do not turn it into another item.
+- If the reference does not include a phone, do not add one.
+
 PHOTOGRAPHY:
 - Camera: {camera}, {lens}.
 - Film: {film} — visible fine grain, organic tonal transitions.
@@ -76,25 +138,38 @@ visible skin pores and natural skin texture, fine fabric grain.
 
 ANTI-AI DETAILS: {anti_ai}.
 
-NEGATIVE: no Y2K poses, no mirror selfies, no exaggerated cute gestures, no plastic skin, no AI-symmetric features.
+NEGATIVE: no Y2K poses, do not add a phone unless the reference visibly includes one, no exaggerated cute gestures, no plastic skin, no AI-symmetric features.
 
 CRITICAL: Match the reference photograph's POSE, COMPOSITION, and CAMERA ANGLE as closely as possible. The model should be in the same position and the framing should be nearly identical. Only the garment, styling, and minor setting details should differ."""
 
 
 # ---------- IMC-driven prompt (v3, Option α) -----------------------------
 
-IMC_PROMPT_TEMPLATE = """You are given a REFERENCE photograph. Generate a NEW high-end fashion editorial image for the campaign described below.
+IMC_PROMPT_TEMPLATE = """You are given input images. Generate a NEW high-end fashion editorial image for the campaign described below.
+
+INPUT IMAGE ROLES:
+- Image 1: INFLUENCER REFERENCE. This is the PRIMARY visual authority for the human subject, pose, body position, camera angle, composition, and broad model proportions.
+- Image 2: SELECTED PRODUCT. This is NOT a human/pose reference. Use it only for the selected garment's fit, length, silhouette, color, logo/graphic placement, fabric, and construction details.
+
+STRICT INPUT AUTHORITY:
+- If Image 2 contains a person, mannequin, model pose, face, hair, body proportions, background, lighting, crop, or styling, ignore all of those completely.
+- Never borrow the product-photo model's pose or body. The generated model must follow Image 1.
+- Use exactly one fixed product garment from Image 2. Do not force both top and bottom products into the look.
+- Generate every non-selected garment, bag, accessory, shoe, and prop from the campaign tone and scene direction.
+- A smartphone visible in Image 1 is the exception to accessory restyling: keep it as a real smartphone, because it preserves selfie/phone-held capture logic.
 
 USE THE REFERENCE FOR (anchor):
 - POSE and BODY POSITION (replicate the exact pose, limb positions, head angle)
 - COMPOSITION and FRAMING (same camera angle, distance, crop, rule-of-thirds placement)
 - The MODEL'S age range, gender, and proportions
+- Phone/selfie capture context when Image 1 visibly includes a smartphone
 
 IGNORE FROM THE REFERENCE (replace entirely):
 - Setting, location, background, architecture
 - Lighting and color grading
-- Clothing, accessories, footwear
+- Clothing, accessories, footwear, bags, and props, except a smartphone visible in Image 1
 - Color palette and styling
+- Mirror/selfie/reflection context only when no phone/selfie cue is visible in Image 1
 
 CAMPAIGN: {brand} {season} — {lifestyle}
 HEADLINE: "{headline_en}" / "{headline_ko}"
@@ -113,7 +188,13 @@ THE MODEL: {persona_demo}. {brand_model_keyword}.
 EXPRESSION: {expression} (gaze: {gaze}).
 SIGNATURE POSE: {pose}.
 
-WEARING:
+PHONE / SELFIE CONTEXT:
+{phone_context_rule}
+
+SINGLE-PRODUCT WARDROBE GROUNDING:
+{product_prompt_section}
+
+WEARING BRIEF FROM IMC:
 - Hero: {hero_desc}
 - Sub: {sub_desc_csv}
 ACCESSORIES (scene-appropriate, light): {accessories}
@@ -129,9 +210,9 @@ visible skin pores and natural skin texture, fine fabric grain.
 
 ANTI-AI DETAILS: {anti_ai}.
 
-NEGATIVE: no Y2K poses, no mirror selfies, no exaggerated cute gestures, no plastic skin, no AI-symmetric features, no team mascots in the foreground.
+NEGATIVE: no Y2K poses, no exaggerated cute gestures, no plastic skin, no AI-symmetric features, no team mascots in the foreground, {phone_negative_clause}, do not copy the product-photo model, do not copy the product-photo pose, do not copy the product-photo background.
 
-CRITICAL: Match the REFERENCE photograph's POSE / COMPOSITION / CAMERA ANGLE precisely. The model's SETTING, COLOR PALETTE, CLOTHING, and ACCESSORIES must match the SCENE BRIEF above — NOT the reference image. The TONE & COLOR direction ({scene_tone}) must dominate the rendered image's color grading."""
+CRITICAL: Generate the outfit as part of the original editorial shoot, not as a later pasted try-on. Match the INFLUENCER REFERENCE photograph's POSE / COMPOSITION / CAMERA ANGLE precisely. The selected garment must match Image 2's product DNA, but the product image must not influence the model identity, pose, composition, setting, or styling beyond that one garment. The model's SETTING, COLOR PALETTE, complementary wardrobe, bag, accessories, and shoes must match the SCENE BRIEF above. The TONE & COLOR direction ({scene_tone}) must dominate the whole image coherently, including the selected product fabric lighting."""
 
 
 def build_prompt_from_imc_scene(
@@ -142,6 +223,7 @@ def build_prompt_from_imc_scene(
     moment: Optional[str] = None,
     accessories: Optional[str] = None,
     footwear: Optional[str] = None,
+    outfit_manifest: Optional[dict] = None,
 ) -> str:
     """Render the IMC-aware prompt for one scene + ref + persona.
 
@@ -199,6 +281,9 @@ def build_prompt_from_imc_scene(
         expression=expression or "cool",
         gaze=gaze or "front",
         pose=pose or "full body shot",
+        phone_context_rule=_phone_context_rule(ref),
+        phone_negative_clause=_phone_negative_clause(ref),
+        product_prompt_section=format_product_prompt_section(outfit_manifest),
         hero_desc=f"[{spec.hero_garment.get('code', '')}] {spec.hero_garment.get('desc', '')}".strip(),
         sub_desc_csv=sub_desc_csv,
         accessories=accessories or "minimal scene-appropriate items",
