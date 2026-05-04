@@ -35,9 +35,11 @@ ST)MKT_builder_for_fnf/                 ← PROJECT_ROOT in code
 | `source/sns-influencer-output/_pool_embeddings.npz` | precomputed gemini-3-flash embeddings for ~5,800 marketing-context Instagram posts | 63MB |
 | `source/sns-influencer-output/labels_adapted_index.jsonl` | per-post metadata (handle, image path, age/gender, score axes, taxonomy labels) | 20MB |
 | `source/sns-influencer-output/_pool_taxonomy.json` | controlled vocabulary used by the labeler | 4KB |
-| `st_cut-dev/data/{brand}/...` | local copies of Instagram post images, gitignored | 357MB total |
+| `source/sns-influencer-output/{BRAND}/crawl_raw/thumbnails/{handle}/{post_id}.jpg` | actual Instagram thumbnail jpgs — referenced by absolute path in `labels_adapted_index.jsonl["image"]["path"]` | 991MB total (5,832 files across DV/DX/MLB) |
 
 `selector_v3.py:DEFAULT_POOL` resolves to `source/sns-influencer-output/labels_marketing_index.jsonl` — make sure that file exists (or symlink to `labels_adapted_index.jsonl`).
+
+**Known limitation — absolute thumbnail paths**: each label record has `image.path` baked as `D:/ralph_kaphacy/ST)MKT_builder_for_fnf/source/...`. To keep that working, either (a) clone the repo to that exact location on your machine, or (b) patch `selector_v3` and `run_campaign_pipeline` to derive `image.path` from `image.file` + `account.handle` + `account.brand` against `PROJECT_ROOT/source/...`. The Drive zips already restore the correct subtree under `source/sns-influencer-output/{BRAND}/crawl_raw/thumbnails/`, so option (a) just works as long as `PROJECT_ROOT` matches.
 
 ### 2. imc_plan.json (campaign brief) — `~5MB × N brands`
 
@@ -83,7 +85,7 @@ In-repo at `brand-dna/{discovery,duvetica,mlb}.json` + alignment files. No downl
 
 ## Distribution: Google Drive public link
 
-All 9 inputs (~280 MB) live in a single shared Drive folder. `scripts/_download_inputs.py` fetches the folder once via `gdown.download_folder`, then places each artifact at the path the pipeline expects.
+All 12 inputs (~1.27 GB) live in a single shared Drive folder. `scripts/_download_inputs.py` fetches the folder once via `gdown.download_folder`, then places each artifact at the path the pipeline expects.
 
 **Public folder**: https://drive.google.com/drive/folders/1VQF_Qldg3JhZJRi5DUYNWiyu6R6qdPzN
 
@@ -94,7 +96,10 @@ fnf-strategy-cut/  (Drive — "Anyone with the link can view")
   ├── influencer_pool/
   │     ├── _pool_embeddings.npz
   │     ├── labels_adapted_index.jsonl
-  │     └── _pool_taxonomy.json
+  │     ├── _pool_taxonomy.json
+  │     ├── thumbnails_DV.zip       (~215MB) — 1,354 raw .jpg referenced by absolute path in jsonl
+  │     ├── thumbnails_DX.zip       (~390MB) — 2,323 jpg
+  │     └── thumbnails_MLB.zip      (~369MB) — 2,155 jpg
   ├── imc_plans/
   │     ├── 20260503_DV_27SS_imc_plan.json
   │     ├── 20260503_DX_26FW_imc_plan.json

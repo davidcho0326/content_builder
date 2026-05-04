@@ -48,6 +48,13 @@ PLAN: list[tuple[str, str, str | None, str, int]] = [
      "source/sns-influencer-output/labels_adapted_index.jsonl", None, "file", 20_000_000),
     ("influencer_pool/_pool_taxonomy.json",
      "source/sns-influencer-output/_pool_taxonomy.json", None, "file", 4_000),
+    # raw thumbnails (referenced by absolute path in labels_adapted_index.jsonl)
+    ("influencer_pool/thumbnails_DV.zip",
+     "source/sns-influencer-output/DV/crawl_raw/thumbnails", "DV", "zip", 220_000_000),
+    ("influencer_pool/thumbnails_DX.zip",
+     "source/sns-influencer-output/DX/crawl_raw/thumbnails", "DX", "zip", 400_000_000),
+    ("influencer_pool/thumbnails_MLB.zip",
+     "source/sns-influencer-output/MLB/crawl_raw/thumbnails", "MLB", "zip", 380_000_000),
     ("imc_plans/20260503_DV_27SS_imc_plan.json",
      "marketing_builder/samples/20260503_DV_27SS/05_marketing/output/imc_plan.json",
      "DV", "file", 100_000),
