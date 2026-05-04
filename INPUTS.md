@@ -5,18 +5,18 @@ Code in this repo (`st_cut-dev/`) depends on several input artifacts that are **
 ## Required layout (parent directory of this repo)
 
 ```
-ralph_kaphacy/
-├── ST)MKT_builder_for_fnf/
-│   ├── st_cut-dev/                     ← THIS REPO (code + brand-dna)
-│   ├── marketing_builder/              ← outside repo, holds imc_plan.json
-│   │   └── output/
-│   │       ├── 20260503_DV_27SS/05_marketing/output/imc_plan.json
-│   │       ├── 20260503_DX_26FW/05_marketing/output/imc_plan.json
-│   │       └── 20260503_MLB_27SS/05_marketing/output/imc_plan.json
-│   └── products_resource/              ← outside repo, ~200MB total
-│       ├── DV/27SS WJ/, DV/27SS SET/
-│       ├── DX/26FW WJ/, DX/26FW DJ/, DX/26FW SH/
-│       └── MLB/27SS TS/, MLB/27SS PT/, MLB/27SS SH/
+ST)MKT_builder_for_fnf/                 ← PROJECT_ROOT in code
+├── st_cut-dev/                         ← THIS REPO (code + brand-dna)
+├── marketing_builder/                  ← outside repo, holds imc_plan.json
+│   ├── output/
+│   │   ├── 20260503_DX_26FW/05_marketing/output/imc_plan.json
+│   │   └── 20260503_MLB_27SS/05_marketing/output/imc_plan.json
+│   └── samples/
+│       └── 20260503_DV_27SS/05_marketing/output/imc_plan.json
+├── products_resource/                  ← outside repo, ~200MB total
+│   ├── DV/27SS WJ/, DV/27SS SET/
+│   ├── DX/26FW WJ/, DX/26FW DJ/, DX/26FW SH/
+│   └── MLB/27SS TS/, MLB/27SS PT/, MLB/27SS SH/
 └── source/                             ← outside repo, influencer pool
     └── sns-influencer-output/
         ├── _pool_embeddings.npz        # 63MB — gemini-3-flash embeddings
@@ -24,7 +24,7 @@ ralph_kaphacy/
         └── _pool_taxonomy.json         # 4KB — label vocabulary
 ```
 
-`PROJECT_ROOT` in code is computed as `Path(__file__).resolve().parents[3]` from `st_cut-dev/scripts/sns_labeling/...`, i.e. it points to the directory containing `ST)MKT_builder_for_fnf/`. All external paths are relative to that root.
+`PROJECT_ROOT` in code is computed as `Path(__file__).resolve().parents[3]` from `st_cut-dev/scripts/sns_labeling/...` and resolves to `ST)MKT_builder_for_fnf/`. All external paths in `_download_inputs.py` and selector_v3 are relative to that root.
 
 ## Input groups
 
