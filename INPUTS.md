@@ -88,6 +88,7 @@ In-repo at `brand-dna/{discovery,duvetica,mlb}.json` + alignment files. No downl
 All 12 inputs (~1.27 GB) live in a single shared Drive folder. `scripts/_download_inputs.py` fetches the folder once via `gdown.download_folder`, then places each artifact at the path the pipeline expects.
 
 **Public folder**: https://drive.google.com/drive/folders/1VQF_Qldg3JhZJRi5DUYNWiyu6R6qdPzN
+*(view-only, "anyone with the link". 12 artifacts as of 2026-05-04: 3 pool files + 3 thumbnails zips + 3 imc_plans + 3 brand product zips.)*
 
 Folder layout (mirrors `_drive_upload_staging/`):
 
